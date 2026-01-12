@@ -1,6 +1,9 @@
 import Logo from "@/components/Logo";
+import { useLanguage } from "@/lib/i18n";
 
 const HeroSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
       {/* Background with overlay */}
@@ -21,7 +24,7 @@ const HeroSection = () => {
           className="text-xl md:text-2xl font-serif text-cream/90 mb-2 animate-fade-in"
           style={{ animationDelay: "0.2s" }}
         >
-          Fine Dining Indian Cuisine
+          {t("hero.tagline")}
         </p>
         
         <div
@@ -39,8 +42,7 @@ const HeroSection = () => {
           className="text-lg md:text-xl font-serif text-cream/70 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in"
           style={{ animationDelay: "0.4s" }}
         >
-          Embark on a culinary journey through the rich flavors and traditions 
-          of India, crafted with passion in the heart of Rotterdam.
+          {t("hero.subtitle")}
         </p>
         
         <div
@@ -51,13 +53,13 @@ const HeroSection = () => {
             href="#reservation"
             className="bg-secondary text-secondary-foreground px-10 py-4 font-serif text-lg hover:bg-secondary/90 transition-all hover:scale-105"
           >
-            Reserve Your Table
+            {t("hero.cta.reserve")}
           </a>
           <a
             href="#menu"
             className="border-2 border-cream/40 text-cream px-10 py-4 font-serif text-lg hover:bg-cream/10 transition-all"
           >
-            Explore Menu
+            {t("hero.cta.menu")}
           </a>
         </div>
 

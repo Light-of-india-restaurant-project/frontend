@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Mail, Sparkles } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 const NewsletterSection = () => {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -35,19 +37,18 @@ const NewsletterSection = () => {
           </div>
 
           <h2 className="font-display text-3xl md:text-4xl mb-4">
-            Join Our Newsletter
+            {t("newsletter.title")}
           </h2>
 
           <p className="font-serif text-lg text-primary-foreground/80 mb-8">
-            Be the first to know about exclusive offers, special menus, and
-            upcoming events at Light of India.
+            {t("newsletter.subtitle")}
           </p>
 
           {isSuccess ? (
             <div className="animate-fade-in">
               <div className="inline-flex items-center gap-2 bg-green-500/20 px-6 py-3 rounded">
                 <Mail size={20} className="text-green-300" />
-                <span className="font-serif">Thank you for subscribing!</span>
+                <span className="font-serif">{t("newsletter.success")}</span>
               </div>
             </div>
           ) : (
@@ -60,7 +61,7 @@ const NewsletterSection = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="Enter your email address"
+                placeholder={t("newsletter.placeholder")}
                 className="flex-1 px-6 py-4 bg-white/10 border border-white/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:border-secondary focus:outline-none transition-colors font-serif"
               />
               <button
@@ -68,7 +69,7 @@ const NewsletterSection = () => {
                 disabled={isSubmitting}
                 className="bg-secondary text-secondary-foreground px-8 py-4 font-serif hover:bg-secondary/90 transition-colors disabled:opacity-50 whitespace-nowrap"
               >
-                {isSubmitting ? "Subscribing..." : "Subscribe"}
+                {isSubmitting ? t("newsletter.subscribing") : t("newsletter.subscribe")}
               </button>
             </form>
           )}

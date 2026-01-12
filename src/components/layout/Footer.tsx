@@ -1,7 +1,10 @@
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from "lucide-react";
 import Logo from "@/components/Logo";
+import { useLanguage } from "@/lib/i18n";
 
 const Footer = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-brown text-cream py-16">
       <div className="container mx-auto px-6">
@@ -10,14 +13,13 @@ const Footer = () => {
           <div className="md:col-span-1">
             <Logo variant="image" size="lg" className="mb-6 brightness-0 invert" />
             <p className="font-serif text-cream/80 leading-relaxed">
-              Experience the finest Indian cuisine in an elegant setting. 
-              Every dish tells a story of tradition and innovation.
+              {t("footer.tagline")}
             </p>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-display text-lg mb-6 text-secondary">Contact</h4>
+            <h4 className="font-display text-lg mb-6 text-secondary">{t("footer.contact")}</h4>
             <ul className="space-y-4 font-serif">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-secondary mt-1 flex-shrink-0" />
@@ -43,26 +45,26 @@ const Footer = () => {
 
           {/* Opening Hours */}
           <div>
-            <h4 className="font-display text-lg mb-6 text-secondary">Opening Hours</h4>
+            <h4 className="font-display text-lg mb-6 text-secondary">{t("footer.hours")}</h4>
             <ul className="space-y-3 font-serif text-cream/80">
               <li className="flex items-start gap-3">
                 <Clock size={18} className="text-secondary mt-1 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-cream">Tue - Thu</p>
+                  <p className="font-medium text-cream">{t("footer.monthurs")}</p>
                   <p>17:00 - 22:00</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Clock size={18} className="text-secondary mt-1 flex-shrink-0 opacity-0" />
                 <div>
-                  <p className="font-medium text-cream">Fri - Sat</p>
+                  <p className="font-medium text-cream">{t("footer.frisat")}</p>
                   <p>17:00 - 23:00</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Clock size={18} className="text-secondary mt-1 flex-shrink-0 opacity-0" />
                 <div>
-                  <p className="font-medium text-cream">Sunday</p>
+                  <p className="font-medium text-cream">{t("footer.sunday")}</p>
                   <p>16:00 - 21:00</p>
                 </div>
               </li>
@@ -101,13 +103,13 @@ const Footer = () => {
             </div>
             <div className="space-y-2 font-serif">
               <a href="#menu" className="block text-cream/80 hover:text-secondary transition-colors">
-                Our Menu
+                {t("nav.menu")}
               </a>
               <a href="#reservation" className="block text-cream/80 hover:text-secondary transition-colors">
-                Reservations
+                {t("nav.reserve")}
               </a>
               <a href="#contact" className="block text-cream/80 hover:text-secondary transition-colors">
-                Private Events
+                {t("nav.contact")}
               </a>
             </div>
           </div>
@@ -116,7 +118,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-cream/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-cream/60 text-sm font-serif">
-            © {new Date().getFullYear()} Light of India. All rights reserved.
+            © {new Date().getFullYear()} Light of India. {t("footer.rights")}
           </p>
           <div className="flex gap-6 text-sm font-serif text-cream/60">
             <a href="/privacy" className="hover:text-secondary transition-colors">

@@ -1,4 +1,5 @@
 import SectionHeading from "@/components/ui/SectionHeading";
+import { useLanguage } from "@/lib/i18n";
 
 // Placeholder gallery images (will be replaced with API data)
 const galleryImages = [
@@ -11,12 +12,14 @@ const galleryImages = [
 ];
 
 const GallerySection = () => {
+  const { t } = useLanguage();
+
   return (
     <section id="gallery" className="py-24 bg-background">
       <div className="container mx-auto px-6">
         <SectionHeading
-          title="Gallery"
-          subtitle="A glimpse into our culinary artistry and elegant ambiance"
+          title={t("gallery.title")}
+          subtitle={t("gallery.subtitle")}
         />
 
         {/* Gallery Grid */}
