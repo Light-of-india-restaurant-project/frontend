@@ -147,7 +147,13 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const defaultValue: LanguageContextType = {
+  language: "en",
+  setLanguage: () => {},
+  t: (key: string) => translations[key]?.en || key,
+};
+
+const LanguageContext = createContext<LanguageContextType>(defaultValue);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>(() => {
@@ -177,9 +183,5 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
-  }
-  return context;
+  return useContext(LanguageContext);
 };
