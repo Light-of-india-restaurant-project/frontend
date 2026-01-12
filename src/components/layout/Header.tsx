@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import Logo from "@/components/Logo";
-
-const navLinks = [
-  { label: "Menu", href: "#menu" },
-  { label: "About", href: "#about" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Contact", href: "#contact" },
-];
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/lib/i18n";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useLanguage();
+
+  const navLinks = [
+    { label: t("nav.menu"), href: "#menu" },
+    { label: t("nav.about"), href: "#about" },
+    { label: t("nav.gallery"), href: "#gallery" },
+    { label: t("nav.contact"), href: "#contact" },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -30,11 +33,12 @@ const Header = () => {
               {link.label}
             </a>
           ))}
+          <LanguageSwitcher />
           <a
             href="#reservation"
             className="bg-primary text-primary-foreground px-6 py-2.5 font-serif hover:bg-primary/90 transition-colors"
           >
-            Reserve Table
+            {t("nav.reserve")}
           </a>
         </nav>
 
@@ -62,12 +66,15 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
+            <div className="py-2">
+              <LanguageSwitcher />
+            </div>
             <a
               href="#reservation"
               className="bg-primary text-primary-foreground px-6 py-3 font-serif text-center hover:bg-primary/90 transition-colors mt-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Reserve Table
+              {t("nav.reserve")}
             </a>
           </div>
         </nav>

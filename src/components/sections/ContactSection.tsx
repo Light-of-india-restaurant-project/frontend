@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { useLanguage } from "@/lib/i18n";
 
 const ContactSection = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,8 +43,8 @@ const ContactSection = () => {
     <section id="contact" className="py-24 bg-muted">
       <div className="container mx-auto px-6">
         <SectionHeading
-          title="Contact Us"
-          subtitle="We would love to hear from you"
+          title={t("contact.title")}
+          subtitle={t("contact.subtitle")}
         />
 
         <div className="grid md:grid-cols-2 gap-16 max-w-6xl mx-auto">
@@ -54,7 +56,7 @@ const ContactSection = () => {
                   <MapPin className="text-primary" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-display text-lg mb-2">Visit Us</h3>
+                  <h3 className="font-display text-lg mb-2">{t("contact.address")}</h3>
                   <p className="font-serif text-muted-foreground">
                     Kortekade 1<br />
                     Rotterdam, Netherlands
@@ -67,7 +69,7 @@ const ContactSection = () => {
                   <Phone className="text-primary" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-display text-lg mb-2">Call Us</h3>
+                  <h3 className="font-display text-lg mb-2">{t("contact.phone")}</h3>
                   <a
                     href="tel:+31101234567"
                     className="font-serif text-muted-foreground hover:text-primary transition-colors"
@@ -82,7 +84,7 @@ const ContactSection = () => {
                   <Mail className="text-primary" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-display text-lg mb-2">Email Us</h3>
+                  <h3 className="font-display text-lg mb-2">{t("contact.email")}</h3>
                   <a
                     href="mailto:info@lightofindia.nl"
                     className="font-serif text-muted-foreground hover:text-primary transition-colors"
@@ -97,7 +99,7 @@ const ContactSection = () => {
                   <Clock className="text-primary" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-display text-lg mb-2">Opening Hours</h3>
+                  <h3 className="font-display text-lg mb-2">{t("contact.hours")}</h3>
                   <div className="font-serif text-muted-foreground space-y-1">
                     <p>Tue - Thu: 17:00 - 22:00</p>
                     <p>Fri - Sat: 17:00 - 23:00</p>
@@ -122,10 +124,8 @@ const ContactSection = () => {
                   <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
                     <Send size={32} className="text-green-600" />
                   </div>
-                  <h3 className="font-display text-2xl mb-4">Message Sent!</h3>
-                  <p className="font-serif text-muted-foreground">
-                    Thank you for reaching out. We will get back to you soon.
-                  </p>
+                  <h3 className="font-display text-2xl mb-4">{t("contact.success")}</h3>
+                  <p className="font-serif text-muted-foreground">{t("contact.reply")}</p>
                 </div>
               </div>
             ) : (
@@ -133,7 +133,7 @@ const ContactSection = () => {
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="contact-name" className="block font-serif mb-2 text-foreground">
-                      Name *
+                      {t("contact.name")} *
                     </label>
                     <input
                       type="text"
@@ -148,7 +148,7 @@ const ContactSection = () => {
                   </div>
                   <div>
                     <label htmlFor="contact-email" className="block font-serif mb-2 text-foreground">
-                      Email *
+                      {t("contact.email")} *
                     </label>
                     <input
                       type="email"
@@ -165,7 +165,7 @@ const ContactSection = () => {
 
                 <div>
                   <label htmlFor="contact-subject" className="block font-serif mb-2 text-foreground">
-                    Subject *
+                    {t("contact.subject")} *
                   </label>
                   <select
                     id="contact-subject"
@@ -187,7 +187,7 @@ const ContactSection = () => {
 
                 <div>
                   <label htmlFor="contact-message" className="block font-serif mb-2 text-foreground">
-                    Message *
+                    {t("contact.message")} *
                   </label>
                   <textarea
                     id="contact-message"
@@ -207,11 +207,11 @@ const ContactSection = () => {
                   className="w-full bg-primary text-primary-foreground py-4 font-serif text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
-                    "Sending..."
+                    t("contact.sending")
                   ) : (
                     <>
                       <Send size={18} />
-                      Send Message
+                      {t("contact.send")}
                     </>
                   )}
                 </button>

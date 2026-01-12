@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Calendar, Clock, Users, Check } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { useLanguage } from "@/lib/i18n";
 
 const ReservationSection = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -53,8 +55,8 @@ const ReservationSection = () => {
     <section id="reservation" className="py-24 bg-brown text-cream">
       <div className="container mx-auto px-6">
         <SectionHeading
-          title="Reserve Your Table"
-          subtitle="Join us for an unforgettable dining experience"
+          title={t("reservation.title")}
+          subtitle={t("reservation.subtitle")}
         />
 
         <div className="max-w-2xl mx-auto">
@@ -63,17 +65,15 @@ const ReservationSection = () => {
               <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
                 <Check size={32} className="text-green-400" />
               </div>
-              <h3 className="font-display text-2xl mb-4">Reservation Confirmed!</h3>
-              <p className="font-serif text-cream/80">
-                Thank you for your reservation. We have sent a confirmation to your email.
-              </p>
+              <h3 className="font-display text-2xl mb-4">{t("reservation.success")}</h3>
+              <p className="font-serif text-cream/80">{t("reservation.confirm")}</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block font-serif mb-2 text-cream/80">
-                    Full Name *
+                    {t("reservation.name")} *
                   </label>
                   <input
                     type="text"
@@ -88,7 +88,7 @@ const ReservationSection = () => {
                 </div>
                 <div>
                   <label htmlFor="email" className="block font-serif mb-2 text-cream/80">
-                    Email *
+                    {t("reservation.email")} *
                   </label>
                   <input
                     type="email"
@@ -105,7 +105,7 @@ const ReservationSection = () => {
 
               <div>
                 <label htmlFor="phone" className="block font-serif mb-2 text-cream/80">
-                  Phone Number *
+                  {t("reservation.phone")} *
                 </label>
                 <input
                   type="tel"
@@ -123,7 +123,7 @@ const ReservationSection = () => {
                 <div>
                   <label htmlFor="date" className="block font-serif mb-2 text-cream/80">
                     <Calendar size={16} className="inline mr-2" />
-                    Date *
+                    {t("reservation.date")} *
                   </label>
                   <input
                     type="date"
@@ -139,7 +139,7 @@ const ReservationSection = () => {
                 <div>
                   <label htmlFor="time" className="block font-serif mb-2 text-cream/80">
                     <Clock size={16} className="inline mr-2" />
-                    Time *
+                    {t("reservation.time")} *
                   </label>
                   <select
                     id="time"
@@ -165,7 +165,7 @@ const ReservationSection = () => {
                 <div>
                   <label htmlFor="guests" className="block font-serif mb-2 text-cream/80">
                     <Users size={16} className="inline mr-2" />
-                    Guests *
+                    {t("reservation.guests")} *
                   </label>
                   <select
                     id="guests"
@@ -187,7 +187,7 @@ const ReservationSection = () => {
 
               <div>
                 <label htmlFor="specialRequests" className="block font-serif mb-2 text-cream/80">
-                  Special Requests
+                  {t("reservation.requests")}
                 </label>
                 <textarea
                   id="specialRequests"
@@ -205,7 +205,7 @@ const ReservationSection = () => {
                 disabled={isSubmitting}
                 className="w-full bg-secondary text-secondary-foreground py-4 font-serif text-lg hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Confirming..." : "Confirm Reservation"}
+                {isSubmitting ? t("reservation.submitting") : t("reservation.submit")}
               </button>
 
               <p className="text-center text-cream/60 text-sm font-serif">

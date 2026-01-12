@@ -1,69 +1,69 @@
 import { useState } from "react";
 import { Leaf, Flame } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
-
-// Sample menu data (will be replaced with API data)
-const sampleMenuItems = [
-  {
-    id: "1",
-    name: "Butter Chicken",
-    description: "Tender chicken in a rich, creamy tomato-based sauce with aromatic spices",
-    price: 18.5,
-    category: "Main Course",
-    isSpicy: false,
-  },
-  {
-    id: "2",
-    name: "Lamb Biryani",
-    description: "Fragrant basmati rice layered with tender lamb and saffron",
-    price: 22.0,
-    category: "Main Course",
-    isSpicy: true,
-  },
-  {
-    id: "3",
-    name: "Paneer Tikka Masala",
-    description: "Grilled cottage cheese in a spiced tomato gravy",
-    price: 16.5,
-    category: "Main Course",
-    isVegetarian: true,
-  },
-  {
-    id: "4",
-    name: "Tandoori Prawns",
-    description: "King prawns marinated in yogurt and spices, cooked in tandoor",
-    price: 24.0,
-    category: "Starters",
-    isSpicy: true,
-  },
-  {
-    id: "5",
-    name: "Dal Makhani",
-    description: "Black lentils slow-cooked with cream and butter",
-    price: 14.0,
-    category: "Main Course",
-    isVegetarian: true,
-    isVegan: false,
-  },
-  {
-    id: "6",
-    name: "Chicken Tikka",
-    description: "Succulent pieces of chicken marinated and grilled to perfection",
-    price: 15.0,
-    category: "Starters",
-    isSpicy: false,
-  },
-];
+import { useLanguage } from "@/lib/i18n";
 
 const MenuSection = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
+  const { t } = useLanguage();
+
+  const menuItems = [
+    {
+      id: "1",
+      name: t("menu.butterchicken"),
+      description: t("menu.butterchicken.desc"),
+      price: 18.5,
+      category: "Main Course",
+      isSpicy: false,
+    },
+    {
+      id: "2",
+      name: t("menu.biryani"),
+      description: t("menu.biryani.desc"),
+      price: 22.0,
+      category: "Main Course",
+      isSpicy: true,
+    },
+    {
+      id: "3",
+      name: t("menu.paneer"),
+      description: t("menu.paneer.desc"),
+      price: 16.5,
+      category: "Main Course",
+      isVegetarian: true,
+    },
+    {
+      id: "4",
+      name: t("menu.tandoori"),
+      description: t("menu.tandoori.desc"),
+      price: 24.0,
+      category: "Starters",
+      isSpicy: true,
+    },
+    {
+      id: "5",
+      name: t("menu.dal"),
+      description: t("menu.dal.desc"),
+      price: 14.0,
+      category: "Main Course",
+      isVegetarian: true,
+    },
+    {
+      id: "6",
+      name: t("menu.samosa"),
+      description: t("menu.samosa.desc"),
+      price: 8.0,
+      category: "Starters",
+      isVegetarian: true,
+    },
+  ];
 
   return (
     <section id="menu" className="py-24 bg-muted">
       <div className="container mx-auto px-6">
         <SectionHeading
-          title="Our Menu"
-          subtitle="Discover the authentic flavors of India, prepared with love and tradition"
+          title={t("menu.title")}
+          subtitle={t("menu.subtitle")}
         />
 
         {/* Menu Type Tabs */}
@@ -76,7 +76,7 @@ const MenuSection = () => {
                 : "bg-card text-foreground hover:bg-card/80"
             }`}
           >
-            Dine In
+            {t("menu.dinein")}
           </button>
           <button
             onClick={() => setActiveTab("takeaway")}
@@ -86,13 +86,13 @@ const MenuSection = () => {
                 : "bg-card text-foreground hover:bg-card/80"
             }`}
           >
-            Takeaway & Delivery
+            {t("menu.takeaway")}
           </button>
         </div>
 
         {/* Menu Items Grid */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {sampleMenuItems.map((item) => (
+          {menuItems.map((item) => (
             <div
               key={item.id}
               className="bg-card p-6 border border-border hover:border-secondary/50 transition-colors group"
@@ -128,7 +128,7 @@ const MenuSection = () => {
             href="/menu"
             className="inline-flex items-center gap-2 border-2 border-primary text-primary px-8 py-3 font-serif text-lg hover:bg-primary hover:text-primary-foreground transition-all"
           >
-            View Full Menu
+            {t("menu.viewfull")}
           </a>
         </div>
 
