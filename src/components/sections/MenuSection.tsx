@@ -1,7 +1,44 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Leaf, Flame, Star } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const categoryVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut" as const,
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut" as const,
+    },
+  },
+};
 
 const MenuSection = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
@@ -146,22 +183,54 @@ const MenuSection = () => {
         </div>
 
         {/* Menu Categories */}
-        <div className="max-w-5xl mx-auto space-y-16">
-          {menuCategories.map((category) => (
-            <div key={category.name}>
+        <motion.div
+          className="max-w-5xl mx-auto space-y-16"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {menuCategories.map((category, categoryIndex) => (
+            <motion.div
+              key={category.name}
+              variants={categoryVariants}
+              custom={categoryIndex}
+            >
               {/* Category Header */}
-              <div className="text-center mb-10">
+              <motion.div
+                className="text-center mb-10"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
+              >
                 <h3 className="font-display text-2xl md:text-3xl text-primary tracking-wide uppercase">
                   {category.name}
                 </h3>
-                <div className="w-24 h-px bg-secondary mx-auto mt-4" />
-              </div>
+                <motion.div
+                  className="w-24 h-px bg-secondary mx-auto mt-4"
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.2 + categoryIndex * 0.1 }}
+                />
+              </motion.div>
 
               {/* Menu Items */}
-              <div className="space-y-6">
-                {category.items.map((item) => (
-                  <div
+              <motion.div
+                className="space-y-6"
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+              >
+                {category.items.map((item, itemIndex) => (
+                  <motion.div
                     key={item.id}
+                    variants={itemVariants}
+                    custom={itemIndex}
+                    whileHover={{ scale: 1.01, x: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                     className="group relative bg-card p-6 md:p-8 border border-border hover:border-secondary/50 transition-all duration-300"
                   >
                     <div className="flex justify-between items-start gap-6">
@@ -172,19 +241,31 @@ const MenuSection = () => {
                           </h4>
                           <div className="flex items-center gap-2">
                             {item.isSignature && (
-                              <span title="Signature Dish">
+                              <motion.span
+                                title="Signature Dish"
+                                whileHover={{ scale: 1.2, rotate: 15 }}
+                                transition={{ type: "spring", stiffness: 400 }}
+                              >
                                 <Star size={16} className="text-secondary fill-secondary" />
-                              </span>
+                              </motion.span>
                             )}
                             {item.isVegetarian && (
-                              <span title="Vegetarian">
+                              <motion.span
+                                title="Vegetarian"
+                                whileHover={{ scale: 1.2 }}
+                                transition={{ type: "spring", stiffness: 400 }}
+                              >
                                 <Leaf size={16} className="text-green-600" />
-                              </span>
+                              </motion.span>
                             )}
                             {item.isSpicy && (
-                              <span title="Spicy">
+                              <motion.span
+                                title="Spicy"
+                                whileHover={{ scale: 1.2 }}
+                                transition={{ type: "spring", stiffness: 400 }}
+                              >
                                 <Flame size={16} className="text-red-500" />
-                              </span>
+                              </motion.span>
                             )}
                           </div>
                         </div>
@@ -192,16 +273,20 @@ const MenuSection = () => {
                           {item.description}
                         </p>
                       </div>
-                      <span className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap">
+                      <motion.span
+                        className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ type: "spring", stiffness: 400 }}
+                      >
                         €{item.price.toFixed(0)}
-                      </span>
+                      </motion.span>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* View Full Menu CTA */}
         <div className="text-center mt-16">
