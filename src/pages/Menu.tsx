@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Leaf, Flame, Star, Wine, Coffee, IceCream, ZoomIn } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
@@ -7,8 +7,9 @@ import Footer from "@/components/layout/Footer";
 import { Lightbox } from "@/components/ui/lightbox";
 import { useLightbox } from "@/hooks/use-lightbox";
 import { MenuCategorySkeleton } from "@/components/menu/MenuItemSkeleton";
+import { useMenu } from "@/hooks/use-menu";
 
-// Import food images
+// Import food images for local fallback
 import gilafiSeekhImg from "@/assets/menu/gilafi-seekh.jpg";
 import scallopsImg from "@/assets/menu/scallops.jpg";
 import halibutTikkaImg from "@/assets/menu/halibut-tikka.jpg";
@@ -20,21 +21,29 @@ import biryaniImg from "@/assets/menu/biryani.jpg";
 import gulabJamunImg from "@/assets/menu/gulab-jamun.jpg";
 import spiceMartiniImg from "@/assets/menu/spice-martini.jpg";
 
+// Local image map for fallback when API images are not available
+const localImageMap: Record<string, string> = {
+  "gilafi-seekh": gilafiSeekhImg,
+  "scallops": scallopsImg,
+  "halibut-tikka": halibutTikkaImg,
+  "lamb-rogan": lambRoganImg,
+  "truffle-paneer": trufflePaneerImg,
+  "dal-makhani": dalMakhaniImg,
+  "butter-chicken": butterChickenImg,
+  "biryani": biryaniImg,
+  "gulab-jamun": gulabJamunImg,
+  "spice-martini": spiceMartiniImg,
+};
+
 const Menu = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
-  const [isLoading, setIsLoading] = useState(true);
   const { t, language } = useLanguage();
+  
+  // Fetch menu data from API
+  const { data: menuData, isLoading, isError } = useMenu(activeTab);
 
-  // Simulate data fetching
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, [activeTab]);
-
-  const menuCategories = [
+  // Fallback menu data when API is unavailable
+  const fallbackMenuCategories = useMemo(() => [
     {
       name: "Starters",
       nameNl: "Voorgerechten",
@@ -397,7 +406,30 @@ const Menu = () => {
         },
       ],
     },
-  ];
+  ], [t, language]);
+
+  // Use API data or fallback to local data
+  const menuCategories = useMemo(() => {
+    if (menuData?.categories) {
+      // Map API data and resolve local images
+      return menuData.categories.map(category => ({
+        ...category,
+        name: language === "nl" && category.nameNl ? category.nameNl : category.name,
+        items: category.items.map(item => ({
+          ...item,
+          name: language === "nl" && item.nameNl ? item.nameNl : item.name,
+          description: language === "nl" && item.descriptionNl ? item.descriptionNl : item.description,
+          image: item.image?.startsWith("http") 
+            ? item.image 
+            : item.image 
+              ? localImageMap[item.image] || item.image 
+              : undefined,
+        })),
+      }));
+    }
+    // Fallback to static data defined above
+    return fallbackMenuCategories;
+  }, [menuData, language]);
 
   // Collect all images for lightbox
   const lightboxImages = useMemo(() => {
