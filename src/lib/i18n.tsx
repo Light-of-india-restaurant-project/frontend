@@ -67,10 +67,10 @@ export const translations: Translations = {
   },
 
   // Menu items - Mains
-  "menu.lobster.malabar": { en: "Malabar Lobster", nl: "Malabar Kreeft" },
-  "menu.lobster.malabar.desc": {
-    en: "Native lobster tail, coconut and green chilli sauce, curry leaf tempura",
-    nl: "Inheemse kreeftstaart, kokos en groene chilisaus, kerrieblaadtempura",
+  "menu.halibut.tikka": { en: "Tandoori Halibut", nl: "Tandoori Heilbot" },
+  "menu.halibut.tikka.desc": {
+    en: "Wild halibut fillet, ajwain crust, coconut moilee, curry leaf oil, charred lime",
+    nl: "Wilde heilbotfilet, ajwainkorst, kokos moilee, kerriebladolie, gegrilde limoen",
   },
   "menu.lamb.rogan": { en: "Kashmiri Lamb Rogan Josh", nl: "Kashmiri Lam Rogan Josh" },
   "menu.lamb.rogan.desc": {
