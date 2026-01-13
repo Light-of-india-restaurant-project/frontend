@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 
 interface LightboxProps {
   images: { src: string; alt: string; title?: string }[];
@@ -20,6 +20,29 @@ export const Lightbox = ({
   onPrev,
 }: LightboxProps) => {
   const currentImage = images[currentIndex];
+  const [dragDirection, setDragDirection] = useState<number>(0);
+
+  const handleDragEnd = useCallback(
+    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      const swipeThreshold = 50;
+      const velocityThreshold = 500;
+
+      if (
+        info.offset.x < -swipeThreshold ||
+        info.velocity.x < -velocityThreshold
+      ) {
+        onNext();
+        setDragDirection(-1);
+      } else if (
+        info.offset.x > swipeThreshold ||
+        info.velocity.x > velocityThreshold
+      ) {
+        onPrev();
+        setDragDirection(1);
+      }
+    },
+    [onNext, onPrev]
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -87,18 +110,22 @@ export const Lightbox = ({
           {/* Main Image */}
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
-            className="relative max-w-[90vw] max-h-[85vh] flex flex-col items-center"
+            initial={{ opacity: 0, x: dragDirection * 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -dragDirection * 100 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={handleDragEnd}
+            className="relative max-w-[90vw] max-h-[85vh] flex flex-col items-center cursor-grab active:cursor-grabbing touch-pan-y"
             onClick={(e) => e.stopPropagation()}
           >
             <motion.img
               src={currentImage.src}
               alt={currentImage.alt}
-              className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
-              layoutId={`lightbox-image-${currentIndex}`}
+              className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl pointer-events-none select-none"
+              draggable={false}
             />
             
             {/* Image Title */}
