@@ -1,7 +1,7 @@
 // API Configuration for backend connection
 // This allows connecting to different environments (local, staging, production)
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://lightofrestaurant.nl/api";
 
 export const apiConfig = {
   baseUrl: API_BASE_URL,
