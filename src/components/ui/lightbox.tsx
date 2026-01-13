@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useCallback, useState } from "react";
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { useEffect, useCallback, useState, useRef } from "react";
 
 interface LightboxProps {
   images: { src: string; alt: string; title?: string }[];
@@ -21,9 +21,119 @@ export const Lightbox = ({
 }: LightboxProps) => {
   const currentImage = images[currentIndex];
   const [dragDirection, setDragDirection] = useState<number>(0);
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const imageRef = useRef<HTMLDivElement>(null);
+  const lastTouchDistance = useRef<number | null>(null);
+  const lastTouchCenter = useRef<{ x: number; y: number } | null>(null);
+  
+  const isZoomed = scale > 1;
+
+  // Reset zoom when changing images
+  useEffect(() => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  }, [currentIndex]);
+
+  // Handle pinch-to-zoom
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      lastTouchDistance.current = distance;
+      lastTouchCenter.current = {
+        x: (touch1.clientX + touch2.clientX) / 2,
+        y: (touch1.clientY + touch2.clientY) / 2,
+      };
+    }
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastTouchDistance.current !== null) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      
+      const scaleDelta = distance / lastTouchDistance.current;
+      const newScale = Math.min(Math.max(scale * scaleDelta, 1), 4);
+      
+      setScale(newScale);
+      lastTouchDistance.current = distance;
+      
+      // Pan while zoomed
+      if (newScale > 1 && lastTouchCenter.current) {
+        const newCenter = {
+          x: (touch1.clientX + touch2.clientX) / 2,
+          y: (touch1.clientY + touch2.clientY) / 2,
+        };
+        const deltaX = newCenter.x - lastTouchCenter.current.x;
+        const deltaY = newCenter.y - lastTouchCenter.current.y;
+        
+        setPosition(prev => ({
+          x: prev.x + deltaX,
+          y: prev.y + deltaY,
+        }));
+        
+        lastTouchCenter.current = newCenter;
+      }
+    } else if (e.touches.length === 1 && isZoomed) {
+      // Single finger pan when zoomed
+      e.preventDefault();
+    }
+  }, [scale, isZoomed]);
+
+  const handleTouchEnd = useCallback(() => {
+    lastTouchDistance.current = null;
+    lastTouchCenter.current = null;
+  }, []);
+
+  // Double tap to zoom
+  const lastTap = useRef<number>(0);
+  const handleDoubleTap = useCallback((e: React.TouchEvent | React.MouseEvent) => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      e.stopPropagation();
+      if (scale > 1) {
+        setScale(1);
+        setPosition({ x: 0, y: 0 });
+      } else {
+        setScale(2.5);
+      }
+    }
+    lastTap.current = now;
+  }, [scale]);
+
+  const resetZoom = useCallback(() => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  }, []);
+
+  const zoomIn = useCallback(() => {
+    setScale(prev => Math.min(prev + 0.5, 4));
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    const newScale = Math.max(scale - 0.5, 1);
+    setScale(newScale);
+    if (newScale === 1) {
+      setPosition({ x: 0, y: 0 });
+    }
+  }, [scale]);
 
   const handleDragEnd = useCallback(
     (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      // Only allow swiping when not zoomed
+      if (isZoomed) return;
+      
       const swipeThreshold = 50;
       const velocityThreshold = 500;
 
@@ -41,7 +151,7 @@ export const Lightbox = ({
         setDragDirection(1);
       }
     },
-    [onNext, onPrev]
+    [onNext, onPrev, isZoomed]
   );
 
   const handleKeyDown = useCallback(
@@ -89,6 +199,48 @@ export const Lightbox = ({
             <X size={32} />
           </motion.button>
 
+          {/* Zoom Controls */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ delay: 0.1 }}
+            className="absolute top-6 left-6 z-50 flex gap-2"
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                zoomIn();
+              }}
+              className="p-2 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-all backdrop-blur-sm"
+              aria-label="Zoom in"
+            >
+              <ZoomIn size={24} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                zoomOut();
+              }}
+              className="p-2 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-all backdrop-blur-sm"
+              aria-label="Zoom out"
+            >
+              <ZoomOut size={24} />
+            </button>
+            {isZoomed && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  resetZoom();
+                }}
+                className="p-2 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-all backdrop-blur-sm"
+                aria-label="Reset zoom"
+              >
+                <RotateCcw size={24} />
+              </button>
+            )}
+          </motion.div>
+
           {/* Navigation - Previous */}
           {images.length > 1 && (
             <motion.button
@@ -109,27 +261,53 @@ export const Lightbox = ({
 
           {/* Main Image */}
           <motion.div
+            ref={imageRef}
             key={currentIndex}
             initial={{ opacity: 0, x: dragDirection * 100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -dragDirection * 100 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            drag="x"
+            drag={isZoomed ? false : "x"}
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
             onDragEnd={handleDragEnd}
-            className="relative max-w-[90vw] max-h-[85vh] flex flex-col items-center cursor-grab active:cursor-grabbing touch-pan-y"
+            className="relative max-w-[90vw] max-h-[85vh] flex flex-col items-center cursor-grab active:cursor-grabbing"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
-            <motion.img
-              src={currentImage.src}
-              alt={currentImage.alt}
-              className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl pointer-events-none select-none"
-              draggable={false}
-            />
+            <motion.div
+              animate={{ 
+                scale, 
+                x: position.x, 
+                y: position.y 
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              onClick={handleDoubleTap}
+              className="touch-none"
+            >
+              <motion.img
+                src={currentImage.src}
+                alt={currentImage.alt}
+                className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl pointer-events-none select-none"
+                draggable={false}
+              />
+            </motion.div>
+            
+            {/* Zoom indicator */}
+            {isZoomed && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/60 rounded-full text-white/80 text-sm backdrop-blur-sm"
+              >
+                {Math.round(scale * 100)}%
+              </motion.div>
+            )}
             
             {/* Image Title */}
-            {currentImage.title && (
+            {currentImage.title && !isZoomed && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
