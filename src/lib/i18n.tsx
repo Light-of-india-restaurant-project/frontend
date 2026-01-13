@@ -49,36 +49,67 @@ export const translations: Translations = {
   "menu.popular": { en: "Popular", nl: "Populair" },
   "menu.viewfull": { en: "View Full Menu", nl: "Bekijk Volledig Menu" },
 
-  // Menu items
-  "menu.butterchicken": { en: "Butter Chicken", nl: "Butter Chicken" },
-  "menu.butterchicken.desc": {
-    en: "Tender chicken in rich, creamy tomato sauce with aromatic spices",
-    nl: "Malse kip in rijke, romige tomatensaus met aromatische kruiden",
+  // Menu items - Starters
+  "menu.gilafi.seekh": { en: "Gilafi Seekh Kebab", nl: "Gilafi Seekh Kebab" },
+  "menu.gilafi.seekh.desc": {
+    en: "Heritage recipe lamb mince with saffron, wrapped in peppers, charred in the tandoor",
+    nl: "Erfgoedrecept lamgehakt met saffraan, gewikkeld in paprika, gegrild in de tandoor",
   },
-  "menu.biryani": { en: "Lamb Biryani", nl: "Lamsvlees Biryani" },
-  "menu.biryani.desc": {
-    en: "Fragrant basmati rice layered with spiced lamb and caramelized onions",
-    nl: "Geurige basmatirijst gelaagd met gekruid lamsvlees en gekaramelliseerde uien",
+  "menu.scallops": { en: "Tandoori Scottish Scallops", nl: "Tandoori Schotse Coquilles" },
+  "menu.scallops.desc": {
+    en: "Hand-dived scallops, kokum butter, pickled mooli, crispy curry leaves",
+    nl: "Handgedoken coquilles, kokumboter, ingelegde mooli, knapperige kerriebladeren",
   },
-  "menu.paneer": { en: "Paneer Tikka Masala", nl: "Paneer Tikka Masala" },
-  "menu.paneer.desc": {
-    en: "Grilled cottage cheese in spiced tomato and cream sauce",
-    nl: "Gegrilde kwark in gekruide tomaten- en roomsaus",
+  "menu.burrata": { en: "Charred Burrata", nl: "Gegrilde Burrata" },
+  "menu.burrata.desc": {
+    en: "Flame-kissed burrata, heritage tomato chutney, micro coriander, truffle naan crisps",
+    nl: "Met vlammen gegrilde burrata, erfgoed tomatenchutney, micro koriander, truffel naan chips",
   },
-  "menu.samosa": { en: "Vegetable Samosa", nl: "Groente Samosa" },
-  "menu.samosa.desc": {
-    en: "Crispy pastry filled with spiced potatoes and peas",
-    nl: "Knapperig gebak gevuld met gekruide aardappelen en erwten",
+
+  // Menu items - Mains
+  "menu.lobster.malabar": { en: "Malabar Lobster", nl: "Malabar Kreeft" },
+  "menu.lobster.malabar.desc": {
+    en: "Native lobster tail, coconut and green chilli sauce, curry leaf tempura",
+    nl: "Inheemse kreeftstaart, kokos en groene chilisaus, kerrieblaadtempura",
   },
-  "menu.tandoori": { en: "Tandoori Prawns", nl: "Tandoori Garnalen" },
-  "menu.tandoori.desc": {
-    en: "Jumbo prawns marinated in yogurt and spices, grilled in tandoor",
-    nl: "Grote garnalen gemarineerd in yoghurt en kruiden, gegrild in tandoor",
+  "menu.venison.nalli": { en: "Venison Nalli Nihari", nl: "Hertenvlees Nalli Nihari" },
+  "menu.venison.nalli.desc": {
+    en: "Slow-braised venison shank, bone marrow, saffron, rose petals, 48-hour reduction",
+    nl: "Langzaam gestoofde hertenschenkel, beenmerg, saffraan, rozenblaadjes, 48-uurs reductie",
   },
-  "menu.dal": { en: "Dal Makhani", nl: "Dal Makhani" },
-  "menu.dal.desc": {
-    en: "Black lentils slow-cooked with cream and butter",
-    nl: "Zwarte linzen langzaam gekookt met room en boter",
+  "menu.duck.chettinad": { en: "Chettinad Spiced Duck", nl: "Chettinad Gekruide Eend" },
+  "menu.duck.chettinad.desc": {
+    en: "Gressingham duck breast, black stone flower, star anise jus, pickled figs",
+    nl: "Gressingham eendenborst, zwarte steenbloem, steranijsjus, ingelegde vijgen",
+  },
+  "menu.lamb.chops": { en: "Champaran Lamb Chops", nl: "Champaran Lamskoteletten" },
+  "menu.lamb.chops.desc": {
+    en: "Double-cut lamb chops, handi-smoked, mustard oil glaze, mint chutney",
+    nl: "Dubbel gesneden lamskoteletten, handi-gerookt, mosterolieglazuur, muntchutney",
+  },
+
+  // Menu items - Vegetarian
+  "menu.truffle.paneer": { en: "Black Truffle Paneer", nl: "Zwarte Truffel Paneer" },
+  "menu.truffle.paneer.desc": {
+    en: "Aged paneer, Périgord truffle, wild mushroom reduction, micro herbs",
+    nl: "Gerijpte paneer, Périgord truffel, wilde paddestoelreductie, micro kruiden",
+  },
+  "menu.jackfruit.biryani": { en: "Jackfruit Dum Biryani", nl: "Jackfruit Dum Biryani" },
+  "menu.jackfruit.biryani.desc": {
+    en: "Young jackfruit, aged basmati, caramelised onions, saffron, edible gold",
+    nl: "Jonge jackfruit, gerijpte basmati, gekaramelliseerde uien, saffraan, eetbaar goud",
+  },
+
+  // Menu items - Signatures
+  "menu.butter.chicken": { en: "Old Delhi Butter Chicken", nl: "Old Delhi Butter Chicken" },
+  "menu.butter.chicken.desc": {
+    en: "Heritage 1947 recipe, charcoal-smoked chicken, sun-dried tomato makhani, kasuri methi",
+    nl: "Erfgoedrecept uit 1947, houtskool-gerookte kip, zongedroogde tomaat makhani, kasuri methi",
+  },
+  "menu.biryani.signature": { en: "Lucknowi Gosht Biryani", nl: "Lucknowi Gosht Biryani" },
+  "menu.biryani.signature.desc": {
+    en: "72-hour marinated lamb, aged basmati, saffron, sealed & slow-cooked dum style",
+    nl: "72 uur gemarineerd lam, gerijpte basmati, saffraan, verzegeld & langzaam dum-stijl gekookt",
   },
 
   // Gallery
