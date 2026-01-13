@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Leaf, Flame, Star, Wine, Coffee, IceCream } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import Header from "@/components/layout/Header";
@@ -439,38 +440,90 @@ const Menu = () => {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto space-y-24">
-              {menuCategories.map((category) => (
-                <div key={category.name}>
+              {menuCategories.map((category, categoryIndex) => (
+                <motion.div 
+                  key={category.name}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6, delay: categoryIndex * 0.1 }}
+                >
                   {/* Category Header */}
-                  <div className="text-center mb-12">
+                  <motion.div 
+                    className="text-center mb-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                  >
                     <div className="flex items-center justify-center gap-3 mb-4">
                       {category.icon && <category.icon size={28} className="text-secondary" />}
                       <h2 className="font-display text-3xl md:text-4xl text-primary tracking-wide uppercase">
                         {language === "nl" ? category.nameNl : category.name}
                       </h2>
                     </div>
-                    <div className="w-32 h-px bg-secondary mx-auto" />
-                  </div>
+                    <motion.div 
+                      className="w-32 h-px bg-secondary mx-auto"
+                      initial={{ scaleX: 0 }}
+                      whileInView={{ scaleX: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    />
+                  </motion.div>
 
                   {/* Menu Items Grid */}
                   <div className="grid gap-8">
-                    {category.items.map((item) => (
-                      <div
+                    {category.items.map((item, itemIndex) => (
+                      <motion.div
                         key={item.id}
+                        initial={{ opacity: 0, x: itemIndex % 2 === 0 ? -30 : 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ duration: 0.5, delay: itemIndex * 0.1 }}
+                        whileHover={{ scale: 1.01 }}
                         className={`group relative bg-card border border-border hover:border-secondary/50 transition-all duration-300 overflow-hidden ${
                           item.image ? 'grid md:grid-cols-[280px,1fr]' : ''
                         }`}
                       >
                         {/* Food Image */}
                         {item.image && (
-                          <div className="relative h-56 md:h-full overflow-hidden">
-                            <img
+                          <motion.div 
+                            className="relative h-56 md:h-full overflow-hidden cursor-pointer"
+                            whileHover="hover"
+                          >
+                            <motion.img
                               src={item.image}
                               alt={item.name}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              className="w-full h-full object-cover"
+                              initial={{ scale: 1 }}
+                              variants={{
+                                hover: { scale: 1.15, transition: { duration: 0.6, ease: "easeOut" } }
+                              }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/20" />
-                          </div>
+                            <motion.div 
+                              className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0"
+                              variants={{
+                                hover: { opacity: 1, transition: { duration: 0.3 } }
+                              }}
+                            />
+                            <motion.div 
+                              className="absolute inset-0 flex items-center justify-center opacity-0"
+                              variants={{
+                                hover: { opacity: 1, transition: { duration: 0.3, delay: 0.1 } }
+                              }}
+                            >
+                              <motion.span 
+                                className="text-white font-serif text-lg px-4 py-2 border border-white/50 backdrop-blur-sm"
+                                initial={{ y: 20 }}
+                                variants={{
+                                  hover: { y: 0, transition: { duration: 0.3, delay: 0.15 } }
+                                }}
+                              >
+                                {item.isSignature ? (language === "nl" ? "Signature" : "Signature") : (language === "nl" ? "Bekijken" : "View")}
+                              </motion.span>
+                            </motion.div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/20 pointer-events-none" />
+                          </motion.div>
                         )}
                         
                         {/* Content */}
@@ -483,19 +536,31 @@ const Menu = () => {
                                 </h3>
                                 <div className="flex items-center gap-2">
                                   {item.isSignature && (
-                                    <span title="Signature Dish">
+                                    <motion.span 
+                                      title="Signature Dish"
+                                      whileHover={{ scale: 1.2, rotate: 15 }}
+                                      transition={{ type: "spring", stiffness: 400 }}
+                                    >
                                       <Star size={16} className="text-secondary fill-secondary" />
-                                    </span>
+                                    </motion.span>
                                   )}
                                   {item.isVegetarian && (
-                                    <span title="Vegetarian">
+                                    <motion.span 
+                                      title="Vegetarian"
+                                      whileHover={{ scale: 1.2 }}
+                                      transition={{ type: "spring", stiffness: 400 }}
+                                    >
                                       <Leaf size={16} className="text-green-600" />
-                                    </span>
+                                    </motion.span>
                                   )}
                                   {item.isSpicy && (
-                                    <span title="Spicy">
+                                    <motion.span 
+                                      title="Spicy"
+                                      whileHover={{ scale: 1.2 }}
+                                      transition={{ type: "spring", stiffness: 400 }}
+                                    >
                                       <Flame size={16} className="text-red-500" />
-                                    </span>
+                                    </motion.span>
                                   )}
                                 </div>
                               </div>
@@ -503,15 +568,19 @@ const Menu = () => {
                                 {item.description}
                               </p>
                             </div>
-                            <span className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap">
+                            <motion.span 
+                              className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap"
+                              whileHover={{ scale: 1.1 }}
+                              transition={{ type: "spring", stiffness: 400 }}
+                            >
                               €{item.price.toFixed(0)}
-                            </span>
+                            </motion.span>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
 
