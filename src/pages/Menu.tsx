@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Leaf, Flame, Star, Wine, Coffee, IceCream } from "lucide-react";
+import { Leaf, Flame, Star, Wine, Coffee, IceCream, ZoomIn } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { Lightbox } from "@/components/ui/lightbox";
+import { useLightbox } from "@/hooks/use-lightbox";
 
 // Import food images
 import gilafiSeekhImg from "@/assets/menu/gilafi-seekh.jpg";
@@ -386,6 +388,29 @@ const Menu = () => {
     },
   ];
 
+  // Collect all images for lightbox
+  const lightboxImages = useMemo(() => {
+    const allItems: { src: string; alt: string; title: string }[] = [];
+    menuCategories.forEach((category) => {
+      category.items.forEach((item) => {
+        if (item.image) {
+          allItems.push({
+            src: item.image,
+            alt: item.name,
+            title: item.name,
+          });
+        }
+      });
+    });
+    return allItems;
+  }, [menuCategories]);
+
+  const lightbox = useLightbox(lightboxImages);
+
+  const getImageIndex = (imageSrc: string) => {
+    return lightboxImages.findIndex((img) => img.src === imageSrc);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -490,6 +515,7 @@ const Menu = () => {
                           <motion.div 
                             className="relative h-56 md:h-full overflow-hidden cursor-pointer"
                             whileHover="hover"
+                            onClick={() => lightbox.open(getImageIndex(item.image!))}
                           >
                             <motion.img
                               src={item.image}
@@ -513,13 +539,14 @@ const Menu = () => {
                               }}
                             >
                               <motion.span 
-                                className="text-white font-serif text-lg px-4 py-2 border border-white/50 backdrop-blur-sm"
+                                className="text-white font-serif text-lg px-4 py-2 border border-white/50 backdrop-blur-sm flex items-center gap-2"
                                 initial={{ y: 20 }}
                                 variants={{
                                   hover: { y: 0, transition: { duration: 0.3, delay: 0.15 } }
                                 }}
                               >
-                                {item.isSignature ? (language === "nl" ? "Signature" : "Signature") : (language === "nl" ? "Bekijken" : "View")}
+                                <ZoomIn size={18} />
+                                {language === "nl" ? "Bekijk volledig" : "View Full"}
                               </motion.span>
                             </motion.div>
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/20 pointer-events-none" />
@@ -617,6 +644,16 @@ const Menu = () => {
       </main>
       
       <Footer />
+      
+      {/* Lightbox */}
+      <Lightbox
+        images={lightboxImages}
+        currentIndex={lightbox.currentIndex}
+        isOpen={lightbox.isOpen}
+        onClose={lightbox.close}
+        onNext={lightbox.next}
+        onPrev={lightbox.prev}
+      />
     </div>
   );
 };
