@@ -47,9 +47,9 @@ export async function apiFetch<T>(
 // Typed API methods
 export const api = {
   // Menu
-  getMenuDineIn: () => apiFetch(apiConfig.endpoints.menuDineIn),
-  getMenuTakeaway: () => apiFetch(apiConfig.endpoints.menuTakeaway),
-  getSpecialMenus: () => apiFetch(apiConfig.endpoints.menuSpecial),
+  getMenuDineIn: () => apiFetch<MenuResponse>(apiConfig.endpoints.menuDineIn),
+  getMenuTakeaway: () => apiFetch<MenuResponse>(apiConfig.endpoints.menuTakeaway),
+  getSpecialMenus: () => apiFetch<MenuResponse>(apiConfig.endpoints.menuSpecial),
 
   // Reservations
   createReservation: (data: ReservationData) =>
@@ -99,14 +99,29 @@ export interface ContactData {
 export interface MenuItem {
   id: string;
   name: string;
+  nameNl?: string;
   description: string;
+  descriptionNl?: string;
   price: number;
   category: string;
   image?: string;
   isVegetarian?: boolean;
   isVegan?: boolean;
   isSpicy?: boolean;
+  isSignature?: boolean;
   allergens?: string[];
+}
+
+export interface MenuCategory {
+  name: string;
+  nameNl?: string;
+  icon?: string;
+  items: MenuItem[];
+}
+
+export interface MenuResponse {
+  categories: MenuCategory[];
+  updatedAt?: string;
 }
 
 export interface GalleryImage {
