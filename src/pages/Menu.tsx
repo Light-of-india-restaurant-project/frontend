@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Leaf, Flame, Star, Wine, Coffee, IceCream, ZoomIn } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Lightbox } from "@/components/ui/lightbox";
 import { useLightbox } from "@/hooks/use-lightbox";
+import { MenuCategorySkeleton } from "@/components/menu/MenuItemSkeleton";
 
 // Import food images
 import gilafiSeekhImg from "@/assets/menu/gilafi-seekh.jpg";
@@ -21,7 +22,17 @@ import spiceMartiniImg from "@/assets/menu/spice-martini.jpg";
 
 const Menu = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
+  const [isLoading, setIsLoading] = useState(true);
   const { t, language } = useLanguage();
+
+  // Simulate data fetching
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
 
   const menuCategories = [
     {
@@ -465,7 +476,10 @@ const Menu = () => {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto space-y-24">
-              {menuCategories.map((category, categoryIndex) => (
+              {isLoading ? (
+                <MenuCategorySkeleton />
+              ) : (
+              menuCategories.map((category, categoryIndex) => (
                 <motion.div 
                   key={category.name}
                   initial={{ opacity: 0, y: 40 }}
@@ -608,7 +622,8 @@ const Menu = () => {
                     ))}
                   </div>
                 </motion.div>
-              ))}
+              ))
+              )}
             </div>
 
             {/* Legend */}
