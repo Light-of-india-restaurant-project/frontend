@@ -4,6 +4,18 @@ import { useLanguage } from "@/lib/i18n";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
+// Import food images
+import gilafiSeekhImg from "@/assets/menu/gilafi-seekh.jpg";
+import scallopsImg from "@/assets/menu/scallops.jpg";
+import halibutTikkaImg from "@/assets/menu/halibut-tikka.jpg";
+import lambRoganImg from "@/assets/menu/lamb-rogan.jpg";
+import trufflePaneerImg from "@/assets/menu/truffle-paneer.jpg";
+import dalMakhaniImg from "@/assets/menu/dal-makhani.jpg";
+import butterChickenImg from "@/assets/menu/butter-chicken.jpg";
+import biryaniImg from "@/assets/menu/biryani.jpg";
+import gulabJamunImg from "@/assets/menu/gulab-jamun.jpg";
+import spiceMartiniImg from "@/assets/menu/spice-martini.jpg";
+
 const Menu = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
   const { t, language } = useLanguage();
@@ -20,6 +32,7 @@ const Menu = () => {
           description: t("menu.gilafi.seekh.desc"),
           price: 18.0,
           isSignature: true,
+          image: gilafiSeekhImg,
         },
         {
           id: "2",
@@ -27,6 +40,7 @@ const Menu = () => {
           description: t("menu.scallops.desc"),
           price: 26.0,
           isSignature: true,
+          image: scallopsImg,
         },
         {
           id: "3",
@@ -65,6 +79,7 @@ const Menu = () => {
           description: t("menu.halibut.tikka.desc"),
           price: 46.0,
           isSignature: true,
+          image: halibutTikkaImg,
         },
         {
           id: "5",
@@ -73,6 +88,7 @@ const Menu = () => {
           price: 42.0,
           isSpicy: true,
           isSignature: true,
+          image: lambRoganImg,
         },
         {
           id: "6",
@@ -111,6 +127,7 @@ const Menu = () => {
           price: 28.0,
           isVegetarian: true,
           isSignature: true,
+          image: trufflePaneerImg,
         },
         {
           id: "9",
@@ -128,6 +145,7 @@ const Menu = () => {
           price: 22.0,
           isVegetarian: true,
           isSignature: true,
+          image: dalMakhaniImg,
         },
         {
           id: "v4",
@@ -161,6 +179,7 @@ const Menu = () => {
           description: t("menu.butter.chicken.desc"),
           price: 32.0,
           isSignature: true,
+          image: butterChickenImg,
         },
         {
           id: "11",
@@ -168,6 +187,7 @@ const Menu = () => {
           description: t("menu.biryani.signature.desc"),
           price: 38.0,
           isSignature: true,
+          image: biryaniImg,
         },
         {
           id: "c3",
@@ -237,6 +257,7 @@ const Menu = () => {
           price: 16.0,
           isVegetarian: true,
           isSignature: true,
+          image: gulabJamunImg,
         },
         {
           id: "d2",
@@ -333,6 +354,7 @@ const Menu = () => {
             : "Vodka, cardamom, saffron, vanilla, edible gold",
           price: 18.0,
           isSignature: true,
+          image: spiceMartiniImg,
         },
         {
           id: "w2",
@@ -416,7 +438,7 @@ const Menu = () => {
         {/* Menu Categories */}
         <section className="py-20 bg-background">
           <div className="container mx-auto px-6">
-            <div className="max-w-5xl mx-auto space-y-20">
+            <div className="max-w-6xl mx-auto space-y-24">
               {menuCategories.map((category) => (
                 <div key={category.name}>
                   {/* Category Header */}
@@ -430,44 +452,61 @@ const Menu = () => {
                     <div className="w-32 h-px bg-secondary mx-auto" />
                   </div>
 
-                  {/* Menu Items */}
-                  <div className="space-y-6">
+                  {/* Menu Items Grid */}
+                  <div className="grid gap-8">
                     {category.items.map((item) => (
                       <div
                         key={item.id}
-                        className="group relative bg-card p-6 md:p-8 border border-border hover:border-secondary/50 transition-all duration-300"
+                        className={`group relative bg-card border border-border hover:border-secondary/50 transition-all duration-300 overflow-hidden ${
+                          item.image ? 'grid md:grid-cols-[280px,1fr]' : ''
+                        }`}
                       >
-                        <div className="flex justify-between items-start gap-6">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-3">
-                              <h3 className="font-display text-xl md:text-2xl text-foreground group-hover:text-primary transition-colors">
-                                {item.name}
-                              </h3>
-                              <div className="flex items-center gap-2">
-                                {item.isSignature && (
-                                  <span title="Signature Dish">
-                                    <Star size={16} className="text-secondary fill-secondary" />
-                                  </span>
-                                )}
-                                {item.isVegetarian && (
-                                  <span title="Vegetarian">
-                                    <Leaf size={16} className="text-green-600" />
-                                  </span>
-                                )}
-                                {item.isSpicy && (
-                                  <span title="Spicy">
-                                    <Flame size={16} className="text-red-500" />
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <p className="font-serif text-muted-foreground leading-relaxed text-base md:text-lg">
-                              {item.description}
-                            </p>
+                        {/* Food Image */}
+                        {item.image && (
+                          <div className="relative h-56 md:h-full overflow-hidden">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/20" />
                           </div>
-                          <span className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap">
-                            €{item.price.toFixed(0)}
-                          </span>
+                        )}
+                        
+                        {/* Content */}
+                        <div className="p-6 md:p-8 flex flex-col justify-center">
+                          <div className="flex justify-between items-start gap-6">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-3">
+                                <h3 className="font-display text-xl md:text-2xl text-foreground group-hover:text-primary transition-colors">
+                                  {item.name}
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                  {item.isSignature && (
+                                    <span title="Signature Dish">
+                                      <Star size={16} className="text-secondary fill-secondary" />
+                                    </span>
+                                  )}
+                                  {item.isVegetarian && (
+                                    <span title="Vegetarian">
+                                      <Leaf size={16} className="text-green-600" />
+                                    </span>
+                                  )}
+                                  {item.isSpicy && (
+                                    <span title="Spicy">
+                                      <Flame size={16} className="text-red-500" />
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="font-serif text-muted-foreground leading-relaxed text-base md:text-lg">
+                                {item.description}
+                              </p>
+                            </div>
+                            <span className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap">
+                              €{item.price.toFixed(0)}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -480,30 +519,34 @@ const Menu = () => {
             <div className="flex flex-wrap justify-center gap-8 mt-16 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Star size={14} className="text-secondary fill-secondary" />
-                <span>{language === "nl" ? "Signature" : "Signature"}</span>
+                <span className="font-serif">{language === "nl" ? "Signature Gerecht" : "Signature Dish"}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Leaf size={14} className="text-green-600" />
-                <span>{language === "nl" ? "Vegetarisch" : "Vegetarian"}</span>
+                <span className="font-serif">{language === "nl" ? "Vegetarisch" : "Vegetarian"}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Flame size={14} className="text-red-500" />
-                <span>{language === "nl" ? "Pittig" : "Spicy"}</span>
+                <span className="font-serif">{language === "nl" ? "Pittig" : "Spicy"}</span>
               </div>
-            </div>
-
-            {/* Allergen Notice */}
-            <div className="max-w-2xl mx-auto mt-12 text-center">
-              <p className="text-sm text-muted-foreground font-serif">
-                {language === "nl" 
-                  ? "Informeer ons alstublieft over eventuele dieetbeperkingen of allergieën. Onze chef-koks passen gerechten graag aan uw behoeften aan."
-                  : "Please inform us of any dietary restrictions or allergies. Our chefs are happy to adapt dishes to suit your needs."}
-              </p>
             </div>
           </div>
         </section>
-      </main>
 
+        {/* Takeaway Notice */}
+        {activeTab === "takeaway" && (
+          <section className="py-12 bg-muted">
+            <div className="container mx-auto px-6 text-center">
+              <p className="font-serif text-lg text-muted-foreground">
+                {language === "nl" 
+                  ? "Afhaal- en bezorgbestellingen: Bel ons op +31 20 123 4567 of bestel online via onze app"
+                  : "Takeaway and delivery orders: Call us at +31 20 123 4567 or order online via our app"}
+              </p>
+            </div>
+          </section>
+        )}
+      </main>
+      
       <Footer />
     </div>
   );
