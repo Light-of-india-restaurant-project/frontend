@@ -48,18 +48,18 @@ const MenuSection = () => {
         },
         {
           id: "5",
-          name: t("menu.venison.nalli"),
-          description: t("menu.venison.nalli.desc"),
+          name: t("menu.lamb.rogan"),
+          description: t("menu.lamb.rogan.desc"),
           price: 42.0,
           isSpicy: true,
           isSignature: true,
         },
         {
           id: "6",
-          name: t("menu.duck.chettinad"),
-          description: t("menu.duck.chettinad.desc"),
+          name: t("menu.prawn.koliwada"),
+          description: t("menu.prawn.koliwada.desc"),
           price: 38.0,
-          isSpicy: true,
+          isSignature: true,
         },
         {
           id: "7",

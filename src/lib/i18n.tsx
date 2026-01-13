@@ -72,15 +72,15 @@ export const translations: Translations = {
     en: "Native lobster tail, coconut and green chilli sauce, curry leaf tempura",
     nl: "Inheemse kreeftstaart, kokos en groene chilisaus, kerrieblaadtempura",
   },
-  "menu.venison.nalli": { en: "Venison Nalli Nihari", nl: "Hertenvlees Nalli Nihari" },
-  "menu.venison.nalli.desc": {
-    en: "Slow-braised venison shank, bone marrow, saffron, rose petals, 48-hour reduction",
-    nl: "Langzaam gestoofde hertenschenkel, beenmerg, saffraan, rozenblaadjes, 48-uurs reductie",
+  "menu.lamb.rogan": { en: "Kashmiri Lamb Rogan Josh", nl: "Kashmiri Lam Rogan Josh" },
+  "menu.lamb.rogan.desc": {
+    en: "Slow-braised lamb shoulder, Kashmiri chillies, fennel, saffron, 12-hour reduction",
+    nl: "Langzaam gestoofde lamschouder, Kashmiri pepers, venkel, saffraan, 12-uurs reductie",
   },
-  "menu.duck.chettinad": { en: "Chettinad Spiced Duck", nl: "Chettinad Gekruide Eend" },
-  "menu.duck.chettinad.desc": {
-    en: "Gressingham duck breast, black stone flower, star anise jus, pickled figs",
-    nl: "Gressingham eendenborst, zwarte steenbloem, steranijsjus, ingelegde vijgen",
+  "menu.prawn.koliwada": { en: "Koliwada Tiger Prawns", nl: "Koliwada Tijgergarnalen" },
+  "menu.prawn.koliwada.desc": {
+    en: "Jumbo tiger prawns, Mumbai-style spiced batter, tamarind aioli, curry leaf dust",
+    nl: "Jumbo tijgergarnalen, Mumbai-stijl gekruide beslag, tamarinde aioli, kerriebladpoeder",
   },
   "menu.lamb.chops": { en: "Champaran Lamb Chops", nl: "Champaran Lamskoteletten" },
   "menu.lamb.chops.desc": {
