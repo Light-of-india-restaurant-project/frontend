@@ -41,9 +41,9 @@ const MenuSection = () => {
       items: [
         {
           id: "4",
-          name: t("menu.lobster.malabar"),
-          description: t("menu.lobster.malabar.desc"),
-          price: 48.0,
+          name: t("menu.halibut.tikka"),
+          description: t("menu.halibut.tikka.desc"),
+          price: 46.0,
           isSignature: true,
         },
         {
