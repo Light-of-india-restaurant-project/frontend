@@ -12,6 +12,7 @@ const Header = () => {
     { label: t("nav.menu"), href: "#menu" },
     { label: t("nav.about"), href: "#about" },
     { label: t("nav.gallery"), href: "#gallery" },
+    { label: t("nav.events"), href: "/private-events" },
     { label: t("nav.contact"), href: "#contact" },
   ];
 

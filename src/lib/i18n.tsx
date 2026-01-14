@@ -14,6 +14,7 @@ export const translations: Translations = {
   "nav.menu": { en: "Menu", nl: "Menu" },
   "nav.about": { en: "About", nl: "Over Ons" },
   "nav.gallery": { en: "Gallery", nl: "Galerij" },
+  "nav.events": { en: "Private Events", nl: "Privé Evenementen" },
   "nav.contact": { en: "Contact", nl: "Contact" },
   "nav.reserve": { en: "Reserve Table", nl: "Reserveren" },
 

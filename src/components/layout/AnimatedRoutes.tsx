@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "./PageTransition";
 import Index from "@/pages/Index";
 import Menu from "@/pages/Menu";
+import PrivateEvents from "@/pages/PrivateEvents";
 import NotFound from "@/pages/NotFound";
 
 export const AnimatedRoutes = () => {
@@ -24,6 +25,14 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Menu />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/private-events"
+          element={
+            <PageTransition>
+              <PrivateEvents />
             </PageTransition>
           }
         />
