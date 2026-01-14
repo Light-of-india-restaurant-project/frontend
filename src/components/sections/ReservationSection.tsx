@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Calendar, Clock, Users, Check } from "lucide-react";
+import { Calendar, Clock, Users, Check, AlertCircle } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
+import { api, ReservationData } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const ReservationSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,30 +19,64 @@ const ReservationSection = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
-    // Simulate API call (will be replaced with actual API integration)
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Prepare reservation data for API
+      const reservationData: ReservationData = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        date: formData.date,
+        time: formData.time,
+        guests: parseInt(formData.guests, 10),
+        specialRequests: formData.specialRequests.trim() || undefined,
+      };
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
+      // Call the actual backend API
+      await api.createReservation(reservationData);
 
-    // Reset after 3 seconds
-    setTimeout(() => {
-      setIsSuccess(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        date: "",
-        time: "",
-        guests: "2",
-        specialRequests: "",
+      setIsSuccess(true);
+      toast({
+        title: language === "nl" ? "Reservering bevestigd!" : "Reservation confirmed!",
+        description: language === "nl" 
+          ? "U ontvangt een bevestigingsmail." 
+          : "You will receive a confirmation email.",
+        duration: 5000,
       });
-    }, 3000);
+
+      // Reset after 5 seconds
+      setTimeout(() => {
+        setIsSuccess(false);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          date: "",
+          time: "",
+          guests: "2",
+          specialRequests: "",
+        });
+      }, 5000);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: language === "nl" ? "Reservering mislukt" : "Reservation failed",
+        description: language === "nl" 
+          ? "Probeer het opnieuw of bel ons direct." 
+          : "Please try again or call us directly.",
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -70,6 +107,12 @@ const ReservationSection = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="flex items-center gap-3 p-4 bg-red-500/20 border border-red-500/40 text-red-200 rounded">
+                  <AlertCircle size={20} className="flex-shrink-0" />
+                  <p className="font-serif text-sm">{error}</p>
+                </div>
+              )}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block font-serif mb-2 text-cream/80">
