@@ -3,7 +3,7 @@ import { useLanguage } from "@/lib/i18n";
 import { useLightbox } from "@/hooks/use-lightbox";
 import { Lightbox } from "@/components/ui/lightbox";
 
-// Import gallery images
+// Import gallery images - Food
 import butterChicken from "@/assets/menu/butter-chicken.jpg";
 import biryani from "@/assets/menu/biryani.jpg";
 import gilafiSeekh from "@/assets/menu/gilafi-seekh.jpg";
@@ -14,16 +14,25 @@ import trufflePaneer from "@/assets/menu/truffle-paneer.jpg";
 import lambRogan from "@/assets/menu/lamb-rogan.jpg";
 import gulabJamun from "@/assets/menu/gulab-jamun.jpg";
 
+// Import gallery images - Ambiance
+import interiorDining from "@/assets/gallery/interior-dining.jpg";
+import privateDining from "@/assets/gallery/private-dining.jpg";
+import chefPlating from "@/assets/gallery/chef-plating.jpg";
+import barLounge from "@/assets/gallery/bar-lounge.jpg";
+
 const galleryImages = [
-  { id: "1", src: butterChicken, alt: "Signature Butter Chicken", title: "Butter Chicken", category: "food" },
-  { id: "2", src: gilafiSeekh, alt: "Gilafi Seekh Kebab", title: "Gilafi Seekh Kebab", category: "food" },
-  { id: "3", src: halibutTikka, alt: "Tandoori Halibut", title: "Tandoori Halibut", category: "food" },
-  { id: "4", src: biryani, alt: "Lamb Biryani", title: "Hyderabadi Biryani", category: "food" },
-  { id: "5", src: scallops, alt: "Seared Scallops", title: "Masala Scallops", category: "food" },
-  { id: "6", src: dalMakhani, alt: "Dal Makhani", title: "Dal Makhani", category: "food" },
-  { id: "7", src: trufflePaneer, alt: "Truffle Paneer", title: "Truffle Paneer Tikka", category: "food" },
-  { id: "8", src: lambRogan, alt: "Lamb Rogan Josh", title: "Lamb Rogan Josh", category: "food" },
-  { id: "9", src: gulabJamun, alt: "Gulab Jamun", title: "Gulab Jamun", category: "food" },
+  { id: "1", src: interiorDining, alt: "Elegant Dining Room", title: "Main Dining Hall", category: "ambiance" },
+  { id: "2", src: butterChicken, alt: "Signature Butter Chicken", title: "Butter Chicken", category: "food" },
+  { id: "3", src: gilafiSeekh, alt: "Gilafi Seekh Kebab", title: "Gilafi Seekh Kebab", category: "food" },
+  { id: "4", src: privateDining, alt: "Private Dining Room", title: "Private Dining", category: "ambiance" },
+  { id: "5", src: halibutTikka, alt: "Tandoori Halibut", title: "Tandoori Halibut", category: "food" },
+  { id: "6", src: barLounge, alt: "Bar & Lounge Area", title: "The Lounge Bar", category: "ambiance" },
+  { id: "7", src: biryani, alt: "Lamb Biryani", title: "Hyderabadi Biryani", category: "food" },
+  { id: "8", src: chefPlating, alt: "Chef Preparing Dish", title: "Culinary Artistry", category: "ambiance" },
+  { id: "9", src: scallops, alt: "Seared Scallops", title: "Masala Scallops", category: "food" },
+  { id: "10", src: dalMakhani, alt: "Dal Makhani", title: "Dal Makhani", category: "food" },
+  { id: "11", src: trufflePaneer, alt: "Truffle Paneer", title: "Truffle Paneer Tikka", category: "food" },
+  { id: "12", src: lambRogan, alt: "Lamb Rogan Josh", title: "Lamb Rogan Josh", category: "food" },
 ];
 
 const GallerySection = () => {
