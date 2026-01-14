@@ -1,18 +1,34 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
+import { useLightbox } from "@/hooks/use-lightbox";
+import { Lightbox } from "@/components/ui/lightbox";
 
-// Placeholder gallery images (will be replaced with API data)
+// Import gallery images
+import butterChicken from "@/assets/menu/butter-chicken.jpg";
+import biryani from "@/assets/menu/biryani.jpg";
+import gilafiSeekh from "@/assets/menu/gilafi-seekh.jpg";
+import halibutTikka from "@/assets/menu/halibut-tikka.jpg";
+import dalMakhani from "@/assets/menu/dal-makhani.jpg";
+import scallops from "@/assets/menu/scallops.jpg";
+import trufflePaneer from "@/assets/menu/truffle-paneer.jpg";
+import lambRogan from "@/assets/menu/lamb-rogan.jpg";
+import gulabJamun from "@/assets/menu/gulab-jamun.jpg";
+
 const galleryImages = [
-  { id: "1", alt: "Signature Butter Chicken", category: "food" },
-  { id: "2", alt: "Restaurant Interior", category: "ambiance" },
-  { id: "3", alt: "Tandoori Platter", category: "food" },
-  { id: "4", alt: "Private Dining Area", category: "ambiance" },
-  { id: "5", alt: "Chef Preparing Dish", category: "ambiance" },
-  { id: "6", alt: "Lamb Biryani", category: "food" },
+  { id: "1", src: butterChicken, alt: "Signature Butter Chicken", title: "Butter Chicken", category: "food" },
+  { id: "2", src: gilafiSeekh, alt: "Gilafi Seekh Kebab", title: "Gilafi Seekh Kebab", category: "food" },
+  { id: "3", src: halibutTikka, alt: "Tandoori Halibut", title: "Tandoori Halibut", category: "food" },
+  { id: "4", src: biryani, alt: "Lamb Biryani", title: "Hyderabadi Biryani", category: "food" },
+  { id: "5", src: scallops, alt: "Seared Scallops", title: "Masala Scallops", category: "food" },
+  { id: "6", src: dalMakhani, alt: "Dal Makhani", title: "Dal Makhani", category: "food" },
+  { id: "7", src: trufflePaneer, alt: "Truffle Paneer", title: "Truffle Paneer Tikka", category: "food" },
+  { id: "8", src: lambRogan, alt: "Lamb Rogan Josh", title: "Lamb Rogan Josh", category: "food" },
+  { id: "9", src: gulabJamun, alt: "Gulab Jamun", title: "Gulab Jamun", category: "food" },
 ];
 
 const GallerySection = () => {
   const { t } = useLanguage();
+  const lightbox = useLightbox(galleryImages);
 
   return (
     <section id="gallery" className="py-24 bg-background">
@@ -27,25 +43,24 @@ const GallerySection = () => {
           {galleryImages.map((image, index) => (
             <div
               key={image.id}
+              onClick={() => lightbox.open(index)}
               className={`relative overflow-hidden group cursor-pointer ${
                 index === 0 || index === 5 ? "md:col-span-2 md:row-span-2" : ""
               }`}
             >
-              <div
-                className={`bg-gradient-to-br from-brown/30 to-primary/30 ${
+              <img
+                src={image.src}
+                alt={image.alt}
+                className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${
                   index === 0 || index === 5
                     ? "aspect-square md:aspect-[4/3]"
                     : "aspect-square"
-                } flex items-center justify-center`}
-              >
-                <span className="text-muted-foreground font-serif text-sm">
-                  {image.alt}
-                </span>
-              </div>
+                }`}
+              />
               {/* Overlay on hover */}
-              <div className="absolute inset-0 bg-primary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span className="text-primary-foreground font-serif text-lg">
-                  {image.alt}
+              <div className="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <span className="text-primary-foreground font-serif text-lg text-center px-4">
+                  {image.title}
                 </span>
               </div>
             </div>
@@ -67,6 +82,16 @@ const GallerySection = () => {
           </a>
         </div>
       </div>
+
+      {/* Lightbox */}
+      <Lightbox
+        images={galleryImages}
+        currentIndex={lightbox.currentIndex}
+        isOpen={lightbox.isOpen}
+        onClose={lightbox.close}
+        onNext={lightbox.next}
+        onPrev={lightbox.prev}
+      />
     </section>
   );
 };
