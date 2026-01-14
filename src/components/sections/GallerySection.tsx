@@ -19,20 +19,24 @@ import interiorDining from "@/assets/gallery/interior-dining.jpg";
 import privateDining from "@/assets/gallery/private-dining.jpg";
 import chefPlating from "@/assets/gallery/chef-plating.jpg";
 import barLounge from "@/assets/gallery/bar-lounge.jpg";
+import heatedTerrace1 from "@/assets/gallery/heated-terrace-1.jpg";
+import heatedTerrace2 from "@/assets/gallery/heated-terrace-2.jpg";
 
 const galleryImages = [
   { id: "1", src: interiorDining, alt: "Elegant Dining Room", title: "Main Dining Hall", category: "ambiance" },
   { id: "2", src: butterChicken, alt: "Signature Butter Chicken", title: "Butter Chicken", category: "food" },
-  { id: "3", src: gilafiSeekh, alt: "Gilafi Seekh Kebab", title: "Gilafi Seekh Kebab", category: "food" },
-  { id: "4", src: privateDining, alt: "Private Dining Room", title: "Private Dining", category: "ambiance" },
-  { id: "5", src: halibutTikka, alt: "Tandoori Halibut", title: "Tandoori Halibut", category: "food" },
-  { id: "6", src: barLounge, alt: "Bar & Lounge Area", title: "The Lounge Bar", category: "ambiance" },
-  { id: "7", src: biryani, alt: "Lamb Biryani", title: "Hyderabadi Biryani", category: "food" },
-  { id: "8", src: chefPlating, alt: "Chef Preparing Dish", title: "Culinary Artistry", category: "ambiance" },
-  { id: "9", src: scallops, alt: "Seared Scallops", title: "Masala Scallops", category: "food" },
-  { id: "10", src: dalMakhani, alt: "Dal Makhani", title: "Dal Makhani", category: "food" },
-  { id: "11", src: trufflePaneer, alt: "Truffle Paneer", title: "Truffle Paneer Tikka", category: "food" },
-  { id: "12", src: lambRogan, alt: "Lamb Rogan Josh", title: "Lamb Rogan Josh", category: "food" },
+  { id: "3", src: heatedTerrace1, alt: "Heated Terrace Evening", title: "Heated Terrace", category: "ambiance" },
+  { id: "4", src: gilafiSeekh, alt: "Gilafi Seekh Kebab", title: "Gilafi Seekh Kebab", category: "food" },
+  { id: "5", src: privateDining, alt: "Private Dining Room", title: "Private Dining", category: "ambiance" },
+  { id: "6", src: halibutTikka, alt: "Tandoori Halibut", title: "Tandoori Halibut", category: "food" },
+  { id: "7", src: heatedTerrace2, alt: "Terrace Dining Experience", title: "Al Fresco Dining", category: "ambiance" },
+  { id: "8", src: barLounge, alt: "Bar & Lounge Area", title: "The Lounge Bar", category: "ambiance" },
+  { id: "9", src: biryani, alt: "Lamb Biryani", title: "Hyderabadi Biryani", category: "food" },
+  { id: "10", src: chefPlating, alt: "Chef Preparing Dish", title: "Culinary Artistry", category: "ambiance" },
+  { id: "11", src: scallops, alt: "Seared Scallops", title: "Masala Scallops", category: "food" },
+  { id: "12", src: dalMakhani, alt: "Dal Makhani", title: "Dal Makhani", category: "food" },
+  { id: "13", src: trufflePaneer, alt: "Truffle Paneer", title: "Truffle Paneer Tikka", category: "food" },
+  { id: "14", src: lambRogan, alt: "Lamb Rogan Josh", title: "Lamb Rogan Josh", category: "food" },
 ];
 
 const GallerySection = () => {
