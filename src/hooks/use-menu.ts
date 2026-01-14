@@ -7,6 +7,9 @@ export function useMenu(menuType: "dine-in" | "takeaway") {
     queryFn: () => 
       menuType === "dine-in" ? api.getMenuDineIn() : api.getMenuTakeaway(),
     staleTime: 1000 * 60 * 5, // 5 minutes
-    retry: 2,
+    retry: 1, // Fewer retries for faster fallback
+    retryDelay: 1000, // 1 second between retries
+    // Show stale data immediately while fetching fresh data
+    placeholderData: (previousData) => previousData,
   });
 }

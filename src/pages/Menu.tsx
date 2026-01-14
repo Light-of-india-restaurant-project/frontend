@@ -39,8 +39,8 @@ const Menu = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
   const { t, language } = useLanguage();
   
-  // Fetch menu data from API
-  const { data: menuData, isLoading, isError } = useMenu(activeTab);
+  // Fetch menu data from API - show fallback immediately, update if API succeeds
+  const { data: menuData, isFetching } = useMenu(activeTab);
 
   // Fallback menu data when API is unavailable
   const fallbackMenuCategories = useMemo(() => [
@@ -508,10 +508,7 @@ const Menu = () => {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto space-y-24">
-              {isLoading ? (
-                <MenuCategorySkeleton />
-              ) : (
-              menuCategories.map((category, categoryIndex) => (
+              {menuCategories.map((category, categoryIndex) => (
                 <motion.div 
                   key={category.name}
                   initial={{ opacity: 0, y: 40 }}
@@ -654,8 +651,7 @@ const Menu = () => {
                     ))}
                   </div>
                 </motion.div>
-              ))
-              )}
+              ))}
             </div>
 
             {/* Legend */}
