@@ -10,6 +10,7 @@ import interiorDining from "@/assets/gallery/interior-dining.jpg";
 import privateDining from "@/assets/gallery/private-dining.jpg";
 import barLounge from "@/assets/gallery/bar-lounge.jpg";
 import chefPlating from "@/assets/gallery/chef-plating.jpg";
+import heatedTerrace from "@/assets/gallery/heated-terrace-1.jpg";
 
 const eventSpaces = [
   {
@@ -23,7 +24,7 @@ const eventSpaces = [
   },
   {
     id: "heated-terrace",
-    image: barLounge,
+    image: heatedTerrace,
     titleEn: "Heated Terrace",
     titleNl: "Verwarmd Terras",
     capacity: "80",
