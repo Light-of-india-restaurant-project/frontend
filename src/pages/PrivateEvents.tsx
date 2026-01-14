@@ -13,31 +13,22 @@ import chefPlating from "@/assets/gallery/chef-plating.jpg";
 
 const eventSpaces = [
   {
-    id: "private-dining",
-    image: privateDining,
-    titleEn: "The Maharaja Room",
-    titleNl: "De Maharaja Kamer",
-    capacity: "2-12",
-    descEn: "An intimate private dining room adorned with intricate Indian artwork and plush seating. Perfect for romantic dinners, family celebrations, and small business gatherings.",
-    descNl: "Een intieme privé-eetzaal versierd met ingewikkelde Indiase kunstwerken en luxe zitplaatsen. Perfect voor romantische diners, familiefeesten en kleine zakelijke bijeenkomsten.",
-  },
-  {
-    id: "main-hall",
+    id: "indoor-dining",
     image: interiorDining,
-    titleEn: "The Royal Court",
-    titleNl: "Het Koninklijk Hof",
-    capacity: "30-80",
-    descEn: "Our magnificent main dining hall features crystal chandeliers, burgundy velvet seating, and ornate wooden panels. Ideal for weddings, corporate events, and grand celebrations.",
-    descNl: "Onze prachtige hoofdeetzaal heeft kristallen kroonluchters, bordeauxrode fluwelen zitplaatsen en sierlijke houten panelen. Ideaal voor bruiloften, bedrijfsevenementen en grote feesten.",
+    titleEn: "Indoor Restaurant",
+    titleNl: "Binnenrestaurant",
+    capacity: "80",
+    descEn: "Our elegant indoor dining space seats up to 80 guests, featuring crystal chandeliers, warm ambiance, and sophisticated decor. Perfect for intimate celebrations, corporate dinners, and family gatherings in a refined setting.",
+    descNl: "Onze elegante binnenruimte biedt plaats aan maximaal 80 gasten, met kristallen kroonluchters, warme sfeer en verfijnd decor. Perfect voor intieme vieringen, zakelijke diners en familiebijeenkomsten in een verfijnde setting.",
   },
   {
-    id: "lounge",
+    id: "heated-terrace",
     image: barLounge,
-    titleEn: "The Lounge Bar",
-    titleNl: "De Lounge Bar",
-    capacity: "15-40",
-    descEn: "A sophisticated cocktail lounge with polished copper accents and ambient lighting. Perfect for cocktail receptions, networking events, and pre-dinner gatherings.",
-    descNl: "Een verfijnde cocktaillounge met gepolijste koperen accenten en sfeerverlichting. Perfect voor cocktailrecepties, netwerkevenementen en bijeenkomsten voor het diner.",
+    titleEn: "Heated Terrace",
+    titleNl: "Verwarmd Terras",
+    capacity: "80",
+    descEn: "Our spacious heated terrace offers year-round outdoor dining for up to 80 guests. Enjoy the Rotterdam atmosphere while staying comfortable in any weather, ideal for cocktail receptions and al fresco celebrations.",
+    descNl: "Ons ruime verwarmde terras biedt het hele jaar door buiteneten voor maximaal 80 gasten. Geniet van de Rotterdamse sfeer terwijl u comfortabel blijft in elk weer, ideaal voor cocktailrecepties en feesten in de buitenlucht.",
   },
 ];
 
