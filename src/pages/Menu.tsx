@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Leaf, Flame, Star, Wine, Coffee, IceCream, ZoomIn } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
@@ -8,6 +8,7 @@ import { Lightbox } from "@/components/ui/lightbox";
 import { useLightbox } from "@/hooks/use-lightbox";
 import { MenuCategorySkeleton } from "@/components/menu/MenuItemSkeleton";
 import { useMenu } from "@/hooks/use-menu";
+import { useToast } from "@/hooks/use-toast";
 
 // Import food images for local fallback
 import gilafiSeekhImg from "@/assets/menu/gilafi-seekh.jpg";
@@ -38,9 +39,25 @@ const localImageMap: Record<string, string> = {
 const Menu = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
   const { t, language } = useLanguage();
+  const { toast } = useToast();
+  const hasShownToast = useRef(false);
   
   // Fetch menu data from API - show fallback immediately, update if API succeeds
-  const { data: menuData, isFetching } = useMenu(activeTab);
+  const { data: menuData, isFetching, isSuccess } = useMenu(activeTab);
+
+  // Show toast when fresh menu data loads from API
+  useEffect(() => {
+    if (isSuccess && menuData?.categories && !hasShownToast.current) {
+      hasShownToast.current = true;
+      toast({
+        title: language === "nl" ? "Menu bijgewerkt" : "Menu updated",
+        description: language === "nl" 
+          ? "Laatste prijzen en gerechten geladen" 
+          : "Latest prices and dishes loaded",
+        duration: 3000,
+      });
+    }
+  }, [isSuccess, menuData, toast, language]);
 
   // Fallback menu data when API is unavailable
   const fallbackMenuCategories = useMemo(() => [
