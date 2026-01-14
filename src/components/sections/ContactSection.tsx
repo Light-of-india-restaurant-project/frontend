@@ -145,9 +145,18 @@ const ContactSection = () => {
               </div>
             </div>
 
-            {/* Map placeholder */}
-            <div className="mt-8 aspect-video bg-card border border-border flex items-center justify-center">
-              <span className="text-muted-foreground font-serif">Google Maps Embed</span>
+            {/* Google Maps Embed */}
+            <div className="mt-8 aspect-video bg-card border border-border overflow-hidden">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2460.548!2d4.4895!3d51.9175!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c4335e4ef6e8d1%3A0x0!2sKortekade%201%2C%20Rotterdam!5e0!3m2!1sen!2snl!4v1700000000000!5m2!1sen!2snl"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Light of India - Kortekade 1, Rotterdam"
+              />
             </div>
           </div>
 
