@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Send, AlertCircle } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
+import { api, ContactData } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const ContactSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,21 +16,53 @@ const ContactSection = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Prepare contact data for API
+      const contactData: ContactData = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject,
+        message: formData.message.trim(),
+      };
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
+      // Call the actual backend API
+      await api.sendContactMessage(contactData);
 
-    setTimeout(() => {
-      setIsSuccess(false);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
+      setIsSuccess(true);
+      toast({
+        title: language === "nl" ? "Bericht verzonden!" : "Message sent!",
+        description: language === "nl" 
+          ? "We nemen zo snel mogelijk contact met u op." 
+          : "We'll get back to you as soon as possible.",
+        duration: 5000,
+      });
+
+      // Reset after 5 seconds
+      setTimeout(() => {
+        setIsSuccess(false);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      }, 5000);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: language === "nl" ? "Verzenden mislukt" : "Failed to send",
+        description: language === "nl" 
+          ? "Probeer het opnieuw of mail ons direct." 
+          : "Please try again or email us directly.",
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -130,6 +165,12 @@ const ContactSection = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {error && (
+                  <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/40 text-destructive rounded">
+                    <AlertCircle size={20} className="flex-shrink-0" />
+                    <p className="font-serif text-sm">{error}</p>
+                  </div>
+                )}
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="contact-name" className="block font-serif mb-2 text-foreground">
