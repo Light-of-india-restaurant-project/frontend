@@ -5,6 +5,9 @@ import Index from "@/pages/Index";
 import Menu from "@/pages/Menu";
 import PrivateEvents from "@/pages/PrivateEvents";
 import NotFound from "@/pages/NotFound";
+import Checkout from "@/pages/Checkout";
+import Login from "@/pages/Login";
+import Orders from "@/pages/Orders";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -40,6 +43,30 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <PrivateEvents />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <PageTransition>
+              <Checkout />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PageTransition>
+              <Login />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <PageTransition>
+              <Orders />
             </PageTransition>
           }
         />

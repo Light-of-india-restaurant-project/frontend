@@ -5,19 +5,25 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { LanguageProvider } from "@/lib/i18n";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
+import { CartProvider } from "@/contexts/CartContext";
+import { UserAuthProvider } from "@/contexts/UserAuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AnimatedRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
+      <UserAuthProvider>
+        <CartProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <AnimatedRoutes />
+            </BrowserRouter>
+          </TooltipProvider>
+        </CartProvider>
+      </UserAuthProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );

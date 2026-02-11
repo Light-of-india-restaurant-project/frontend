@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Leaf, Flame, Star } from "lucide-react";
+import { Leaf, Flame, Star, ShoppingCart, Plus, Minus } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
 import { useMenu } from "@/hooks/use-menu";
+import { useCart } from "@/contexts/CartContext";
+import type { MenuItem } from "@/lib/api";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -45,24 +47,32 @@ const MenuSection = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
   const { t, language } = useLanguage();
   const { data: menuData, isLoading, isError } = useMenu(activeTab);
+  const { addItem, isInCart, getItemQuantity, updateQuantity } = useCart();
 
   // Transform API data - limit to 3 items per category for preview
   const menuCategories = menuData?.categories
     ?.filter(cat => cat.isActive !== false)
     ?.slice(0, 4) // Show max 4 categories on homepage
     ?.map(category => ({
+      _id: category._id,
       name: language === "nl" && category.nameNl ? category.nameNl : category.name,
       items: category.items
         ?.filter(item => item.isActive !== false)
         ?.slice(0, 3) // Show max 3 items per category
         ?.map(item => ({
+          _id: item._id,
           id: item._id,
-          name: language === "nl" && item.nameNl ? item.nameNl : item.name,
-          description: language === "nl" && item.descriptionNl ? item.descriptionNl : item.description,
+          name: item.name,
+          nameNl: item.nameNl,
+          displayName: language === "nl" && item.nameNl ? item.nameNl : item.name,
+          description: item.description,
+          displayDescription: language === "nl" && item.descriptionNl ? item.descriptionNl : item.description,
           price: item.price,
           isSignature: item.isSignature,
           isVegetarian: item.isVegetarian,
           isSpicy: item.isSpicy,
+          image: item.image,
+          category: category._id,
         })) || [],
     })) || [];
 
@@ -200,7 +210,7 @@ const MenuSection = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-3">
                           <h4 className="font-display text-xl md:text-2xl text-foreground group-hover:text-primary transition-colors">
-                            {item.name}
+                            {item.displayName}
                           </h4>
                           <div className="flex items-center gap-2">
                             {item.isSignature && (
@@ -233,16 +243,75 @@ const MenuSection = () => {
                           </div>
                         </div>
                         <p className="font-serif text-muted-foreground leading-relaxed text-base md:text-lg">
-                          {item.description}
+                          {item.displayDescription}
                         </p>
                       </div>
-                      <motion.span
-                        className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                      >
-                        €{item.price.toFixed(0)}
-                      </motion.span>
+                      <div className="flex flex-col items-end gap-3">
+                        <motion.span
+                          className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap"
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                        >
+                          €{item.price.toFixed(0)}
+                        </motion.span>
+                        
+                        {/* Add to Cart Button (only for takeaway) */}
+                        {activeTab === "takeaway" && (
+                          <>
+                            {isInCart(item._id) ? (
+                              <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const qty = getItemQuantity(item._id);
+                                    updateQuantity(item._id, qty - 1);
+                                  }}
+                                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                                  aria-label="Decrease quantity"
+                                >
+                                  <Minus size={16} />
+                                </button>
+                                <span className="font-serif text-foreground min-w-[2ch] text-center">
+                                  {getItemQuantity(item._id)}
+                                </span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const qty = getItemQuantity(item._id);
+                                    updateQuantity(item._id, qty + 1);
+                                  }}
+                                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                                  aria-label="Increase quantity"
+                                >
+                                  <Plus size={16} />
+                                </button>
+                              </div>
+                            ) : (
+                              <motion.button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const menuItem: MenuItem = {
+                                    _id: item._id,
+                                    name: item.name,
+                                    nameNl: item.nameNl,
+                                    description: item.description,
+                                    price: item.price,
+                                    category: item.category,
+                                    image: item.image,
+                                  };
+                                  addItem(menuItem);
+                                }}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-serif text-sm hover:bg-primary/90 transition-colors rounded"
+                              >
+                                <ShoppingCart size={16} />
+                                {language === "nl" ? "Toevoegen" : "Add to Cart"}
+                              </motion.button>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 ))}

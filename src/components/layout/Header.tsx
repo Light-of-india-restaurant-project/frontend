@@ -1,12 +1,19 @@
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Menu, X, User, Package, LogOut, LogIn, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { CartButton } from "@/components/cart/CartDrawer";
 import { useLanguage } from "@/lib/i18n";
+import { useUserAuth } from "@/contexts/UserAuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { t } = useLanguage();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const { t, language } = useLanguage();
+  const { user, isAuthenticated, logout } = useUserAuth();
+  const navigate = useNavigate();
 
   const navLinks = [
     { label: t("nav.menu"), href: "#menu" },
@@ -15,6 +22,23 @@ const Header = () => {
     { label: t("nav.events"), href: "/private-events" },
     { label: t("nav.contact"), href: "#contact" },
   ];
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setIsUserMenuOpen(false);
+    navigate("/");
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -35,6 +59,50 @@ const Header = () => {
             </a>
           ))}
           <LanguageSwitcher />
+          <CartButton />
+          
+          {/* User Menu */}
+          {isAuthenticated ? (
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 px-4 py-2 text-foreground/80 hover:text-primary transition-colors font-serif"
+              >
+                <User size={20} />
+                <span className="max-w-[100px] truncate">{user?.fullName || user?.email?.split("@")[0]}</span>
+                <ChevronDown size={16} className={`transition-transform ${isUserMenuOpen ? "rotate-180" : ""}`} />
+              </button>
+              
+              {isUserMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
+                  <a
+                    href="/orders"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2 text-foreground/80 hover:text-primary hover:bg-muted transition-colors font-serif"
+                  >
+                    <Package size={18} />
+                    {language === "nl" ? "Mijn Bestellingen" : "My Orders"}
+                  </a>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 w-full px-4 py-2 text-foreground/80 hover:text-destructive hover:bg-muted transition-colors font-serif"
+                  >
+                    <LogOut size={18} />
+                    {language === "nl" ? "Uitloggen" : "Logout"}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <a
+              href="/login"
+              className="flex items-center gap-2 px-4 py-2 text-foreground/80 hover:text-primary transition-colors font-serif"
+            >
+              <LogIn size={20} />
+              {language === "nl" ? "Inloggen" : "Login"}
+            </a>
+          )}
+          
           <a
             href="#reservation"
             className="bg-primary text-primary-foreground px-6 py-2.5 font-serif hover:bg-primary/90 transition-colors"
@@ -44,13 +112,16 @@ const Header = () => {
         </nav>
 
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 text-foreground"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <CartButton />
+          <button
+            className="p-2 text-foreground"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -67,6 +138,45 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
+            
+            {/* Mobile User Menu */}
+            {isAuthenticated ? (
+              <>
+                <div className="border-t border-border pt-4 mt-2">
+                  <p className="font-serif text-muted-foreground text-sm mb-2">
+                    {language === "nl" ? "Ingelogd als" : "Logged in as"}
+                  </p>
+                  <p className="font-serif text-foreground truncate">
+                    {user?.fullName || user?.email}
+                  </p>
+                </div>
+                <a
+                  href="/orders"
+                  className="flex items-center gap-3 text-foreground/80 hover:text-primary transition-colors font-serif text-lg py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Package size={20} />
+                  {language === "nl" ? "Mijn Bestellingen" : "My Orders"}
+                </a>
+                <button
+                  onClick={() => { handleLogout(); setIsMenuOpen(false); }}
+                  className="flex items-center gap-3 text-foreground/80 hover:text-destructive transition-colors font-serif text-lg py-2"
+                >
+                  <LogOut size={20} />
+                  {language === "nl" ? "Uitloggen" : "Logout"}
+                </button>
+              </>
+            ) : (
+              <a
+                href="/login"
+                className="flex items-center gap-3 text-foreground/80 hover:text-primary transition-colors font-serif text-lg py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <LogIn size={20} />
+                {language === "nl" ? "Inloggen" : "Login"}
+              </a>
+            )}
+            
             <div className="py-2">
               <LanguageSwitcher />
             </div>

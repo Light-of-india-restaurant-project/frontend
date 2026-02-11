@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Leaf, Flame, Star, ZoomIn, AlertCircle, RefreshCw } from "lucide-react";
+import { Leaf, Flame, Star, ZoomIn, AlertCircle, RefreshCw, ShoppingCart, Plus, Minus, Check } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -8,6 +8,8 @@ import { Lightbox } from "@/components/ui/lightbox";
 import { useLightbox } from "@/hooks/use-lightbox";
 import { MenuCategorySkeleton } from "@/components/menu/MenuItemSkeleton";
 import { useMenu } from "@/hooks/use-menu";
+import { useCart } from "@/contexts/CartContext";
+import type { MenuItem } from "@/lib/api";
 
 // Import food images for local fallback
 import gilafiSeekhImg from "@/assets/menu/gilafi-seekh.jpg";
@@ -38,6 +40,7 @@ const localImageMap: Record<string, string> = {
 const Menu = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
   const { t, language } = useLanguage();
+  const { addItem, isInCart, getItemQuantity, updateQuantity } = useCart();
   
   // Fetch menu data from API
   const { data: menuData, isLoading, isError, refetch } = useMenu(activeTab);
@@ -307,13 +310,73 @@ const Menu = () => {
                                 {item.displayDescription}
                               </p>
                             </div>
-                            <motion.span 
-                              className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap"
-                              whileHover={{ scale: 1.1 }}
-                              transition={{ type: "spring", stiffness: 400 }}
-                            >
-                              €{item.price.toFixed(0)}
-                            </motion.span>
+                            <div className="flex flex-col items-end gap-3">
+                              <motion.span 
+                                className="font-display text-xl md:text-2xl text-secondary whitespace-nowrap"
+                                whileHover={{ scale: 1.1 }}
+                                transition={{ type: "spring", stiffness: 400 }}
+                              >
+                                €{item.price.toFixed(0)}
+                              </motion.span>
+                              
+                              {/* Add to Cart Button (only for takeaway) */}
+                              {activeTab === "takeaway" && (
+                                <>
+                                  {isInCart(item._id) ? (
+                                    <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const qty = getItemQuantity(item._id);
+                                          updateQuantity(item._id, qty - 1);
+                                        }}
+                                        className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                                        aria-label="Decrease quantity"
+                                      >
+                                        <Minus size={16} />
+                                      </button>
+                                      <span className="font-serif text-foreground min-w-[2ch] text-center">
+                                        {getItemQuantity(item._id)}
+                                      </span>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const qty = getItemQuantity(item._id);
+                                          updateQuantity(item._id, qty + 1);
+                                        }}
+                                        className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                                        aria-label="Increase quantity"
+                                      >
+                                        <Plus size={16} />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <motion.button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        // Create a MenuItem object for the cart
+                                        const menuItem: MenuItem = {
+                                          _id: item._id,
+                                          name: item.name,
+                                          nameNl: item.nameNl,
+                                          description: item.description,
+                                          price: item.price,
+                                          category: category._id,
+                                          image: item.resolvedImage,
+                                        };
+                                        addItem(menuItem);
+                                      }}
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-serif text-sm hover:bg-primary/90 transition-colors rounded"
+                                    >
+                                      <ShoppingCart size={16} />
+                                      {language === "nl" ? "Toevoegen" : "Add to Cart"}
+                                    </motion.button>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </motion.div>
