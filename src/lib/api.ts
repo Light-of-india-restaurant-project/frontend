@@ -2,14 +2,15 @@
 // This allows connecting to different environments (local, staging, production)
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://lightofrestaurant.nl/api";
+const API_V1_URL = `${API_BASE_URL}/v1`;
 
 export const apiConfig = {
   baseUrl: API_BASE_URL,
   endpoints: {
-    // Menu endpoints
-    menuDineIn: `${API_BASE_URL}/menu/dine-in`,
-    menuTakeaway: `${API_BASE_URL}/menu/takeaway`,
-    menuSpecial: `${API_BASE_URL}/menu/special`,
+    // Menu endpoints (v1)
+    menuDineIn: `${API_V1_URL}/menu/dine-in`,
+    menuTakeaway: `${API_V1_URL}/menu/takeaway`,
+    menuSpecial: `${API_V1_URL}/menu/special`,
     
     // Reservation endpoints
     reservations: `${API_BASE_URL}/reservations`,
@@ -78,7 +79,7 @@ export const api = {
   getGalleryImages: () => apiFetch(apiConfig.endpoints.gallery),
 };
 
-// Types
+// Types - aligned with backend response structure
 export interface ReservationData {
   name: string;
   email: string;
@@ -97,25 +98,32 @@ export interface ContactData {
 }
 
 export interface MenuItem {
-  id: string;
+  _id: string;
+  id?: string; // Alias for _id for compatibility
   name: string;
   nameNl?: string;
   description: string;
   descriptionNl?: string;
   price: number;
   category: string;
+  menuType?: 'takeaway' | 'dine-in' | 'both';
   image?: string;
   isVegetarian?: boolean;
   isVegan?: boolean;
   isSpicy?: boolean;
   isSignature?: boolean;
+  isActive?: boolean;
+  sortOrder?: number;
   allergens?: string[];
 }
 
 export interface MenuCategory {
+  _id: string;
   name: string;
   nameNl?: string;
   icon?: string;
+  isActive?: boolean;
+  sortOrder?: number;
   items: MenuItem[];
 }
 

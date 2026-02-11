@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Leaf, Flame, Star } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
+import { useMenu } from "@/hooks/use-menu";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -42,113 +43,28 @@ const itemVariants = {
 
 const MenuSection = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { data: menuData, isLoading, isError } = useMenu(activeTab);
 
-  const menuCategories = [
-    {
-      name: "Starters",
-      nameNl: "Voorgerechten",
-      items: [
-        {
-          id: "1",
-          name: t("menu.gilafi.seekh"),
-          description: t("menu.gilafi.seekh.desc"),
-          price: 18.0,
-          isSignature: true,
-        },
-        {
-          id: "2",
-          name: t("menu.scallops"),
-          description: t("menu.scallops.desc"),
-          price: 26.0,
-          isSignature: true,
-        },
-        {
-          id: "3",
-          name: t("menu.burrata"),
-          description: t("menu.burrata.desc"),
-          price: 19.0,
-          isVegetarian: true,
-        },
-      ],
-    },
-    {
-      name: "Signature Mains",
-      nameNl: "Signature Hoofdgerechten",
-      items: [
-        {
-          id: "4",
-          name: t("menu.halibut.tikka"),
-          description: t("menu.halibut.tikka.desc"),
-          price: 46.0,
-          isSignature: true,
-        },
-        {
-          id: "5",
-          name: t("menu.lamb.rogan"),
-          description: t("menu.lamb.rogan.desc"),
-          price: 42.0,
-          isSpicy: true,
-          isSignature: true,
-        },
-        {
-          id: "6",
-          name: t("menu.prawn.koliwada"),
-          description: t("menu.prawn.koliwada.desc"),
-          price: 38.0,
-          isSignature: true,
-        },
-        {
-          id: "7",
-          name: t("menu.lamb.chops"),
-          description: t("menu.lamb.chops.desc"),
-          price: 44.0,
-          isSignature: true,
-        },
-      ],
-    },
-    {
-      name: "Vegetarian",
-      nameNl: "Vegetarisch",
-      items: [
-        {
-          id: "8",
-          name: t("menu.truffle.paneer"),
-          description: t("menu.truffle.paneer.desc"),
-          price: 28.0,
-          isVegetarian: true,
-          isSignature: true,
-        },
-        {
-          id: "9",
-          name: t("menu.jackfruit.biryani"),
-          description: t("menu.jackfruit.biryani.desc"),
-          price: 32.0,
-          isVegetarian: true,
-        },
-      ],
-    },
-    {
-      name: "Classics Reimagined",
-      nameNl: "Klassiekers Opnieuw Uitgevonden",
-      items: [
-        {
-          id: "10",
-          name: t("menu.butter.chicken"),
-          description: t("menu.butter.chicken.desc"),
-          price: 32.0,
-          isSignature: true,
-        },
-        {
-          id: "11",
-          name: t("menu.biryani.signature"),
-          description: t("menu.biryani.signature.desc"),
-          price: 38.0,
-          isSignature: true,
-        },
-      ],
-    },
-  ];
+  // Transform API data - limit to 3 items per category for preview
+  const menuCategories = menuData?.categories
+    ?.filter(cat => cat.isActive !== false)
+    ?.slice(0, 4) // Show max 4 categories on homepage
+    ?.map(category => ({
+      name: language === "nl" && category.nameNl ? category.nameNl : category.name,
+      items: category.items
+        ?.filter(item => item.isActive !== false)
+        ?.slice(0, 3) // Show max 3 items per category
+        ?.map(item => ({
+          id: item._id,
+          name: language === "nl" && item.nameNl ? item.nameNl : item.name,
+          description: language === "nl" && item.descriptionNl ? item.descriptionNl : item.description,
+          price: item.price,
+          isSignature: item.isSignature,
+          isVegetarian: item.isVegetarian,
+          isSpicy: item.isSpicy,
+        })) || [],
+    })) || [];
 
   return (
     <section id="menu" className="py-24 bg-muted">
@@ -182,17 +98,64 @@ const MenuSection = () => {
           </button>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="max-w-5xl mx-auto space-y-16">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="text-center mb-10">
+                  <div className="h-8 bg-muted-foreground/20 rounded w-48 mx-auto mb-4" />
+                  <div className="w-24 h-px bg-muted-foreground/20 mx-auto" />
+                </div>
+                <div className="space-y-6">
+                  {[1, 2, 3].map((j) => (
+                    <div key={j} className="bg-card p-6 md:p-8 border border-border">
+                      <div className="flex justify-between items-start gap-6">
+                        <div className="flex-1">
+                          <div className="h-6 bg-muted-foreground/20 rounded w-48 mb-3" />
+                          <div className="h-4 bg-muted-foreground/20 rounded w-full mb-2" />
+                          <div className="h-4 bg-muted-foreground/20 rounded w-3/4" />
+                        </div>
+                        <div className="h-6 bg-muted-foreground/20 rounded w-16" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Error State */}
+        {isError && !isLoading && (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground text-lg">
+              {t("menu.error") || "Unable to load menu. Please try again later."}
+            </p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !isError && menuCategories.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground text-lg">
+              {t("menu.empty") || "No menu items available at the moment."}
+            </p>
+          </div>
+        )}
+
         {/* Menu Categories */}
-        <motion.div
-          className="max-w-5xl mx-auto space-y-16"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
+        {!isLoading && !isError && menuCategories.length > 0 && (
+          <motion.div
+            key={activeTab}
+            className="max-w-5xl mx-auto space-y-16"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
           {menuCategories.map((category, categoryIndex) => (
             <motion.div
-              key={category.name}
+              key={`${activeTab}-${category.name}`}
               variants={categoryVariants}
               custom={categoryIndex}
             >
@@ -226,7 +189,7 @@ const MenuSection = () => {
               >
                 {category.items.map((item, itemIndex) => (
                   <motion.div
-                    key={item.id}
+                    key={`${activeTab}-${item.id}`}
                     variants={itemVariants}
                     custom={itemIndex}
                     whileHover={{ scale: 1.01, x: 5 }}
@@ -287,6 +250,7 @@ const MenuSection = () => {
             </motion.div>
           ))}
         </motion.div>
+        )}
 
         {/* View Full Menu CTA */}
         <div className="text-center mt-16">
