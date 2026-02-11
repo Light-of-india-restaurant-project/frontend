@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Package, Clock, CheckCircle, XCircle, ChefHat, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Package, Clock, CheckCircle, XCircle, ChefHat, Loader2, RefreshCw, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useUserAuth } from "@/contexts/UserAuthContext";
@@ -12,9 +12,98 @@ const statusConfig: Record<Order["status"], { icon: React.ElementType; color: st
   pending: { icon: Clock, color: "text-amber-500", labelEn: "Pending", labelNl: "In behandeling" },
   confirmed: { icon: CheckCircle, color: "text-blue-500", labelEn: "Confirmed", labelNl: "Bevestigd" },
   preparing: { icon: ChefHat, color: "text-orange-500", labelEn: "Preparing", labelNl: "In voorbereiding" },
-  ready: { icon: Package, color: "text-green-500", labelEn: "Ready for Pickup", labelNl: "Klaar voor afhaling" },
+  ready: { icon: Package, color: "text-green-500", labelEn: "Ready", labelNl: "Klaar" },
   completed: { icon: CheckCircle, color: "text-green-600", labelEn: "Completed", labelNl: "Voltooid" },
   cancelled: { icon: XCircle, color: "text-red-500", labelEn: "Cancelled", labelNl: "Geannuleerd" },
+};
+
+// Order of statuses for the stepper (excluding cancelled)
+const statusOrder: Array<Exclude<Order["status"], "cancelled">> = ["pending", "confirmed", "preparing", "ready", "completed"];
+
+interface OrderStatusStepperProps {
+  currentStatus: Order["status"];
+  language: "en" | "nl";
+}
+
+const OrderStatusStepper = ({ currentStatus, language }: OrderStatusStepperProps) => {
+  // If cancelled, show a different view
+  if (currentStatus === "cancelled") {
+    const config = statusConfig.cancelled;
+    const Icon = config.icon;
+    return (
+      <div className="flex items-center justify-center gap-2 py-4 px-6 bg-red-50 dark:bg-red-950/20 rounded-lg">
+        <Icon size={24} className="text-red-500" />
+        <span className="font-serif text-red-500 font-medium">
+          {language === "nl" ? config.labelNl : config.labelEn}
+        </span>
+      </div>
+    );
+  }
+
+  const currentIndex = statusOrder.indexOf(currentStatus as Exclude<Order["status"], "cancelled">);
+  const totalSteps = statusOrder.length;
+  const stepWidth = 100 / totalSteps; // Each step takes this percentage
+  const lineStart = stepWidth / 2; // Start from center of first circle
+  const lineEnd = stepWidth / 2; // End at center of last circle
+
+  return (
+    <div className="w-full py-4">
+      <div className="flex items-center justify-between relative">
+        {/* Progress Line Background */}
+        <div 
+          className="absolute top-5 h-0.5 bg-border"
+          style={{ left: `${lineStart}%`, right: `${lineEnd}%` }}
+        />
+        
+        {/* Progress Line Filled */}
+        <div 
+          className="absolute top-5 h-0.5 bg-primary transition-all duration-500"
+          style={{ 
+            left: `${lineStart}%`, 
+            width: currentIndex === 0 ? "0%" : `${(currentIndex / (totalSteps - 1)) * (100 - lineStart - lineEnd)}%`
+          }}
+        />
+
+        {statusOrder.map((status, index) => {
+          const config = statusConfig[status];
+          const Icon = config.icon;
+          const isCompleted = index < currentIndex;
+          const isCurrent = index === currentIndex;
+          const isPending = index > currentIndex;
+
+          return (
+            <div key={status} className="flex flex-col items-center z-10 flex-1">
+              {/* Circle with Icon */}
+              <div
+                className={`
+                  w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                  ${isCompleted ? "bg-primary text-primary-foreground" : ""}
+                  ${isCurrent ? "bg-primary text-primary-foreground ring-4 ring-primary/20" : ""}
+                  ${isPending ? "bg-muted text-muted-foreground" : ""}
+                `}
+              >
+                {isCompleted ? (
+                  <Check size={20} />
+                ) : (
+                  <Icon size={18} />
+                )}
+              </div>
+
+              {/* Status Label */}
+              <span
+                className={`
+                  font-serif text-xs mt-2 text-center max-w-[80px] leading-tight
+                  ${isCompleted || isCurrent ? "text-foreground font-medium" : "text-muted-foreground"}
+                `}
+              >
+                {language === "nl" ? config.labelNl : config.labelEn}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 const Orders = () => {
@@ -50,19 +139,6 @@ const Orders = () => {
     navigate("/login?redirect=/orders");
     return null;
   }
-
-  const handleCancelOrder = async (orderId: string) => {
-    if (!confirm(language === "nl" ? "Weet je zeker dat je deze bestelling wilt annuleren?" : "Are you sure you want to cancel this order?")) {
-      return;
-    }
-
-    try {
-      await orderApi.cancelOrder(orderId);
-      fetchOrders(); // Refresh the list
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to cancel order");
-    }
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -153,11 +229,7 @@ const Orders = () => {
             {/* Orders List */}
             {!isLoading && !error && orders.length > 0 && (
               <div className="space-y-6">
-                {orders.map((order, index) => {
-                  const status = statusConfig[order.status];
-                  const StatusIcon = status.icon;
-
-                  return (
+                {orders.map((order, index) => (
                     <motion.div
                       key={order._id}
                       initial={{ opacity: 0, y: 20 }}
@@ -176,12 +248,16 @@ const Orders = () => {
                               {formatDate(order.createdAt)}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <StatusIcon size={20} className={status.color} />
-                            <span className={`font-serif ${status.color}`}>
-                              {language === "nl" ? status.labelNl : status.labelEn}
+                          <div className="text-right">
+                            <span className="font-display text-2xl text-secondary">
+                              €{order.total.toFixed(2)}
                             </span>
                           </div>
+                        </div>
+
+                        {/* Status Stepper */}
+                        <div className="mt-4">
+                          <OrderStatusStepper currentStatus={order.status} language={language} />
                         </div>
                       </div>
 
@@ -234,22 +310,9 @@ const Orders = () => {
                             </p>
                           </div>
                         )}
-
-                        {/* Cancel Button (only for pending orders) */}
-                        {order.status === "pending" && (
-                          <div className="mt-4 pt-4 border-t border-border">
-                            <button
-                              onClick={() => handleCancelOrder(order._id)}
-                              className="px-4 py-2 text-destructive hover:bg-destructive/10 font-serif text-sm transition-colors rounded"
-                            >
-                              {language === "nl" ? "Bestelling Annuleren" : "Cancel Order"}
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </motion.div>
-                  );
-                })}
+                ))}
               </div>
             )}
           </div>
