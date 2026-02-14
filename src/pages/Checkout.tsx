@@ -1,25 +1,24 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CheckCircle } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useCart } from "@/contexts/CartContext";
 import { useUserAuth } from "@/contexts/UserAuthContext";
-import { orderApi } from "@/lib/user-api";
+import { paymentApi } from "@/lib/user-api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
-  const { items, total, itemCount, clearCart } = useCart();
+  const { items, total, itemCount } = useCart();
   const { isAuthenticated, isLoading: authLoading } = useUserAuth();
   
   const [pickupTime, setPickupTime] = useState("");
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [orderSuccess, setOrderSuccess] = useState<{ orderNumber: string } | null>(null);
 
   // Generate pickup time options (next 2 hours in 15-min intervals)
   const pickupTimeOptions = () => {
@@ -61,67 +60,19 @@ const Checkout = () => {
         notes: notes || undefined,
       };
 
-      const response = await orderApi.createOrder(orderData);
+      // Initiate payment and get Mollie checkout URL
+      const response = await paymentApi.initiatePayment(orderData);
       
-      setOrderSuccess({ orderNumber: response.order.orderNumber });
-      clearCart();
+      // Store payment ID in sessionStorage for use after redirect
+      sessionStorage.setItem('pendingPaymentId', response.paymentId);
+      
+      // Redirect to Mollie payment page
+      window.location.href = response.paymentUrl;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to place order");
-    } finally {
+      setError(err instanceof Error ? err.message : "Failed to initiate payment");
       setIsSubmitting(false);
     }
   };
-
-  // Order success view
-  if (orderSuccess) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="pt-24 pb-20">
-          <div className="container mx-auto px-6">
-            <div className="max-w-lg mx-auto text-center py-16">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200 }}
-              >
-                <CheckCircle size={80} className="mx-auto text-green-500 mb-6" />
-              </motion.div>
-              <h1 className="font-display text-4xl text-foreground mb-4">
-                {language === "nl" ? "Bestelling Geplaatst!" : "Order Placed!"}
-              </h1>
-              <p className="font-serif text-xl text-muted-foreground mb-2">
-                {language === "nl" ? "Bestelnummer" : "Order Number"}:
-              </p>
-              <p className="font-display text-2xl text-primary mb-8">
-                {orderSuccess.orderNumber}
-              </p>
-              <p className="font-serif text-muted-foreground mb-8">
-                {language === "nl"
-                  ? "We sturen je een bevestiging wanneer je bestelling klaar is voor afhaling."
-                  : "We'll notify you when your order is ready for pickup."}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  onClick={() => navigate("/orders")}
-                  className="px-6 py-3 bg-primary text-primary-foreground font-serif hover:bg-primary/90 transition-colors"
-                >
-                  {language === "nl" ? "Bekijk Bestellingen" : "View Orders"}
-                </button>
-                <button
-                  onClick={() => navigate("/menu")}
-                  className="px-6 py-3 bg-muted text-foreground font-serif hover:bg-muted/80 transition-colors"
-                >
-                  {language === "nl" ? "Terug naar Menu" : "Back to Menu"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   // Empty cart view
   if (items.length === 0) {
@@ -272,19 +223,20 @@ const Checkout = () => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="animate-spin" size={20} />
-                      {language === "nl" ? "Bezig met bestellen..." : "Placing Order..."}
+                      {language === "nl" ? "Doorsturen naar betaling..." : "Redirecting to payment..."}
                     </>
                   ) : (
                     <>
-                      {language === "nl" ? "Bestelling Plaatsen" : "Place Order"}
+                      <CreditCard size={20} />
+                      {language === "nl" ? "Doorgaan naar Betaling" : "Proceed to Payment"}
                     </>
                   )}
                 </button>
 
                 <p className="text-center text-sm text-muted-foreground font-serif">
                   {language === "nl"
-                    ? "Betaling geschiedt bij afhaling"
-                    : "Payment is collected at pickup"}
+                    ? "Je wordt doorgestuurd naar onze beveiligde betaalpagina"
+                    : "You will be redirected to our secure payment page"}
                 </p>
               </form>
 

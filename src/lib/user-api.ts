@@ -210,3 +210,38 @@ export const orderApi = {
     });
   },
 };
+
+// Payment API
+export const paymentApi = {
+  // Initiate payment session
+  initiatePayment: async (data: CreateOrderData): Promise<{
+    success: boolean;
+    message: string;
+    paymentUrl: string;
+    paymentId: string;
+  }> => {
+    return authFetch(`${API_V1_URL}/payments/initiate`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Get payment status
+  getPaymentStatus: async (paymentId: string): Promise<{
+    success: boolean;
+    status: string;
+    isPaid: boolean;
+    order?: {
+      orderNumber: string;
+      orderId: string;
+    };
+  }> => {
+    // No auth needed for status check
+    const response = await fetch(`${API_V1_URL}/payments/${paymentId}/status`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+};

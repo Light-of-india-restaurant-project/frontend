@@ -8,6 +8,8 @@ import NotFound from "@/pages/NotFound";
 import Checkout from "@/pages/Checkout";
 import Login from "@/pages/Login";
 import Orders from "@/pages/Orders";
+import PaymentSuccess from "@/pages/PaymentSuccess";
+import PaymentCancelled from "@/pages/PaymentCancelled";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -67,6 +69,22 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Orders />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/payment/success"
+          element={
+            <PageTransition>
+              <PaymentSuccess />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/payment/cancelled"
+          element={
+            <PageTransition>
+              <PaymentCancelled />
             </PageTransition>
           }
         />
