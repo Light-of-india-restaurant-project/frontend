@@ -34,10 +34,19 @@ export interface OrderItem {
   quantity: number;
 }
 
+export interface DeliveryAddress {
+  postalCode: string;
+  streetName: string;
+  houseNumber: string;
+  city: string;
+}
+
 export interface CreateOrderData {
   items: OrderItem[];
   pickupTime?: string;
   notes?: string;
+  deliveryAddress: DeliveryAddress;
+  contactMobile: string;
 }
 
 export interface Order {
@@ -55,6 +64,8 @@ export interface Order {
   status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled';
   pickupTime?: string;
   notes?: string;
+  deliveryAddress: DeliveryAddress;
+  contactMobile: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -177,6 +188,22 @@ export const userApi = {
 
 // Order API
 export const orderApi = {
+  // Check if postal code is in delivery area (public, no auth required)
+  checkDeliveryArea: async (postalCode: string): Promise<{
+    success: boolean;
+    deliverable: boolean;
+    postalCode: string;
+    zoneName?: string;
+    message: string;
+  }> => {
+    const response = await fetch(`${API_V1_URL}/delivery-zones/check/${encodeURIComponent(postalCode)}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+
   // Create order
   createOrder: async (data: CreateOrderData): Promise<{ success: boolean; message: string; order: Order }> => {
     return authFetch(`${API_V1_URL}/orders`, {

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard, MapPin, Phone, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useCart } from "@/contexts/CartContext";
 import { useUserAuth } from "@/contexts/UserAuthContext";
-import { paymentApi } from "@/lib/user-api";
+import { paymentApi, orderApi } from "@/lib/user-api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -19,6 +19,52 @@ const Checkout = () => {
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Delivery address state
+  const [postalCode, setPostalCode] = useState("");
+  const [streetName, setStreetName] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
+  const [city, setCity] = useState("Rotterdam");
+  const [contactMobile, setContactMobile] = useState("");
+  
+  // Postal code validation state
+  const [isCheckingPostalCode, setIsCheckingPostalCode] = useState(false);
+  const [postalCodeValid, setPostalCodeValid] = useState<boolean | null>(null);
+  const [postalCodeMessage, setPostalCodeMessage] = useState<string | null>(null);
+
+  // Debounced postal code check
+  const checkPostalCode = useCallback(async (code: string) => {
+    if (!code || code.length < 6) {
+      setPostalCodeValid(null);
+      setPostalCodeMessage(null);
+      return;
+    }
+
+    setIsCheckingPostalCode(true);
+    try {
+      const result = await orderApi.checkDeliveryArea(code);
+      setPostalCodeValid(result.deliverable);
+      setPostalCodeMessage(result.message);
+      if (result.deliverable && result.postalCode) {
+        setPostalCode(result.postalCode); // Use formatted postal code
+      }
+    } catch (err) {
+      setPostalCodeValid(false);
+      setPostalCodeMessage(language === "nl" ? "Kon postcode niet valideren" : "Could not validate postal code");
+    } finally {
+      setIsCheckingPostalCode(false);
+    }
+  }, [language]);
+
+  // Check postal code with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (postalCode.replace(/\s/g, '').length >= 6) {
+        checkPostalCode(postalCode);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [postalCode, checkPostalCode]);
 
   // Generate pickup time options (next 2 hours in 15-min intervals)
   const pickupTimeOptions = () => {
@@ -34,6 +80,17 @@ const Checkout = () => {
     return options;
   };
 
+  // Validate form before submission
+  const isFormValid = () => {
+    return (
+      postalCodeValid === true &&
+      streetName.trim() !== "" &&
+      houseNumber.trim() !== "" &&
+      city.trim() !== "" &&
+      contactMobile.trim() !== ""
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -44,6 +101,13 @@ const Checkout = () => {
     
     if (items.length === 0) {
       setError(language === "nl" ? "Je winkelwagen is leeg" : "Your cart is empty");
+      return;
+    }
+
+    if (!isFormValid()) {
+      setError(language === "nl" 
+        ? "Vul alle bezorggegevens in en zorg ervoor dat uw postcode binnen ons bezorggebied valt" 
+        : "Please fill in all delivery details and ensure your postal code is within our delivery area");
       return;
     }
 
@@ -58,6 +122,13 @@ const Checkout = () => {
         })),
         pickupTime: pickupTime ? new Date(`${new Date().toDateString()} ${pickupTime}`).toISOString() : undefined,
         notes: notes || undefined,
+        deliveryAddress: {
+          postalCode: postalCode.trim(),
+          streetName: streetName.trim(),
+          houseNumber: houseNumber.trim(),
+          city: city.trim(),
+        },
+        contactMobile: contactMobile.trim(),
       };
 
       // Initiate payment and get Mollie checkout URL
@@ -181,6 +252,124 @@ const Checkout = () => {
                   </select>
                 </div>
 
+                {/* Delivery Address */}
+                <div className="bg-card border border-border rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <MapPin className="text-primary" size={24} />
+                    <h2 className="font-display text-xl text-foreground">
+                      {language === "nl" ? "Bezorgadres" : "Delivery Address"}
+                    </h2>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {language === "nl" 
+                      ? "Wij bezorgen alleen in Rotterdam (postcodes 3000-3199)" 
+                      : "We only deliver to Rotterdam area (postal codes 3000-3199)"}
+                  </p>
+                  
+                  <div className="space-y-4">
+                    {/* Postal Code */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">
+                        {language === "nl" ? "Postcode *" : "Postal Code *"}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={postalCode}
+                          onChange={(e) => {
+                            setPostalCode(e.target.value.toUpperCase());
+                            setPostalCodeValid(null);
+                          }}
+                          placeholder={language === "nl" ? "bijv. 3011 AB" : "e.g. 3011 AB"}
+                          maxLength={7}
+                          className={`w-full p-3 bg-background border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary ${
+                            postalCodeValid === true ? 'border-green-500' : 
+                            postalCodeValid === false ? 'border-red-500' : 'border-border'
+                          }`}
+                        />
+                        {isCheckingPostalCode && (
+                          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-muted-foreground" />
+                        )}
+                        {!isCheckingPostalCode && postalCodeValid === true && (
+                          <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
+                        )}
+                        {!isCheckingPostalCode && postalCodeValid === false && (
+                          <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-red-500" />
+                        )}
+                      </div>
+                      {postalCodeMessage && (
+                        <p className={`text-sm mt-1 ${postalCodeValid ? 'text-green-600' : 'text-red-600'}`}>
+                          {postalCodeMessage}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Street Name and House Number */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                          {language === "nl" ? "Straatnaam *" : "Street Name *"}
+                        </label>
+                        <input
+                          type="text"
+                          value={streetName}
+                          onChange={(e) => setStreetName(e.target.value)}
+                          placeholder={language === "nl" ? "bijv. Coolsingel" : "e.g. Coolsingel"}
+                          className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                          {language === "nl" ? "Huisnummer *" : "House Number *"}
+                        </label>
+                        <input
+                          type="text"
+                          value={houseNumber}
+                          onChange={(e) => setHouseNumber(e.target.value)}
+                          placeholder={language === "nl" ? "bijv. 42A" : "e.g. 42A"}
+                          className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                    </div>
+
+                    {/* City */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">
+                        {language === "nl" ? "Stad *" : "City *"}
+                      </label>
+                      <input
+                        type="text"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="Rotterdam"
+                        className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Mobile */}
+                <div className="bg-card border border-border rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Phone className="text-primary" size={24} />
+                    <h2 className="font-display text-xl text-foreground">
+                      {language === "nl" ? "Contactnummer" : "Contact Number"}
+                    </h2>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {language === "nl" 
+                      ? "Wij gebruiken dit nummer om contact op te nemen over uw bezorging" 
+                      : "We'll use this number to contact you about your delivery"}
+                  </p>
+                  <input
+                    type="tel"
+                    value={contactMobile}
+                    onChange={(e) => setContactMobile(e.target.value)}
+                    placeholder={language === "nl" ? "bijv. 0612345678 of +31612345678" : "e.g. 0612345678 or +31612345678"}
+                    className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
                 {/* Notes */}
                 <div className="bg-card border border-border rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-4">
@@ -217,7 +406,7 @@ const Checkout = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting || !isAuthenticated}
+                  disabled={isSubmitting || !isAuthenticated || !isFormValid()}
                   className="w-full py-4 bg-primary text-primary-foreground font-serif text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {isSubmitting ? (
