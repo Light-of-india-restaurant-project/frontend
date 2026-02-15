@@ -47,6 +47,7 @@ export interface CreateOrderData {
   notes?: string;
   deliveryAddress: DeliveryAddress;
   contactMobile: string;
+  email: string;
 }
 
 export interface Order {

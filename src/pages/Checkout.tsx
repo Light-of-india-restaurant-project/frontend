@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard, MapPin, Phone, CheckCircle } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard, MapPin, Phone, CheckCircle, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useCart } from "@/contexts/CartContext";
@@ -26,6 +26,7 @@ const Checkout = () => {
   const [houseNumber, setHouseNumber] = useState("");
   const [city, setCity] = useState("Rotterdam");
   const [contactMobile, setContactMobile] = useState("");
+  const [email, setEmail] = useState("");
   
   // Postal code validation state
   const [isCheckingPostalCode, setIsCheckingPostalCode] = useState(false);
@@ -82,12 +83,15 @@ const Checkout = () => {
 
   // Validate form before submission
   const isFormValid = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return (
       postalCodeValid === true &&
       streetName.trim() !== "" &&
       houseNumber.trim() !== "" &&
       city.trim() !== "" &&
-      contactMobile.trim() !== ""
+      contactMobile.trim() !== "" &&
+      email.trim() !== "" &&
+      emailRegex.test(email)
     );
   };
 
@@ -129,6 +133,7 @@ const Checkout = () => {
           city: city.trim(),
         },
         contactMobile: contactMobile.trim(),
+        email: email.trim(),
       };
 
       // Initiate payment and get Mollie checkout URL
@@ -366,6 +371,28 @@ const Checkout = () => {
                     value={contactMobile}
                     onChange={(e) => setContactMobile(e.target.value)}
                     placeholder={language === "nl" ? "bijv. 0612345678 of +31612345678" : "e.g. 0612345678 or +31612345678"}
+                    className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="bg-card border border-border rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Mail className="text-primary" size={24} />
+                    <h2 className="font-display text-xl text-foreground">
+                      {language === "nl" ? "E-mailadres" : "Email Address"}
+                    </h2>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {language === "nl" 
+                      ? "We sturen uw orderbevestiging naar dit e-mailadres" 
+                      : "We'll send your order confirmation to this email"}
+                  </p>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={language === "nl" ? "bijv. voorbeeld@email.nl" : "e.g. example@email.com"}
                     className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
