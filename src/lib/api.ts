@@ -12,9 +12,10 @@ export const apiConfig = {
     menuTakeaway: `${API_V1_URL}/menu/takeaway`,
     menuSpecial: `${API_V1_URL}/menu/special`,
     
-    // Reservation endpoints
-    reservations: `${API_BASE_URL}/reservations`,
-    availableSlots: `${API_BASE_URL}/reservations/available-slots`,
+    // Reservation endpoints (v1)
+    reservations: `${API_V1_URL}/reservations`,
+    availableSlots: `${API_V1_URL}/reservations/available-slots`,
+    reservationSettings: `${API_V1_URL}/reservations/settings`,
     
     // Contact & Newsletter
     contact: `${API_BASE_URL}/contact`,
@@ -54,12 +55,14 @@ export const api = {
 
   // Reservations
   createReservation: (data: ReservationData) =>
-    apiFetch(apiConfig.endpoints.reservations, {
+    apiFetch<ReservationResponse>(apiConfig.endpoints.reservations, {
       method: "POST",
       body: JSON.stringify(data),
     }),
-  getAvailableSlots: (date: string) =>
-    apiFetch(`${apiConfig.endpoints.availableSlots}?date=${date}`),
+  getAvailableSlots: (date: string, guests: number) =>
+    apiFetch<AvailableSlotsResponse>(`${apiConfig.endpoints.availableSlots}?date=${date}&guests=${guests}`),
+  getReservationSettings: () =>
+    apiFetch<ReservationSettingsResponse>(apiConfig.endpoints.reservationSettings),
 
   // Contact
   sendContactMessage: (data: ContactData) =>
@@ -88,6 +91,58 @@ export interface ReservationData {
   time: string;
   guests: number;
   specialRequests?: string;
+}
+
+export interface ReservationResponse {
+  message: string;
+  success: boolean;
+  data: {
+    _id: string;
+    confirmationCode: string;
+    name: string;
+    email: string;
+    date: string;
+    time: string;
+    endTime: string;
+    guests: number;
+    status: string;
+  };
+}
+
+export interface AvailableSlot {
+  time: string;
+  tables: Array<{
+    id: string;
+    name: string;
+    capacity: number;
+    isAvailable: boolean;
+  }>;
+}
+
+export interface AvailableSlotsResponse {
+  message: string;
+  success: boolean;
+  data: AvailableSlot[];
+}
+
+export interface OperatingHours {
+  day: string;
+  isOpen: boolean;
+  openTime: string;
+  closeTime: string;
+}
+
+export interface ReservationSettingsResponse {
+  message: string;
+  success: boolean;
+  data: {
+    operatingHours: OperatingHours[];
+    reservationDuration: number;
+    slotInterval: number;
+    maxAdvanceDays: number;
+    maxGuestsPerReservation: number;
+    minGuestsPerReservation: number;
+  };
 }
 
 export interface ContactData {
