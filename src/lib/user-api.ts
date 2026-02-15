@@ -170,7 +170,7 @@ export const userApi = {
   // Reset password
   resetPassword: async (
     email: string,
-    otp: number,
+    otp: string,
     newPassword: string,
     confirmPassword: string
   ): Promise<{ success: boolean; message: string }> => {

@@ -7,6 +7,7 @@ import PrivateEvents from "@/pages/PrivateEvents";
 import NotFound from "@/pages/NotFound";
 import Checkout from "@/pages/Checkout";
 import Login from "@/pages/Login";
+import ForgotPassword from "@/pages/ForgotPassword";
 import Orders from "@/pages/Orders";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentCancelled from "@/pages/PaymentCancelled";
@@ -61,6 +62,14 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Login />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PageTransition>
+              <ForgotPassword />
             </PageTransition>
           }
         />
