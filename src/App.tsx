@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/lib/i18n";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { CartProvider } from "@/contexts/CartContext";
 import { UserAuthProvider } from "@/contexts/UserAuthContext";
+import ScrollToTop from "@/components/layout/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <ScrollToTop />
               <AnimatedRoutes />
             </BrowserRouter>
           </TooltipProvider>

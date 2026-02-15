@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, X, User, Package, LogOut, LogIn, ChevronDown } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { CartButton } from "@/components/cart/CartDrawer";
@@ -14,6 +14,7 @@ const Header = () => {
   const { t, language } = useLanguage();
   const { user, isAuthenticated, logout } = useUserAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navLinks = [
     { label: t("nav.menu"), href: "#menu" },
@@ -22,6 +23,28 @@ const Header = () => {
     { label: t("nav.events"), href: "/private-events" },
     { label: t("nav.contact"), href: "#contact" },
   ];
+
+  // Handle navigation for hash links
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // If it's a regular route (not hash), let it navigate normally
+    if (!href.startsWith("#")) {
+      return;
+    }
+
+    e.preventDefault();
+    
+    // If we're not on the home page, navigate to home first with hash
+    if (location.pathname !== "/") {
+      navigate("/" + href);
+    } else {
+      // We're on home page, scroll to section
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    setIsMenuOpen(false);
+  };
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -53,6 +76,7 @@ const Header = () => {
             <a
               key={link.href}
               href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
               className="text-foreground/80 hover:text-primary transition-colors font-serif text-lg"
             >
               {link.label}
@@ -105,6 +129,7 @@ const Header = () => {
           
           <a
             href="#reservation"
+            onClick={(e) => handleNavClick(e, "#reservation")}
             className="bg-primary text-primary-foreground px-6 py-2.5 font-serif hover:bg-primary/90 transition-colors"
           >
             {t("nav.reserve")}
@@ -133,7 +158,7 @@ const Header = () => {
                 key={link.href}
                 href={link.href}
                 className="text-foreground/80 hover:text-primary transition-colors font-serif text-lg py-2"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, link.href)}
               >
                 {link.label}
               </a>
@@ -183,7 +208,7 @@ const Header = () => {
             <a
               href="#reservation"
               className="bg-primary text-primary-foreground px-6 py-3 font-serif text-center hover:bg-primary/90 transition-colors mt-2"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, "#reservation")}
             >
               {t("nav.reserve")}
             </a>
