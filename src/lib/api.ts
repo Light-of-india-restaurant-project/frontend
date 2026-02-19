@@ -116,6 +116,8 @@ export interface AvailableSlot {
     name: string;
     capacity: number;
     isAvailable: boolean;
+    floor?: { name: string; locationType: string };
+    row?: { name: string };
   }>;
 }
 

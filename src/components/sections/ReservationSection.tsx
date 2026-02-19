@@ -10,6 +10,8 @@ interface SelectedTable {
   id: string;
   name: string;
   capacity: number;
+  floor?: { name: string; locationType: string };
+  row?: { name: string };
 }
 
 const ReservationSection = () => {
@@ -298,53 +300,150 @@ const ReservationSection = () => {
               {/* Step 3: Select Table (shown after time is selected) */}
               {formData.time && selectedSlot && (
                 <div className="animate-fade-in">
-                  <label className="block font-serif mb-2 text-cream/80">
+                  <label className="block font-serif mb-3 text-cream/80">
                     <Armchair size={16} className="inline mr-2" />
                     {language === "nl" ? "Selecteer een tafel" : "Select a Table"} *
                   </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {selectedSlot.tables.map((table) => {
-                      const isSelected = selectedTable?.id === table.id;
-                      const isAvailable = table.isAvailable;
+                  
+                  {/* Group tables by location type and row */}
+                  {(() => {
+                    // Group tables by locationType -> floorName -> rowName
+                    const groupedTables: Record<string, Record<string, Record<string, typeof selectedSlot.tables>>> = {};
+                    
+                    selectedSlot.tables.forEach(table => {
+                      const locationType = table.floor?.locationType || 'other';
+                      const floorName = table.floor?.name || 'General';
+                      const rowName = table.row?.name || 'General';
                       
-                      return (
-                        <button
-                          key={table.id}
-                          type="button"
-                          onClick={() => isAvailable && handleTableSelect(table)}
-                          disabled={!isAvailable}
-                          className={`p-4 border rounded-lg font-serif transition-colors text-left relative ${
-                            isSelected
-                              ? "bg-secondary text-secondary-foreground border-secondary"
-                              : isAvailable
-                                ? "bg-cream/10 border-cream/20 text-cream hover:border-secondary hover:bg-cream/20 cursor-pointer"
-                                : "bg-cream/5 border-cream/10 text-cream/40 cursor-not-allowed opacity-50"
-                          }`}
-                        >
-                          <span className={`block font-semibold text-lg ${!isAvailable && "line-through"}`}>
-                            {table.name}
-                          </span>
-                          <span className={`text-sm flex items-center gap-1 mt-1 ${
-                            isSelected 
-                              ? "text-secondary-foreground/80" 
-                              : isAvailable 
-                                ? "text-cream/60"
-                                : "text-cream/30"
-                          }`}>
-                            <Users size={14} />
-                            {table.capacity} {table.capacity === 1 
-                              ? (language === "nl" ? "stoel" : "seat") 
-                              : (language === "nl" ? "stoelen" : "seats")}
-                          </span>
-                          {!isAvailable && (
-                            <span className="text-xs text-red-400/80 mt-2 block">
-                              {language === "nl" ? "Gereserveerd" : "Reserved"}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
+                      if (!groupedTables[locationType]) {
+                        groupedTables[locationType] = {};
+                      }
+                      if (!groupedTables[locationType][floorName]) {
+                        groupedTables[locationType][floorName] = {};
+                      }
+                      if (!groupedTables[locationType][floorName][rowName]) {
+                        groupedTables[locationType][floorName][rowName] = [];
+                      }
+                      groupedTables[locationType][floorName][rowName].push(table);
+                    });
+
+                    // Define location order and labels
+                    const locationOrder = ['inside', 'outside', 'terrace', 'other'];
+                    const locationLabels: Record<string, { en: string; nl: string; icon: string }> = {
+                      inside: { en: 'Inside', nl: 'Binnen', icon: '🏠' },
+                      outside: { en: 'Outside', nl: 'Buiten', icon: '🌳' },
+                      terrace: { en: 'Terrace', nl: 'Terras', icon: '☀️' },
+                      other: { en: 'Other', nl: 'Overig', icon: '📍' }
+                    };
+
+                    const sortedLocations = Object.keys(groupedTables).sort(
+                      (a, b) => locationOrder.indexOf(a) - locationOrder.indexOf(b)
+                    );
+
+                    return (
+                      <div className="space-y-6">
+                        {sortedLocations.map(locationType => {
+                          const locationInfo = locationLabels[locationType] || locationLabels.other;
+                          const floors = groupedTables[locationType];
+                          const floorNames = Object.keys(floors);
+                          
+                          return (
+                            <div key={locationType} className="bg-cream/5 rounded-xl p-4 border border-cream/10">
+                              {/* Location Type Header */}
+                              <div className="flex items-center gap-2 mb-4 pb-2 border-b border-cream/20">
+                                <span className="text-xl">{locationInfo.icon}</span>
+                                <h4 className="font-display text-lg text-secondary">
+                                  {language === "nl" ? locationInfo.nl : locationInfo.en}
+                                </h4>
+                              </div>
+                              
+                              <div className="space-y-4">
+                                {floorNames.map(floorName => {
+                                  const rows = floors[floorName];
+                                  const rowNames = Object.keys(rows);
+                                  const showFloorHeader = floorNames.length > 1 || floorName !== 'General';
+                                  
+                                  return (
+                                    <div key={floorName}>
+                                      {/* Floor Header (only if multiple floors or named floor) */}
+                                      {showFloorHeader && (
+                                        <h5 className="font-serif text-sm text-cream/70 mb-2 ml-1">
+                                          {floorName}
+                                        </h5>
+                                      )}
+                                      
+                                      <div className="space-y-3">
+                                        {rowNames.map(rowName => {
+                                          const tables = rows[rowName];
+                                          const showRowHeader = rowNames.length > 1 || rowName !== 'General';
+                                          
+                                          return (
+                                            <div key={rowName}>
+                                              {/* Row Header (only if multiple rows or named row) */}
+                                              {showRowHeader && (
+                                                <p className="text-xs text-cream/50 mb-2 ml-2 uppercase tracking-wider">
+                                                  {rowName}
+                                                </p>
+                                              )}
+                                              
+                                              {/* Tables Grid */}
+                                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                                {tables.map((table) => {
+                                                  const isSelected = selectedTable?.id === table.id;
+                                                  const isAvailable = table.isAvailable;
+                                                  
+                                                  return (
+                                                    <button
+                                                      key={table.id}
+                                                      type="button"
+                                                      onClick={() => isAvailable && handleTableSelect(table)}
+                                                      disabled={!isAvailable}
+                                                      className={`p-3 border rounded-lg font-serif transition-all text-left relative ${
+                                                        isSelected
+                                                          ? "bg-secondary text-secondary-foreground border-secondary shadow-lg scale-[1.02]"
+                                                          : isAvailable
+                                                            ? "bg-cream/10 border-cream/20 text-cream hover:border-secondary hover:bg-cream/15 cursor-pointer"
+                                                            : "bg-cream/5 border-cream/10 text-cream/40 cursor-not-allowed opacity-50"
+                                                      }`}
+                                                    >
+                                                      <span className={`block font-semibold ${!isAvailable && "line-through"}`}>
+                                                        {table.name}
+                                                      </span>
+                                                      <span className={`text-xs flex items-center gap-1 mt-1 ${
+                                                        isSelected 
+                                                          ? "text-secondary-foreground/80" 
+                                                          : isAvailable 
+                                                            ? "text-cream/60"
+                                                            : "text-cream/30"
+                                                      }`}>
+                                                        <Users size={12} />
+                                                        {table.capacity} {table.capacity === 1 
+                                                          ? (language === "nl" ? "stoel" : "seat") 
+                                                          : (language === "nl" ? "stoelen" : "seats")}
+                                                      </span>
+                                                      {!isAvailable && (
+                                                        <span className="text-xs text-red-400/80 mt-1 block">
+                                                          {language === "nl" ? "Gereserveerd" : "Reserved"}
+                                                        </span>
+                                                      )}
+                                                    </button>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
