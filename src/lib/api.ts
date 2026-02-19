@@ -166,6 +166,7 @@ export interface MenuItem {
   isVegetarian?: boolean;
   isVegan?: boolean;
   isSpicy?: boolean;
+  isDoubleSpicy?: boolean;
   isSignature?: boolean;
   isActive?: boolean;
   sortOrder?: number;

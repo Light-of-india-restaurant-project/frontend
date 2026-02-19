@@ -304,6 +304,15 @@ const Menu = () => {
                                       <Flame size={16} className="text-red-500" />
                                     </motion.span>
                                   )}
+                                  {item.isDoubleSpicy && (
+                                    <motion.span 
+                                      title="Double Spicy"
+                                      whileHover={{ scale: 1.2 }}
+                                      transition={{ type: "spring", stiffness: 400 }}
+                                    >
+                                      <Flame size={16} className="text-orange-600 fill-orange-600" />
+                                    </motion.span>
+                                  )}
                                 </div>
                               </div>
                               <p className="font-serif text-muted-foreground leading-relaxed text-base md:text-lg">
