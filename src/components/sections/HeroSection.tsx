@@ -6,8 +6,13 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-      {/* Background with overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-brown/95 via-brown/85 to-background z-0" />
+      {/* Background with overlay - inline style as bulletproof fallback */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background: 'linear-gradient(to bottom, hsla(25, 30%, 20%, 0.95), hsla(25, 30%, 20%, 0.85), hsl(40, 33%, 96%))'
+        }}
+      />
       
       {/* Decorative elements */}
       <div className="absolute inset-0 opacity-10">
@@ -22,7 +27,7 @@ const HeroSection = () => {
         
         <p
           className="text-xl md:text-2xl font-serif text-cream/90 mb-2 animate-fade-in"
-          style={{ animationDelay: "0.2s" }}
+          style={{ animationDelay: "0.2s", color: "hsla(40, 33%, 96%, 0.9)" }}
         >
           {t("hero.tagline")}
         </p>
@@ -32,7 +37,7 @@ const HeroSection = () => {
           style={{ animationDelay: "0.3s" }}
         >
           <span className="h-px w-16 bg-secondary/60" />
-          <span className="text-secondary font-serif tracking-widest text-sm uppercase">
+          <span className="font-serif tracking-widest text-sm uppercase" style={{ color: "hsl(43, 74%, 49%)" }}>
             Rotterdam
           </span>
           <span className="h-px w-16 bg-secondary/60" />
@@ -40,7 +45,7 @@ const HeroSection = () => {
         
         <p
           className="text-lg md:text-xl font-serif text-cream/70 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in"
-          style={{ animationDelay: "0.4s" }}
+          style={{ animationDelay: "0.4s", color: "hsla(40, 33%, 96%, 0.7)" }}
         >
           {t("hero.subtitle")}
         </p>
@@ -51,13 +56,15 @@ const HeroSection = () => {
         >
           <a
             href="#reservation"
-            className="bg-secondary text-secondary-foreground px-10 py-4 font-serif text-lg hover:bg-secondary/90 transition-all hover:scale-105"
+            className="px-10 py-4 font-serif text-lg transition-all hover:scale-105"
+            style={{ backgroundColor: "hsl(43, 74%, 49%)", color: "hsl(25, 30%, 15%)" }}
           >
             {t("hero.cta.reserve")}
           </a>
           <a
             href="#menu"
-            className="border-2 border-cream/40 text-cream px-10 py-4 font-serif text-lg hover:bg-cream/10 transition-all"
+            className="px-10 py-4 font-serif text-lg transition-all"
+            style={{ border: "2px solid hsla(40, 33%, 96%, 0.4)", color: "hsl(40, 33%, 96%)" }}
           >
             {t("hero.cta.menu")}
           </a>
@@ -68,9 +75,9 @@ const HeroSection = () => {
           className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-fade-in"
           style={{ animationDelay: "1s" }}
         >
-          <div className="flex flex-col items-center gap-2 text-cream/50">
+          <div className="flex flex-col items-center gap-2" style={{ color: "hsla(40, 33%, 96%, 0.5)" }}>
             <span className="text-xs uppercase tracking-widest font-serif">Scroll</span>
-            <div className="w-px h-8 bg-gradient-to-b from-cream/50 to-transparent" />
+            <div className="w-px h-8" style={{ background: "linear-gradient(to bottom, hsla(40, 33%, 96%, 0.5), transparent)" }} />
           </div>
         </div>
       </div>

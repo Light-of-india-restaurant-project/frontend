@@ -59,20 +59,20 @@ export default {
         },
         // Brand colors for direct use
         burgundy: {
-          DEFAULT: "hsl(var(--burgundy))",
-          light: "hsl(var(--burgundy-light))",
+          DEFAULT: "hsl(var(--burgundy) / <alpha-value>)",
+          light: "hsl(var(--burgundy-light) / <alpha-value>)",
         },
         gold: {
-          DEFAULT: "hsl(var(--gold))",
-          light: "hsl(var(--gold-light))",
+          DEFAULT: "hsl(var(--gold) / <alpha-value>)",
+          light: "hsl(var(--gold-light) / <alpha-value>)",
         },
         cream: {
-          DEFAULT: "hsl(var(--cream))",
-          dark: "hsl(var(--cream-dark))",
+          DEFAULT: "hsl(var(--cream) / <alpha-value>)",
+          dark: "hsl(var(--cream-dark) / <alpha-value>)",
         },
         brown: {
-          DEFAULT: "hsl(var(--brown))",
-          light: "hsl(var(--brown-light))",
+          DEFAULT: "hsl(var(--brown) / <alpha-value>)",
+          light: "hsl(var(--brown-light) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -106,7 +106,7 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.6s ease-out forwards",
+        "fade-in": "fade-in 0.6s ease-out both",
         shimmer: "shimmer 2s linear infinite",
       },
     },
