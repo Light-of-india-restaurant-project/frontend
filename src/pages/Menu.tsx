@@ -421,8 +421,8 @@ const Menu = () => {
             <div className="container mx-auto px-6 text-center">
               <p className="font-serif text-lg text-muted-foreground">
                 {language === "nl" 
-                  ? "Afhaal- en bezorgbestellingen: Bel ons op +31 20 123 4567 of bestel online via onze app"
-                  : "Takeaway and delivery orders: Call us at +31 20 123 4567 or order online via our app"}
+                  ? "Afhaal- en bezorgbestellingen: Bel ons op 010 307 22 99 of bestel online via onze app"
+                  : "Takeaway and delivery orders: Call us at 010 307 22 99 or order online via our app"}
               </p>
             </div>
           </section>

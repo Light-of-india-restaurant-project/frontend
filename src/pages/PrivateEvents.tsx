@@ -263,9 +263,9 @@ const PrivateEvents = () => {
                   <h3 className="font-display text-xl mb-2">
                     {language === "nl" ? "Bel Ons" : "Call Us"}
                   </h3>
-                  <p className="font-serif text-primary-foreground/80">+31 10 123 4567</p>
+                  <p className="font-serif text-primary-foreground/80">010 307 22 99</p>
                   <p className="font-serif text-primary-foreground/60 text-sm mt-1">
-                    {language === "nl" ? "Ma-Za: 10:00 - 22:00" : "Mon-Sat: 10:00 AM - 10:00 PM"}
+                    {language === "nl" ? "Wo t/m Ma: 16:00 - 22:00" : "Wed - Mon: 16:00 - 22:00"}
                   </p>
                 </div>
               </div>
@@ -279,10 +279,10 @@ const PrivateEvents = () => {
                     {language === "nl" ? "E-mail Ons" : "Email Us"}
                   </h3>
                   <a
-                    href="mailto:events@lightofindia.nl"
+                    href="mailto:zafar@LightofIndia.nl"
                     className="font-serif text-secondary hover:text-secondary/80 transition-colors"
                   >
-                    events@lightofindia.nl
+                    zafar@LightofIndia.nl
                   </a>
                 </div>
               </div>

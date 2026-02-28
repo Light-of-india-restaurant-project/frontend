@@ -30,14 +30,14 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-secondary flex-shrink-0" />
-                <a href="tel:+31101234567" className="text-cream/80 hover:text-secondary transition-colors">
-                  +31 10 123 4567
+                <a href="tel:+31103072299" className="text-cream/80 hover:text-secondary transition-colors">
+                  010 307 22 99
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-secondary flex-shrink-0" />
-                <a href="mailto:info@lightofindia.nl" className="text-cream/80 hover:text-secondary transition-colors">
-                  info@lightofindia.nl
+                <a href="mailto:zafar@LightofIndia.nl" className="text-cream/80 hover:text-secondary transition-colors">
+                  zafar@LightofIndia.nl
                 </a>
               </li>
             </ul>
@@ -50,29 +50,15 @@ const Footer = () => {
               <li className="flex items-start gap-3">
                 <Clock size={18} className="text-secondary mt-1 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-cream">{t("footer.monthurs")}</p>
-                  <p>17:00 - 22:00</p>
+                  <p className="font-medium text-cream">{t("footer.wedmon")}</p>
+                  <p>16:00 - 22:00</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Clock size={18} className="text-secondary mt-1 flex-shrink-0 opacity-0" />
                 <div>
-                  <p className="font-medium text-cream">{t("footer.frisat")}</p>
-                  <p>17:00 - 23:00</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock size={18} className="text-secondary mt-1 flex-shrink-0 opacity-0" />
-                <div>
-                  <p className="font-medium text-cream">{t("footer.sunday")}</p>
-                  <p>16:00 - 21:00</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock size={18} className="text-secondary mt-1 flex-shrink-0 opacity-0" />
-                <div>
-                  <p className="font-medium text-cream/60">Monday</p>
-                  <p className="text-cream/60">Closed</p>
+                  <p className="font-medium text-cream/60">{t("footer.tuesday")}</p>
+                  <p className="text-cream/60">{t("footer.closed")}</p>
                 </div>
               </li>
             </ul>

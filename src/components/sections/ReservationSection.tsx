@@ -581,8 +581,8 @@ const ReservationSection = () => {
                 {language === "nl" 
                   ? "Voor grotere groepen, bel ons op " 
                   : "For larger parties, please call us at "}
-                <a href="tel:+31101234567" className="text-secondary hover:underline">
-                  +31 10 123 4567
+                <a href="tel:+31103072299" className="text-secondary hover:underline">
+                  010 307 22 99
                 </a>
               </p>
             </form>

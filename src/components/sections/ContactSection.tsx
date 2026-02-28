@@ -106,10 +106,10 @@ const ContactSection = () => {
                 <div>
                   <h3 className="font-display text-lg mb-2">{t("contact.phone")}</h3>
                   <a
-                    href="tel:+31101234567"
+                    href="tel:+31103072299"
                     className="font-serif text-muted-foreground hover:text-primary transition-colors"
                   >
-                    +31 10 123 4567
+                    010 307 22 99
                   </a>
                 </div>
               </div>
@@ -121,10 +121,10 @@ const ContactSection = () => {
                 <div>
                   <h3 className="font-display text-lg mb-2">{t("contact.email")}</h3>
                   <a
-                    href="mailto:info@lightofindia.nl"
+                    href="mailto:zafar@LightofIndia.nl"
                     className="font-serif text-muted-foreground hover:text-primary transition-colors"
                   >
-                    info@lightofindia.nl
+                    zafar@LightofIndia.nl
                   </a>
                 </div>
               </div>
@@ -136,10 +136,8 @@ const ContactSection = () => {
                 <div>
                   <h3 className="font-display text-lg mb-2">{t("contact.hours")}</h3>
                   <div className="font-serif text-muted-foreground space-y-1">
-                    <p>Tue - Thu: 17:00 - 22:00</p>
-                    <p>Fri - Sat: 17:00 - 23:00</p>
-                    <p>Sunday: 16:00 - 21:00</p>
-                    <p className="text-muted-foreground/60">Monday: Closed</p>
+                    <p>{language === "nl" ? "Woensdag t/m Maandag" : "Wednesday to Monday"}: 16:00 - 22:00</p>
+                    <p className="text-muted-foreground/60">{language === "nl" ? "Dinsdag: Gesloten" : "Tuesday: Closed"}</p>
                   </div>
                 </div>
               </div>
