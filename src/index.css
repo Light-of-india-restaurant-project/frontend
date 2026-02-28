@@ -20,13 +20,13 @@
 
     /* Semantic Tokens */
     --background: 40 33% 96%;
-    --foreground: 25 30% 15%;
+    --foreground: 25 30% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 25 30% 15%;
+    --card-foreground: 25 30% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 25 30% 15%;
+    --popover-foreground: 25 30% 10%;
 
     --primary: 345 65% 25%;
     --primary-foreground: 40 33% 96%;
@@ -35,7 +35,7 @@
     --secondary-foreground: 25 30% 15%;
 
     --muted: 35 20% 90%;
-    --muted-foreground: 25 20% 45%;
+    --muted-foreground: 25 25% 35%;
 
     --accent: 43 74% 49%;
     --accent-foreground: 25 30% 15%;

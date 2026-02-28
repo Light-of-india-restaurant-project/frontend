@@ -45,7 +45,7 @@ const HeroSection = () => {
         
         <p
           className="text-lg md:text-xl font-serif text-cream/70 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in"
-          style={{ animationDelay: "0.4s", color: "hsla(40, 33%, 96%, 0.7)" }}
+          style={{ animationDelay: "0.4s", color: "hsla(40, 33%, 96%, 0.85)" }}
         >
           {t("hero.subtitle")}
         </p>
@@ -70,16 +70,7 @@ const HeroSection = () => {
           </a>
         </div>
 
-        {/* Scroll indicator */}
-        <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-fade-in"
-          style={{ animationDelay: "1s" }}
-        >
-          <div className="flex flex-col items-center gap-2" style={{ color: "hsla(40, 33%, 96%, 0.5)" }}>
-            <span className="text-xs uppercase tracking-widest font-serif">Scroll</span>
-            <div className="w-px h-8" style={{ background: "linear-gradient(to bottom, hsla(40, 33%, 96%, 0.5), transparent)" }} />
-          </div>
-        </div>
+
       </div>
     </section>
   );

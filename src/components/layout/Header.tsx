@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, X, User, Package, LogOut, LogIn, ChevronDown } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Logo from "@/components/Logo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { CartButton } from "@/components/cart/CartDrawer";
 import { useLanguage } from "@/lib/i18n";
@@ -66,8 +65,8 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-cream/10 backdrop-blur-sm" style={{ backgroundColor: 'hsla(25, 30%, 12%, 0.95)' }}>
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="/" className="hover:opacity-90 transition-opacity">
-          <Logo variant="image" size="md" />
+        <a href="/" className="hover:opacity-90 transition-opacity flex items-center gap-2">
+          <span className="font-display font-bold text-2xl tracking-wide" style={{ color: 'hsl(43, 74%, 49%)' }}>Light of India</span>
         </a>
 
         {/* Desktop Navigation */}
