@@ -10,6 +10,7 @@ import { MenuCategorySkeleton } from "@/components/menu/MenuItemSkeleton";
 import { useMenu } from "@/hooks/use-menu";
 import { useCart } from "@/contexts/CartContext";
 import type { MenuItem } from "@/lib/api";
+import { formatPrice } from "@/lib/formatPrice";
 
 // Import food images for local fallback
 import gilafiSeekhImg from "@/assets/menu/gilafi-seekh.jpg";
@@ -325,7 +326,7 @@ const Menu = () => {
                                 whileHover={{ scale: 1.1 }}
                                 transition={{ type: "spring", stiffness: 400 }}
                               >
-                                €{item.price.toFixed(0)}
+                                €{formatPrice(item.price)}
                               </motion.span>
                               
                               {/* Add to Cart Button (only for takeaway) */}

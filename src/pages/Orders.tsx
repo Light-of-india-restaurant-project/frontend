@@ -7,6 +7,7 @@ import { useUserAuth } from "@/contexts/UserAuthContext";
 import { orderApi, Order } from "@/lib/user-api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { formatPrice } from "@/lib/formatPrice";
 
 const statusConfig: Record<Order["status"], { icon: React.ElementType; color: string; labelEn: string; labelNl: string }> = {
   pending: { icon: Clock, color: "text-amber-500", labelEn: "Pending", labelNl: "In behandeling" },
@@ -250,7 +251,7 @@ const Orders = () => {
                           </div>
                           <div className="text-right">
                             <span className="font-display text-2xl text-secondary">
-                              €{order.total.toFixed(2)}
+                              €{formatPrice(order.total)}
                             </span>
                           </div>
                         </div>
@@ -269,11 +270,11 @@ const Orders = () => {
                               <div className="flex-1">
                                 <p className="font-serif text-foreground">{item.name}</p>
                                 <p className="text-sm text-muted-foreground">
-                                  {item.quantity} × €{item.price.toFixed(2)}
+                                  {item.quantity} × €{formatPrice(item.price)}
                                 </p>
                               </div>
                               <span className="font-serif text-foreground">
-                                €{(item.price * item.quantity).toFixed(2)}
+                                €{formatPrice(item.price * item.quantity)}
                               </span>
                             </div>
                           ))}
@@ -284,7 +285,7 @@ const Orders = () => {
                             {language === "nl" ? "Totaal" : "Total"}
                           </span>
                           <span className="font-display text-2xl text-secondary">
-                            €{order.total.toFixed(2)}
+                            €{formatPrice(order.total)}
                           </span>
                         </div>
 

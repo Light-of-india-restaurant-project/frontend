@@ -8,6 +8,7 @@ import { useUserAuth } from "@/contexts/UserAuthContext";
 import { paymentApi, orderApi } from "@/lib/user-api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { formatPrice } from "@/lib/formatPrice";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -470,11 +471,11 @@ const Checkout = () => {
                           {language === "nl" && item.nameNl ? item.nameNl : item.name}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {item.quantity} × €{item.price.toFixed(2)}
+                          {item.quantity} × €{formatPrice(item.price)}
                         </p>
                       </div>
                       <span className="font-serif text-foreground">
-                        €{(item.price * item.quantity).toFixed(2)}
+                        €{formatPrice(item.price * item.quantity)}
                       </span>
                     </div>
                   ))}
@@ -486,7 +487,7 @@ const Checkout = () => {
                       {language === "nl" ? "Totaal" : "Total"} ({itemCount} items)
                     </span>
                     <span className="font-display text-2xl text-secondary">
-                      €{total.toFixed(2)}
+                      €{formatPrice(total)}
                     </span>
                   </div>
                 </div>

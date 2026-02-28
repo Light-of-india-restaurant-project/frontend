@@ -6,6 +6,7 @@ import { useLanguage } from "@/lib/i18n";
 import { useMenu } from "@/hooks/use-menu";
 import { useCart } from "@/contexts/CartContext";
 import type { MenuItem } from "@/lib/api";
+import { formatPrice } from "@/lib/formatPrice";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -262,7 +263,7 @@ const MenuSection = () => {
                           whileHover={{ scale: 1.1 }}
                           transition={{ type: "spring", stiffness: 400 }}
                         >
-                          €{item.price.toFixed(0)}
+                          €{formatPrice(item.price)}
                         </motion.span>
                         
                         {/* Add to Cart Button (only for takeaway) */}

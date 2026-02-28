@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/lib/i18n";
 import { useNavigate } from "react-router-dom";
+import { formatPrice } from "@/lib/formatPrice";
 
 // Cart Button for Header
 export const CartButton = () => {
@@ -127,7 +128,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                           {language === "nl" && item.nameNl ? item.nameNl : item.name}
                         </h3>
                         <p className="font-serif text-secondary mt-1">
-                          €{item.price.toFixed(2)}
+                          €{formatPrice(item.price)}
                         </p>
 
                         {/* Quantity Controls */}
@@ -181,7 +182,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                     {language === "nl" ? "Totaal" : "Total"} ({itemCount} {itemCount === 1 ? "item" : "items"})
                   </span>
                   <span className="font-display text-2xl text-secondary">
-                    €{total.toFixed(2)}
+                    €{formatPrice(total)}
                   </span>
                 </div>
 
