@@ -64,7 +64,7 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-cream/10 backdrop-blur-sm" style={{ backgroundColor: 'hsla(25, 30%, 12%, 0.95)' }}>
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <a href="/" className="hover:opacity-90 transition-opacity">
           <Logo variant="image" size="md" />
@@ -77,7 +77,9 @@ const Header = () => {
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="text-foreground/80 hover:text-primary transition-colors font-serif text-lg"
+              className="transition-colors font-serif text-lg" style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'hsl(43, 74%, 49%)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'hsla(40, 33%, 96%, 0.85)'}
             >
               {link.label}
             </a>
@@ -90,7 +92,7 @@ const Header = () => {
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2 px-4 py-2 text-foreground/80 hover:text-primary transition-colors font-serif"
+                className="flex items-center gap-2 px-4 py-2 transition-colors font-serif" style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
               >
                 <User size={20} />
                 <span className="max-w-[100px] truncate">{user?.fullName || user?.email?.split("@")[0]}</span>
@@ -120,7 +122,7 @@ const Header = () => {
           ) : (
             <a
               href="/login"
-              className="flex items-center gap-2 px-4 py-2 text-foreground/80 hover:text-primary transition-colors font-serif"
+              className="flex items-center gap-2 px-4 py-2 transition-colors font-serif" style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
             >
               <LogIn size={20} />
               {language === "nl" ? "Inloggen" : "Login"}
@@ -130,7 +132,7 @@ const Header = () => {
           <a
             href="#reservation"
             onClick={(e) => handleNavClick(e, "#reservation")}
-            className="bg-primary text-primary-foreground px-6 py-2.5 font-serif hover:bg-primary/90 transition-colors"
+            className="px-6 py-2.5 font-serif transition-colors" style={{ backgroundColor: 'hsl(345, 65%, 25%)', color: 'hsl(40, 33%, 96%)' }}
           >
             {t("nav.reserve")}
           </a>
@@ -140,7 +142,7 @@ const Header = () => {
         <div className="md:hidden flex items-center gap-2">
           <CartButton />
           <button
-            className="p-2 text-foreground"
+            className="p-2" style={{ color: 'hsl(40, 33%, 96%)' }}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
