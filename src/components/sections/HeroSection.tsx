@@ -21,12 +21,12 @@ const HeroSection = () => {
       </div>
 
       <div className="container mx-auto px-6 text-center relative z-10">
-        <div className="mb-8 animate-fade-in">
-          <Logo variant="image" size="lg" className="mx-auto h-28 md:h-40" />
+        <div className="mb-8 animate-fade-in" style={{ filter: 'drop-shadow(0 0 12px hsla(43, 74%, 49%, 0.5)) drop-shadow(0 0 4px hsla(40, 33%, 96%, 0.3))' }}>
+          <Logo variant="image" size="lg" className="mx-auto h-32 md:h-48" />
         </div>
         
         <p
-          className="text-xl md:text-2xl font-serif text-cream/90 mb-2 animate-fade-in"
+          className="text-2xl md:text-3xl font-serif text-cream/90 mb-2 animate-fade-in"
           style={{ animationDelay: "0.2s", color: "hsla(40, 33%, 96%, 0.9)" }}
         >
           {t("hero.tagline")}
@@ -37,14 +37,14 @@ const HeroSection = () => {
           style={{ animationDelay: "0.3s" }}
         >
           <span className="h-px w-16 bg-secondary/60" />
-          <span className="font-serif tracking-widest text-sm uppercase" style={{ color: "hsl(43, 74%, 49%)" }}>
+          <span className="font-serif tracking-widest text-base uppercase" style={{ color: "hsl(43, 74%, 49%)" }}>
             Rotterdam
           </span>
           <span className="h-px w-16 bg-secondary/60" />
         </div>
         
         <p
-          className="text-lg md:text-xl font-serif text-cream/70 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in"
+          className="text-xl md:text-2xl font-serif text-cream/70 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in"
           style={{ animationDelay: "0.4s", color: "hsla(40, 33%, 96%, 0.85)" }}
         >
           {t("hero.subtitle")}
@@ -56,14 +56,14 @@ const HeroSection = () => {
         >
           <a
             href="#reservation"
-            className="px-10 py-4 font-serif text-lg transition-all hover:scale-105"
+            className="px-12 py-4 font-serif text-xl transition-all hover:scale-105"
             style={{ backgroundColor: "hsl(43, 74%, 49%)", color: "hsl(25, 30%, 15%)" }}
           >
             {t("hero.cta.reserve")}
           </a>
           <a
             href="#menu"
-            className="px-10 py-4 font-serif text-lg transition-all"
+            className="px-12 py-4 font-serif text-xl transition-all"
             style={{ border: "2px solid hsla(40, 33%, 96%, 0.4)", color: "hsl(40, 33%, 96%)" }}
           >
             {t("hero.cta.menu")}
