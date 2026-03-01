@@ -17,6 +17,10 @@ export const apiConfig = {
     availableSlots: `${API_V1_URL}/reservations/available-slots`,
     reservationSettings: `${API_V1_URL}/reservations/settings`,
     
+    // Simple Reservation endpoints (v1)
+    simpleReservations: `${API_V1_URL}/reservations/simple`,
+    simpleReservationsOpenDates: `${API_V1_URL}/reservations/simple/open-dates`,
+    
     // Contact & Newsletter
     contact: `${API_BASE_URL}/contact`,
     newsletter: `${API_BASE_URL}/newsletter`,
@@ -63,6 +67,15 @@ export const api = {
     apiFetch<AvailableSlotsResponse>(`${apiConfig.endpoints.availableSlots}?date=${date}&guests=${guests}`),
   getReservationSettings: () =>
     apiFetch<ReservationSettingsResponse>(apiConfig.endpoints.reservationSettings),
+
+  // Simple Reservations
+  createSimpleReservation: (data: SimpleReservationData) =>
+    apiFetch<SimpleReservationResponse>(apiConfig.endpoints.simpleReservations, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  getSimpleReservationOpenDates: () =>
+    apiFetch<SimpleReservationOpenDatesResponse>(apiConfig.endpoints.simpleReservationsOpenDates),
 
   // Contact
   sendContactMessage: (data: ContactData) =>
@@ -152,6 +165,42 @@ export interface ContactData {
   email: string;
   subject: string;
   message: string;
+}
+
+// Simple Reservation Types
+export interface SimpleReservationData {
+  name: string;
+  email: string;
+  contactNumber: string;
+  numberOfGuests: number;
+  reservationDate: string;
+}
+
+export interface SimpleReservationResponse {
+  message: string;
+  success: boolean;
+  data: {
+    _id: string;
+    name: string;
+    email: string;
+    contactNumber: string;
+    numberOfGuests: number;
+    reservationDate: string;
+    status: 'pending' | 'accepted' | 'rejected' | 'cancelled';
+    createdAt: string;
+  };
+}
+
+export interface OpenDate {
+  date: string;
+  dayName: string;
+  isOpen: boolean;
+}
+
+export interface SimpleReservationOpenDatesResponse {
+  message: string;
+  success: boolean;
+  data: OpenDate[];
 }
 
 export interface MenuItem {
