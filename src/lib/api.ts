@@ -25,8 +25,8 @@ export const apiConfig = {
     contact: `${API_BASE_URL}/contact`,
     newsletter: `${API_BASE_URL}/newsletter`,
     
-    // Gallery
-    gallery: `${API_BASE_URL}/gallery`,
+    // Gallery (v1)
+    gallery: `${API_V1_URL}/gallery`,
   },
 };
 
