@@ -128,6 +128,7 @@ const Header = () => {
             </a>
           )}
           
+          {/* TEMPORARILY HIDDEN - Uncomment when restaurant opens
           <a
             href="#reservation"
             onClick={(e) => handleNavClick(e, "#reservation")}
@@ -135,6 +136,7 @@ const Header = () => {
           >
             {t("nav.reserve")}
           </a>
+          */}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -206,6 +208,7 @@ const Header = () => {
             <div className="py-2">
               <LanguageSwitcher />
             </div>
+            {/* TEMPORARILY HIDDEN - Uncomment when restaurant opens
             <a
               href="#reservation"
               className="bg-primary text-primary-foreground px-6 py-3 font-serif text-center hover:bg-primary/90 transition-colors mt-2"
@@ -213,6 +216,7 @@ const Header = () => {
             >
               {t("nav.reserve")}
             </a>
+            */}
           </div>
         </nav>
       )}

@@ -91,9 +91,11 @@ const Footer = () => {
               <a href="#menu" className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.menu")}
               </a>
+              {/* TEMPORARILY HIDDEN - Uncomment when restaurant opens
               <a href="#reservation" className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.reserve")}
               </a>
+              */}
               <a href="#contact" className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.contact")}
               </a>

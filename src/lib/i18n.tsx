@@ -45,8 +45,8 @@ export const translations: Translations = {
   // Menu
   "menu.title": { en: "Our Menu", nl: "Ons Menu" },
   "menu.subtitle": { en: "Culinary Excellence", nl: "Culinaire Uitmuntendheid" },
-  "menu.dinein": { en: "Dine-in", nl: "Afhalen" },
-  "menu.takeaway": { en: "Takeaway", nl: "Bezorgen" },
+  "menu.dinein": { en: "Dine-in", nl: "Dine-in" },
+  "menu.takeaway": { en: "Takeaway & Delivery", nl: "Afhalen & Bezorgen" },
   "menu.popular": { en: "Popular", nl: "Populair" },
   "menu.viewfull": { en: "View Full Menu", nl: "Bekijk Volledig Menu" },
 
