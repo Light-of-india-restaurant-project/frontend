@@ -31,8 +31,8 @@ export const translations: Translations = {
   "about.title": { en: "Our Story", nl: "Ons Verhaal" },
   "about.subtitle": { en: "A Journey of Flavors", nl: "Een Reis van Smaken" },
   "about.p1": {
-    en: "Welcome to Shahi Darbar, where centuries-old recipes meet contemporary culinary artistry. Our name, meaning 'Royal Court,' reflects our commitment to serving dishes fit for royalty.",
-    nl: "Welkom bij Shahi Darbar, waar eeuwenoude recepten samenkomen met hedendaagse culinaire kunst. Onze naam, wat 'Koninklijk Hof' betekent, weerspiegelt onze toewijding om gerechten te serveren die een koning waardig zijn.",
+    en: "Welcome to Light of India, where centuries-old recipes meet contemporary culinary artistry. Our name reflects our commitment to bringing the vibrant flavors of India to your table, serving dishes fit for royalty.",
+    nl: "Welkom bij Light of India, waar eeuwenoude recepten samenkomen met hedendaagse culinaire kunst. Onze naam weerspiegelt onze toewijding om de levendige smaken van India naar uw tafel te brengen, met gerechten die een koning waardig zijn.",
   },
   "about.p2": {
     en: "Every dish tells a story of tradition, passed down through generations and perfected with love. Our chefs bring authentic flavors from various regions of India, using only the finest ingredients and freshly ground spices.",
