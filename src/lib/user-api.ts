@@ -42,7 +42,12 @@ export interface DeliveryAddress {
 }
 
 export interface CreateOrderData {
-  items: OrderItem[];
+  items?: OrderItem[];
+  cateringItems?: Array<{
+    packId: string;
+    peopleCount: number;
+    quantity: number;
+  }>;
   pickupTime?: string;
   notes?: string;
   deliveryAddress: DeliveryAddress;
@@ -58,6 +63,13 @@ export interface Order {
     menuItemId: string;
     name: string;
     price: number;
+    quantity: number;
+  }>;
+  cateringItems?: Array<{
+    packId: string;
+    name: string;
+    pricePerPerson: number;
+    peopleCount: number;
     quantity: number;
   }>;
   subtotal: number;
@@ -266,6 +278,117 @@ export const paymentApi = {
   }> => {
     // No auth needed for status check
     const response = await fetch(`${API_V1_URL}/payments/${paymentId}/status`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+};
+
+// Catering Types
+export interface CateringMenuItem {
+  _id: string;
+  name: string;
+  description: string;
+  descriptionNl: string;
+  price: number;
+}
+
+export interface CateringPack {
+  _id: string;
+  name: string;
+  description: string;
+  descriptionNl: string;
+  category: 'vegetarian' | 'non-vegetarian' | 'mixed';
+  pricePerPerson: number;
+  minPeople: number;
+  menuItems: CateringMenuItem[];
+  image?: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface CateringDeliveryAddress {
+  street: string;
+  houseNumber: string;
+  city: string;
+  postalCode: string;
+  additionalInfo?: string;
+}
+
+export interface CateringOrderData {
+  cateringPackId: string;
+  peopleCount: number;
+  deliveryDate: string;
+  deliveryTime: string;
+  deliveryAddress: CateringDeliveryAddress;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  notes?: string;
+}
+
+// Catering API
+export const cateringApi = {
+  // Get all active catering packs (public)
+  getPacks: async (): Promise<{
+    success: boolean;
+    packs: CateringPack[];
+  }> => {
+    const response = await fetch(`${API_V1_URL}/catering/packs`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+
+  // Get single pack (public)
+  getPack: async (packId: string): Promise<{
+    success: boolean;
+    pack: CateringPack;
+  }> => {
+    const response = await fetch(`${API_V1_URL}/catering/packs/${packId}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+
+  // Initiate catering payment (public)
+  initiatePayment: async (data: CateringOrderData): Promise<{
+    success: boolean;
+    message: string;
+    paymentUrl: string;
+    paymentId: string;
+  }> => {
+    const response = await fetch(`${API_V1_URL}/payments/catering/initiate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+
+  // Get catering payment status (public)
+  getPaymentStatus: async (paymentId: string): Promise<{
+    success: boolean;
+    status: string;
+    isPaid: boolean;
+    order?: {
+      orderNumber: string;
+      orderId: string;
+    };
+  }> => {
+    const response = await fetch(`${API_V1_URL}/payments/catering/${paymentId}/status`);
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `API Error: ${response.status}`);

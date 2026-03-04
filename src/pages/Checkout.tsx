@@ -13,7 +13,7 @@ import { formatPrice } from "@/lib/formatPrice";
 const Checkout = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
-  const { items, total, itemCount } = useCart();
+  const { items, total, itemCount, cateringItems, cateringTotal, cateringItemCount, totalItemCount, grandTotal } = useCart();
   const { isAuthenticated, isLoading: authLoading } = useUserAuth();
   
   const [pickupTime, setPickupTime] = useState("");
@@ -104,7 +104,7 @@ const Checkout = () => {
       return;
     }
     
-    if (items.length === 0) {
+    if (items.length === 0 && cateringItems.length === 0) {
       setError(language === "nl" ? "Je winkelwagen is leeg" : "Your cart is empty");
       return;
     }
@@ -121,10 +121,15 @@ const Checkout = () => {
 
     try {
       const orderData = {
-        items: items.map((item) => ({
+        items: items.length > 0 ? items.map((item) => ({
           menuItemId: item.menuItemId,
           quantity: item.quantity,
-        })),
+        })) : undefined,
+        cateringItems: cateringItems.length > 0 ? cateringItems.map((item) => ({
+          packId: item.packId,
+          peopleCount: item.peopleCount,
+          quantity: item.quantity,
+        })) : undefined,
         pickupTime: pickupTime ? new Date(`${new Date().toDateString()} ${pickupTime}`).toISOString() : undefined,
         notes: notes || undefined,
         deliveryAddress: {
@@ -152,7 +157,7 @@ const Checkout = () => {
   };
 
   // Empty cart view
-  if (items.length === 0) {
+  if (items.length === 0 && cateringItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -165,8 +170,8 @@ const Checkout = () => {
               </h1>
               <p className="font-serif text-muted-foreground mb-8">
                 {language === "nl"
-                  ? "Voeg items toe aan je winkelwagen vanuit het takeaway menu."
-                  : "Add items to your cart from the takeaway menu."}
+                  ? "Voeg items toe aan je winkelwagen vanuit het menu of catering."
+                  : "Add items to your cart from the menu or catering."}
               </p>
               <button
                 onClick={() => navigate("/menu")}
@@ -464,6 +469,7 @@ const Checkout = () => {
                 </h2>
 
                 <div className="space-y-4 mb-6">
+                  {/* Menu Items */}
                   {items.map((item) => (
                     <div key={item.menuItemId} className="flex justify-between gap-4">
                       <div className="flex-1">
@@ -479,15 +485,32 @@ const Checkout = () => {
                       </span>
                     </div>
                   ))}
+                  
+                  {/* Catering Packs */}
+                  {cateringItems.map((item) => (
+                    <div key={item.packId} className="flex justify-between gap-4 pt-2 border-t border-border/50">
+                      <div className="flex-1">
+                        <p className="font-serif text-foreground">
+                          {item.pack.name}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.quantity} × {item.peopleCount} {language === "nl" ? "personen" : "people"} × €{formatPrice(item.pack.pricePerPerson)}
+                        </p>
+                      </div>
+                      <span className="font-serif text-foreground">
+                        €{formatPrice(item.pack.pricePerPerson * item.peopleCount * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
 
                 <div className="border-t border-border pt-4">
                   <div className="flex justify-between items-center">
                     <span className="font-serif text-lg text-foreground">
-                      {language === "nl" ? "Totaal" : "Total"} ({itemCount} items)
+                      {language === "nl" ? "Totaal" : "Total"} ({totalItemCount} items)
                     </span>
                     <span className="font-display text-2xl text-secondary">
-                      €{formatPrice(total)}
+                      €{formatPrice(grandTotal)}
                     </span>
                   </div>
                 </div>

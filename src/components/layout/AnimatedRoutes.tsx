@@ -11,6 +11,10 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import Orders from "@/pages/Orders";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentCancelled from "@/pages/PaymentCancelled";
+import Catering from "@/pages/Catering";
+import CateringPackDetail from "@/pages/CateringPackDetail";
+import CateringOrder from "@/pages/CateringOrder";
+import CateringSuccess from "@/pages/CateringSuccess";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -94,6 +98,40 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <PaymentCancelled />
+            </PageTransition>
+          }
+        />
+        
+        {/* Catering Routes */}
+        <Route
+          path="/catering"
+          element={
+            <PageTransition>
+              <Catering />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/catering/order/:packId"
+          element={
+            <PageTransition>
+              <CateringOrder />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/catering/success"
+          element={
+            <PageTransition>
+              <CateringSuccess />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/catering/:packId"
+          element={
+            <PageTransition>
+              <CateringPackDetail />
             </PageTransition>
           }
         />

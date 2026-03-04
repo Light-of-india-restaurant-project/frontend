@@ -265,7 +265,8 @@ const Orders = () => {
                       {/* Order Items */}
                       <div className="p-6">
                         <div className="space-y-3 mb-6">
-                          {order.items.map((item, itemIndex) => (
+                          {/* Menu Items */}
+                          {order.items && order.items.length > 0 && order.items.map((item, itemIndex) => (
                             <div key={itemIndex} className="flex justify-between gap-4">
                               <div className="flex-1">
                                 <p className="font-serif text-foreground">{item.name}</p>
@@ -275,6 +276,21 @@ const Orders = () => {
                               </div>
                               <span className="font-serif text-foreground">
                                 €{formatPrice(item.price * item.quantity)}
+                              </span>
+                            </div>
+                          ))}
+
+                          {/* Catering Packs */}
+                          {order.cateringItems && order.cateringItems.length > 0 && order.cateringItems.map((item, itemIndex) => (
+                            <div key={`catering-${itemIndex}`} className="flex justify-between gap-4">
+                              <div className="flex-1">
+                                <p className="font-serif text-foreground">{item.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {item.quantity} × {item.peopleCount} {language === "nl" ? "personen" : "people"} × €{formatPrice(item.pricePerPerson)}
+                                </p>
+                              </div>
+                              <span className="font-serif text-foreground">
+                                €{formatPrice(item.pricePerPerson * item.peopleCount * item.quantity)}
                               </span>
                             </div>
                           ))}
