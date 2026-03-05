@@ -20,6 +20,7 @@ const Header = () => {
     { label: t("nav.about"), href: "#about" },
     { label: t("nav.gallery"), href: "#gallery" },
     { label: t("nav.events"), href: "/private-events" },
+    { label: language === 'nl' ? 'Catering' : 'Catering', href: "/catering" },
     { label: t("nav.contact"), href: "#contact" },
   ];
 
