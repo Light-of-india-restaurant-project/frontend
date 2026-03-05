@@ -35,7 +35,7 @@ const AboutSection = () => {
 
             <div className="mt-10 flex gap-12">
               <div>
-                <span className="block text-4xl font-display text-primary">15+</span>
+                <span className="block text-4xl font-display text-primary">40+</span>
                 <span className="text-sm text-muted-foreground uppercase tracking-wider">
                   {t("about.experience")}
                 </span>
