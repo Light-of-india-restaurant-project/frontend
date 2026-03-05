@@ -16,7 +16,10 @@ export const CartButton = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="relative p-2 text-foreground/80 hover:text-primary transition-colors"
+        className="relative p-2 transition-colors"
+        style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
+        onMouseEnter={(e) => e.currentTarget.style.color = 'hsl(43, 74%, 49%)'}
+        onMouseLeave={(e) => e.currentTarget.style.color = 'hsla(40, 33%, 96%, 0.85)'}
         aria-label="Open cart"
       >
         <ShoppingCart size={24} />

@@ -50,7 +50,7 @@ const HeroSection = () => {
           style={{ animationDelay: "0.3s" }}
         >
           <span className="h-px w-16 bg-secondary/60" />
-          <span className="font-serif tracking-widest text-base uppercase" style={{ color: "hsl(43, 74%, 49%)" }}>
+          <span className="font-serif tracking-widest text-base uppercase" style={{ color: "hsl(43, 85%, 60%)", textShadow: "0 0 10px hsla(43, 74%, 49%, 0.5)" }}>
             Rotterdam
           </span>
           <span className="h-px w-16 bg-secondary/60" />
@@ -58,7 +58,7 @@ const HeroSection = () => {
         
         <p
           className="text-xl md:text-2xl font-serif text-cream/70 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in"
-          style={{ animationDelay: "0.4s", color: "hsla(40, 33%, 96%, 0.85)" }}
+          style={{ animationDelay: "0.4s", color: "hsl(40, 33%, 96%)", textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
         >
           {t("hero.subtitle")}
         </p>
@@ -78,8 +78,8 @@ const HeroSection = () => {
           */}
           <a
             href="#menu"
-            className="px-12 py-4 font-serif text-xl transition-all"
-            style={{ border: "2px solid hsla(40, 33%, 96%, 0.4)", color: "hsl(40, 33%, 96%)" }}
+            className="px-12 py-4 font-serif text-xl transition-all hover:scale-105"
+            style={{ border: "2px solid hsl(43, 74%, 49%)", color: "hsl(43, 74%, 49%)", textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}
           >
             {t("hero.cta.menu")}
           </a>
