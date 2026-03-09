@@ -13,7 +13,7 @@ import { formatPrice } from "@/lib/formatPrice";
 const Checkout = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
-  const { items, total, itemCount, cateringItems, cateringTotal, cateringItemCount, totalItemCount, grandTotal } = useCart();
+  const { items, total, itemCount, cateringItems, cateringTotal, cateringItemCount, offerItems, offerTotal, offerItemCount, totalItemCount, grandTotal } = useCart();
   const { isAuthenticated, isLoading: authLoading } = useUserAuth();
   
   const [pickupTime, setPickupTime] = useState("");
@@ -104,7 +104,7 @@ const Checkout = () => {
       return;
     }
     
-    if (items.length === 0 && cateringItems.length === 0) {
+    if (items.length === 0 && cateringItems.length === 0 && offerItems.length === 0) {
       setError(language === "nl" ? "Je winkelwagen is leeg" : "Your cart is empty");
       return;
     }
@@ -128,6 +128,10 @@ const Checkout = () => {
         cateringItems: cateringItems.length > 0 ? cateringItems.map((item) => ({
           packId: item.packId,
           peopleCount: item.peopleCount,
+          quantity: item.quantity,
+        })) : undefined,
+        offerItems: offerItems.length > 0 ? offerItems.map((item) => ({
+          offerId: item.offerId,
           quantity: item.quantity,
         })) : undefined,
         pickupTime: pickupTime ? new Date(`${new Date().toDateString()} ${pickupTime}`).toISOString() : undefined,
@@ -157,7 +161,7 @@ const Checkout = () => {
   };
 
   // Empty cart view
-  if (items.length === 0 && cateringItems.length === 0) {
+  if (items.length === 0 && cateringItems.length === 0 && offerItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -499,6 +503,26 @@ const Checkout = () => {
                       </div>
                       <span className="font-serif text-foreground">
                         €{formatPrice(item.pack.pricePerPerson * item.peopleCount * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
+                  
+                  {/* Offer Items */}
+                  {offerItems.map((item) => (
+                    <div key={item.offerId} className="flex justify-between gap-4 pt-2 border-t border-border/50">
+                      <div className="flex-1">
+                        <p className="font-serif text-foreground">
+                          {item.name}
+                          <span className="ml-2 text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
+                            {language === "nl" ? "Aanbieding" : "Offer"}
+                          </span>
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.quantity} × €{formatPrice(item.price)}
+                        </p>
+                      </div>
+                      <span className="font-serif text-foreground">
+                        €{formatPrice(item.price * item.quantity)}
                       </span>
                     </div>
                   ))}

@@ -48,6 +48,10 @@ export interface CreateOrderData {
     peopleCount: number;
     quantity: number;
   }>;
+  offerItems?: Array<{
+    offerId: string;
+    quantity: number;
+  }>;
   pickupTime?: string;
   notes?: string;
   deliveryAddress: DeliveryAddress;
@@ -70,6 +74,12 @@ export interface Order {
     name: string;
     pricePerPerson: number;
     peopleCount: number;
+    quantity: number;
+  }>;
+  offerItems?: Array<{
+    offerId: string;
+    name: string;
+    price: number;
     quantity: number;
   }>;
   subtotal: number;
@@ -389,6 +399,36 @@ export const cateringApi = {
     };
   }> => {
     const response = await fetch(`${API_V1_URL}/payments/catering/${paymentId}/status`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+};
+
+// Offer Types
+export interface Offer {
+  _id: string;
+  name: string;
+  description: string;
+  descriptionNl: string;
+  price: number;
+  image?: string;
+  isActive: boolean;
+  sortOrder: number;
+  validFrom?: string;
+  validUntil?: string;
+}
+
+// Offer API
+export const offerApi = {
+  // Get all active offers (public)
+  getActiveOffers: async (): Promise<{
+    success: boolean;
+    offers: Offer[];
+  }> => {
+    const response = await fetch(`${API_V1_URL}/offers/active`);
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `API Error: ${response.status}`);

@@ -1,4 +1,4 @@
-import { ShoppingCart, X, Plus, Minus, Trash2, Users, Package } from "lucide-react";
+import { ShoppingCart, X, Plus, Minus, Trash2, Users, Package, Tag } from "lucide-react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -56,6 +56,10 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     removeCateringPack,
     updateCateringPeopleCount,
     updateCateringQuantity,
+    offerItems,
+    offerTotal,
+    updateOfferQuantity,
+    removeOffer,
     totalItemCount,
     grandTotal,
     clearAllCarts
@@ -68,7 +72,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     navigate("/checkout");
   };
 
-  const isEmpty = items.length === 0 && cateringItems.length === 0;
+  const isEmpty = items.length === 0 && cateringItems.length === 0 && offerItems.length === 0;
 
   // Use portal to render drawer outside header DOM hierarchy
   return createPortal(
@@ -280,6 +284,75 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                               <p className="font-serif text-secondary text-right">
                                 €{formatPrice(item.pack.pricePerPerson * item.peopleCount * item.quantity)}
                               </p>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Offer Items Section */}
+                  {offerItems.length > 0 && (
+                    <div>
+                      <h3 className="font-serif text-sm text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
+                        <Tag size={16} />
+                        {language === "nl" ? "Aanbiedingen" : "Special Offers"}
+                      </h3>
+                      <div className="space-y-4">
+                        {offerItems.map((item) => (
+                          <motion.div
+                            key={item.offerId}
+                            layout
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, x: -100 }}
+                            className="flex gap-4 p-4 bg-muted rounded-lg border-l-4 border-secondary"
+                          >
+                            {/* Item Image */}
+                            {item.image && (
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className="w-20 h-20 object-cover rounded"
+                              />
+                            )}
+
+                            {/* Item Details */}
+                            <div className="flex-1">
+                              <h3 className="font-display text-lg text-foreground">
+                                {item.name}
+                              </h3>
+                              <p className="font-serif text-secondary mt-1">
+                                €{formatPrice(item.price)}
+                              </p>
+
+                              {/* Quantity Controls */}
+                              <div className="flex items-center gap-3 mt-3">
+                                <button
+                                  onClick={() => updateOfferQuantity(item.offerId, item.quantity - 1)}
+                                  className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                                  aria-label="Decrease quantity"
+                                >
+                                  <Minus size={18} />
+                                </button>
+                                <span className="font-serif text-foreground min-w-[2ch] text-center">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => updateOfferQuantity(item.offerId, item.quantity + 1)}
+                                  className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                                  aria-label="Increase quantity"
+                                >
+                                  <Plus size={18} />
+                                </button>
+                                <button
+                                  onClick={() => removeOffer(item.offerId)}
+                                  className="ml-auto p-1 text-destructive hover:text-destructive/80 transition-colors"
+                                  aria-label="Remove item"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
                             </div>
                           </motion.div>
                         ))}

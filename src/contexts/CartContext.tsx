@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import type { MenuItem } from "@/lib/api";
-import type { CateringPack } from "@/lib/user-api";
+import type { CateringPack, Offer } from "@/lib/user-api";
 
 // Cart item with quantity
 export interface CartItem {
@@ -17,6 +17,13 @@ export interface CateringCartItem {
   packId: string;
   pack: CateringPack;
   peopleCount: number;
+  quantity: number;
+}
+
+// Offer cart item
+export interface OfferCartItem {
+  offerId: string;
+  offer: Offer;
   quantity: number;
 }
 
@@ -42,6 +49,16 @@ interface CartContextType {
   clearCateringCart: () => void;
   isCateringPackInCart: (packId: string) => boolean;
   getCateringItem: (packId: string) => CateringCartItem | undefined;
+  // Offer items
+  offerItems: OfferCartItem[];
+  offerItemCount: number;
+  offerTotal: number;
+  addOffer: (offer: Offer) => void;
+  removeOffer: (offerId: string) => void;
+  updateOfferQuantity: (offerId: string, quantity: number) => void;
+  clearOfferCart: () => void;
+  isOfferInCart: (offerId: string) => boolean;
+  getOfferQuantity: (offerId: string) => number;
   // Combined totals
   totalItemCount: number;
   grandTotal: number;
@@ -52,6 +69,7 @@ const CartContext = createContext<CartContextType | null>(null);
 
 const CART_STORAGE_KEY = "light-of-india-cart";
 const CATERING_CART_STORAGE_KEY = "light-of-india-catering-cart";
+const OFFER_CART_STORAGE_KEY = "light-of-india-offer-cart";
 
 export const useCart = () => {
   const context = useContext(CartContext);
@@ -124,17 +142,50 @@ const saveCateringCart = (items: CateringCartItem[]) => {
   }
 };
 
+// Load offer cart from localStorage
+const loadOfferCart = (): OfferCartItem[] => {
+  try {
+    const stored = localStorage.getItem(OFFER_CART_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(
+          (item) =>
+            item.offerId &&
+            item.offer &&
+            typeof item.quantity === "number"
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error loading offer cart from localStorage:", error);
+  }
+  return [];
+};
+
+// Save offer cart to localStorage
+const saveOfferCart = (items: OfferCartItem[]) => {
+  try {
+    localStorage.setItem(OFFER_CART_STORAGE_KEY, JSON.stringify(items));
+  } catch (error) {
+    console.error("Error saving offer cart to localStorage:", error);
+  }
+};
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [cateringItems, setCateringItems] = useState<CateringCartItem[]>([]);
+  const [offerItems, setOfferItems] = useState<OfferCartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Load carts from localStorage on mount
   useEffect(() => {
     const storedItems = loadCart();
     const storedCateringItems = loadCateringCart();
+    const storedOfferItems = loadOfferCart();
     setItems(storedItems);
     setCateringItems(storedCateringItems);
+    setOfferItems(storedOfferItems);
     setIsInitialized(true);
   }, []);
 
@@ -152,6 +203,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [cateringItems, isInitialized]);
 
+  // Save offer cart to localStorage whenever items change
+  useEffect(() => {
+    if (isInitialized) {
+      saveOfferCart(offerItems);
+    }
+  }, [offerItems, isInitialized]);
+
   // Calculate menu item count
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -167,9 +225,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     0
   );
 
+  // Calculate offer item count
+  const offerItemCount = offerItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Calculate offer total price
+  const offerTotal = offerItems.reduce(
+    (sum, item) => sum + item.offer.price * item.quantity,
+    0
+  );
+
   // Combined totals
-  const totalItemCount = itemCount + cateringItemCount;
-  const grandTotal = total + cateringTotal;
+  const totalItemCount = itemCount + cateringItemCount + offerItemCount;
+  const grandTotal = total + cateringTotal + offerTotal;
 
   // Add menu item to cart
   const addItem = useCallback((menuItem: MenuItem) => {
@@ -297,12 +364,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCateringItems([]);
   }, []);
 
-  // Clear all carts
-  const clearAllCarts = useCallback(() => {
-    setItems([]);
-    setCateringItems([]);
-  }, []);
-
   // Check if catering pack is in cart
   const isCateringPackInCart = useCallback(
     (packId: string) => cateringItems.some((item) => item.packId === packId),
@@ -314,6 +375,76 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     (packId: string) => cateringItems.find((item) => item.packId === packId),
     [cateringItems]
   );
+
+  // Add offer to cart
+  const addOffer = useCallback((offer: Offer) => {
+    setOfferItems((prevItems) => {
+      const existingIndex = prevItems.findIndex((item) => item.offerId === offer._id);
+
+      if (existingIndex >= 0) {
+        const updated = [...prevItems];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: updated[existingIndex].quantity + 1,
+        };
+        return updated;
+      }
+
+      return [
+        ...prevItems,
+        {
+          offerId: offer._id,
+          offer,
+          quantity: 1,
+        },
+      ];
+    });
+  }, []);
+
+  // Remove offer from cart
+  const removeOffer = useCallback((offerId: string) => {
+    setOfferItems((prevItems) => prevItems.filter((item) => item.offerId !== offerId));
+  }, []);
+
+  // Update offer quantity
+  const updateOfferQuantity = useCallback((offerId: string, quantity: number) => {
+    if (quantity <= 0) {
+      setOfferItems((prevItems) => prevItems.filter((item) => item.offerId !== offerId));
+    } else {
+      setOfferItems((prevItems) =>
+        prevItems.map((item) =>
+          item.offerId === offerId ? { ...item, quantity } : item
+        )
+      );
+    }
+  }, []);
+
+  // Clear offer cart
+  const clearOfferCart = useCallback(() => {
+    setOfferItems([]);
+  }, []);
+
+  // Check if offer is in cart
+  const isOfferInCart = useCallback(
+    (offerId: string) => offerItems.some((item) => item.offerId === offerId),
+    [offerItems]
+  );
+
+  // Get offer quantity
+  const getOfferQuantity = useCallback(
+    (offerId: string) => {
+      const item = offerItems.find((i) => i.offerId === offerId);
+      return item?.quantity || 0;
+    },
+    [offerItems]
+  );
+
+  // Clear all carts
+  const clearAllCarts = useCallback(() => {
+    setItems([]);
+    setCateringItems([]);
+    setOfferItems([]);
+  }, []);
 
   return (
     <CartContext.Provider
@@ -339,6 +470,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         clearCateringCart,
         isCateringPackInCart,
         getCateringItem,
+        // Offer items
+        offerItems,
+        offerItemCount,
+        offerTotal,
+        addOffer,
+        removeOffer,
+        updateOfferQuantity,
+        clearOfferCart,
+        isOfferInCart,
+        getOfferQuantity,
         // Combined totals
         totalItemCount,
         grandTotal,
