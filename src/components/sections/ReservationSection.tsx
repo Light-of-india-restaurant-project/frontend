@@ -188,9 +188,10 @@ const ReservationSection = () => {
                     value={formData.reservationDate}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-cream/10 border border-cream/20 text-cream focus:border-secondary focus:outline-none transition-colors font-serif"
+                    className="w-full px-4 py-3 border border-cream/20 text-cream focus:border-secondary focus:outline-none transition-colors font-serif"
+                    style={{ backgroundColor: "hsl(25, 30%, 20%)" }}
                   >
-                    <option value="">
+                    <option value="" style={{ backgroundColor: "hsl(25, 30%, 20%)", color: "hsl(40, 33%, 96%)" }}>
                       {language === "nl" ? "Selecteer een datum" : "Select a date"}
                     </option>
                     {openDates.map((dateObj) => (
@@ -198,7 +199,7 @@ const ReservationSection = () => {
                         key={dateObj.date} 
                         value={dateObj.isOpen ? dateObj.date : ""}
                         disabled={!dateObj.isOpen}
-                        className={!dateObj.isOpen ? "text-gray-400" : ""}
+                        style={{ backgroundColor: "hsl(25, 30%, 20%)", color: dateObj.isOpen ? "hsl(40, 33%, 96%)" : "hsl(25, 25%, 50%)" }}
                       >
                         {formatDateOption(dateObj.date, dateObj.dayName)}{!dateObj.isOpen ? (language === "nl" ? " - Gesloten" : " - Closed") : ""}
                       </option>
@@ -277,10 +278,11 @@ const ReservationSection = () => {
                   value={formData.numberOfGuests}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-cream/10 border border-cream/20 text-cream focus:border-secondary focus:outline-none transition-colors font-serif"
+                  className="w-full px-4 py-3 border border-cream/20 text-cream focus:border-secondary focus:outline-none transition-colors font-serif"
+                  style={{ backgroundColor: "hsl(25, 30%, 20%)" }}
                 >
                   {guestOptions.map((num) => (
-                    <option key={num} value={num}>
+                    <option key={num} value={num} style={{ backgroundColor: "hsl(25, 30%, 20%)", color: "hsl(40, 33%, 96%)" }}>
                       {num} {num === 1 ? (language === "nl" ? "Gast" : "Guest") : (language === "nl" ? "Gasten" : "Guests")}
                     </option>
                   ))}
