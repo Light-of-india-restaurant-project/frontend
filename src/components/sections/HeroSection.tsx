@@ -32,7 +32,7 @@ const HeroSection = () => {
           {t("hero.tagline")}
         </p>
         
-        {/* Opening Soon Banner */}
+        {/* Opening Date Banner */}
         <div
           className="my-8 animate-fade-in"
           style={{ animationDelay: "0.25s" }}
@@ -41,7 +41,7 @@ const HeroSection = () => {
             className="text-5xl md:text-7xl lg:text-8xl font-display tracking-wide uppercase animate-pulse"
             style={{ color: "hsl(43, 74%, 49%)", textShadow: "0 0 30px hsla(43, 74%, 49%, 0.4)" }}
           >
-            Opening Soon!
+            Opening on 11 March 2026
           </h2>
         </div>
 
@@ -67,7 +67,6 @@ const HeroSection = () => {
           className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in"
           style={{ animationDelay: "0.6s" }}
         >
-          {/* TEMPORARILY HIDDEN - Uncomment when restaurant opens
           <a
             href="#reservation"
             className="px-12 py-4 font-serif text-xl transition-all hover:scale-105"
@@ -75,7 +74,6 @@ const HeroSection = () => {
           >
             {t("hero.cta.reserve")}
           </a>
-          */}
           <a
             href="#menu"
             className="px-12 py-4 font-serif text-xl transition-all hover:scale-105"

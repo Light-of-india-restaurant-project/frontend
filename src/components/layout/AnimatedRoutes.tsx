@@ -15,6 +15,7 @@ import Catering from "@/pages/Catering";
 import CateringPackDetail from "@/pages/CateringPackDetail";
 import CateringOrder from "@/pages/CateringOrder";
 import CateringSuccess from "@/pages/CateringSuccess";
+import Specials from "@/pages/Specials";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -103,6 +104,14 @@ export const AnimatedRoutes = () => {
         />
         
         {/* Catering Routes */}
+        <Route
+          path="/specials"
+          element={
+            <PageTransition>
+              <Specials />
+            </PageTransition>
+          }
+        />
         <Route
           path="/catering"
           element={
