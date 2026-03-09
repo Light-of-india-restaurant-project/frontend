@@ -305,11 +305,11 @@ const ReservationSection = () => {
                 )}
               </button>
 
-              <p className="text-center text-cream/60 text-sm font-serif">
+              <p className="text-center text-cream/80 text-lg font-serif mt-4">
                 {language === "nl" 
                   ? "Voor grotere groepen of speciale wensen, bel ons op " 
                   : "For larger parties or special requests, please call us at "}
-                <a href="tel:+31103072299" className="text-secondary hover:underline">
+                <a href="tel:+31103072299" className="text-secondary font-bold hover:underline">
                   010 307 22 99
                 </a>
               </p>
