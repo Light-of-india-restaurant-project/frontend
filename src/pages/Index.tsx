@@ -34,9 +34,7 @@ const Index = () => {
         <AboutSection />
         <MenuSection />
         <GallerySection />
-        {/* TEMPORARILY HIDDEN - Uncomment when restaurant opens
         <ReservationSection />
-        */}
         <NewsletterSection />
         <ContactSection />
       </main>
