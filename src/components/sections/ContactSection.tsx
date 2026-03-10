@@ -30,6 +30,7 @@ const ContactSection = () => {
         email: formData.email.trim(),
         subject: formData.subject,
         message: formData.message.trim(),
+        language: language as 'en' | 'nl',
       };
 
       // Call the actual backend API

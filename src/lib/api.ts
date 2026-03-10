@@ -22,7 +22,7 @@ export const apiConfig = {
     simpleReservationsOpenDates: `${API_V1_URL}/reservations/simple/open-dates`,
     
     // Contact & Newsletter
-    contact: `${API_BASE_URL}/contact`,
+    contact: `${API_V1_URL}/contact`,
     newsletter: `${API_BASE_URL}/newsletter`,
     
     // Gallery (v1)
@@ -163,8 +163,10 @@ export interface ReservationSettingsResponse {
 export interface ContactData {
   name: string;
   email: string;
+  phone?: string;
   subject: string;
   message: string;
+  language?: 'en' | 'nl';
 }
 
 // Simple Reservation Types
