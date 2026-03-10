@@ -21,6 +21,9 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Check if cart only has specials/offers (no delivery needed - dine-in only)
+  const isOffersOnly = offerItems.length > 0 && items.length === 0 && cateringItems.length === 0;
+
   // Delivery address state
   const [postalCode, setPostalCode] = useState("");
   const [streetName, setStreetName] = useState("");
@@ -85,6 +88,17 @@ const Checkout = () => {
   // Validate form before submission
   const isFormValid = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    // For offers only (dine-in specials), only need contact info
+    if (isOffersOnly) {
+      return (
+        contactMobile.trim() !== "" &&
+        email.trim() !== "" &&
+        emailRegex.test(email)
+      );
+    }
+    
+    // For delivery orders, need full address
     return (
       postalCodeValid === true &&
       streetName.trim() !== "" &&
@@ -110,9 +124,13 @@ const Checkout = () => {
     }
 
     if (!isFormValid()) {
-      setError(language === "nl" 
-        ? "Vul alle bezorggegevens in en zorg ervoor dat uw postcode binnen ons bezorggebied valt" 
-        : "Please fill in all delivery details and ensure your postal code is within our delivery area");
+      setError(isOffersOnly 
+        ? (language === "nl" 
+          ? "Vul uw contactgegevens in" 
+          : "Please fill in your contact details")
+        : (language === "nl" 
+          ? "Vul alle bezorggegevens in en zorg ervoor dat uw postcode binnen ons bezorggebied valt" 
+          : "Please fill in all delivery details and ensure your postal code is within our delivery area"));
       return;
     }
 
@@ -136,12 +154,14 @@ const Checkout = () => {
         })) : undefined,
         pickupTime: pickupTime ? new Date(`${new Date().toDateString()} ${pickupTime}`).toISOString() : undefined,
         notes: notes || undefined,
-        deliveryAddress: {
+        // Only include delivery address if not offers-only (dine-in)
+        deliveryAddress: isOffersOnly ? undefined : {
           postalCode: postalCode.trim(),
           streetName: streetName.trim(),
           houseNumber: houseNumber.trim(),
           city: city.trim(),
         },
+        isPickup: isOffersOnly, // Flag for pickup/dine-in orders
         contactMobile: contactMobile.trim(),
         email: email.trim(),
       };
@@ -267,101 +287,120 @@ const Checkout = () => {
                   </select>
                 </div>
 
-                {/* Delivery Address */}
-                <div className="bg-card border border-border rounded-lg p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <MapPin className="text-primary" size={24} />
-                    <h2 className="font-display text-xl text-foreground">
-                      {language === "nl" ? "Bezorgadres" : "Delivery Address"}
-                    </h2>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {language === "nl" 
-                      ? "Wij bezorgen alleen in Rotterdam (postcodes 3000-3199)" 
-                      : "We only deliver to Rotterdam area (postal codes 3000-3199)"}
-                  </p>
-                  
-                  <div className="space-y-4">
-                    {/* Postal Code */}
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
-                        {language === "nl" ? "Postcode *" : "Postal Code *"}
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={postalCode}
-                          onChange={(e) => {
-                            setPostalCode(e.target.value.toUpperCase());
-                            setPostalCodeValid(null);
-                          }}
-                          placeholder={language === "nl" ? "bijv. 3011 AB" : "e.g. 3011 AB"}
-                          maxLength={7}
-                          className={`w-full p-3 bg-background border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary ${
-                            postalCodeValid === true ? 'border-green-500' : 
-                            postalCodeValid === false ? 'border-red-500' : 'border-border'
-                          }`}
-                        />
-                        {isCheckingPostalCode && (
-                          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-muted-foreground" />
-                        )}
-                        {!isCheckingPostalCode && postalCodeValid === true && (
-                          <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
-                        )}
-                        {!isCheckingPostalCode && postalCodeValid === false && (
-                          <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-red-500" />
-                        )}
-                      </div>
-                      {postalCodeMessage && (
-                        <p className={`text-sm mt-1 ${postalCodeValid ? 'text-green-600' : 'text-red-600'}`}>
-                          {postalCodeMessage}
-                        </p>
-                      )}
+                {/* Delivery Address - Hidden for offers-only orders (dine-in specials) */}
+                {!isOffersOnly && (
+                  <div className="bg-card border border-border rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <MapPin className="text-primary" size={24} />
+                      <h2 className="font-display text-xl text-foreground">
+                        {language === "nl" ? "Bezorgadres" : "Delivery Address"}
+                      </h2>
                     </div>
-
-                    {/* Street Name and House Number */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {language === "nl" 
+                        ? "Wij bezorgen alleen in Rotterdam (postcodes 3000-3199)" 
+                        : "We only deliver to Rotterdam area (postal codes 3000-3199)"}
+                    </p>
+                    
+                    <div className="space-y-4">
+                      {/* Postal Code */}
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                          {language === "nl" ? "Straatnaam *" : "Street Name *"}
+                          {language === "nl" ? "Postcode *" : "Postal Code *"}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={postalCode}
+                            onChange={(e) => {
+                              setPostalCode(e.target.value.toUpperCase());
+                              setPostalCodeValid(null);
+                            }}
+                            placeholder={language === "nl" ? "bijv. 3011 AB" : "e.g. 3011 AB"}
+                            maxLength={7}
+                            className={`w-full p-3 bg-background border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary ${
+                              postalCodeValid === true ? 'border-green-500' : 
+                              postalCodeValid === false ? 'border-red-500' : 'border-border'
+                            }`}
+                          />
+                          {isCheckingPostalCode && (
+                            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-muted-foreground" />
+                          )}
+                          {!isCheckingPostalCode && postalCodeValid === true && (
+                            <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
+                          )}
+                          {!isCheckingPostalCode && postalCodeValid === false && (
+                            <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-red-500" />
+                          )}
+                        </div>
+                        {postalCodeMessage && (
+                          <p className={`text-sm mt-1 ${postalCodeValid ? 'text-green-600' : 'text-red-600'}`}>
+                            {postalCodeMessage}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Street Name and House Number */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            {language === "nl" ? "Straatnaam *" : "Street Name *"}
+                          </label>
+                          <input
+                            type="text"
+                            value={streetName}
+                            onChange={(e) => setStreetName(e.target.value)}
+                            placeholder={language === "nl" ? "bijv. Coolsingel" : "e.g. Coolsingel"}
+                            className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            {language === "nl" ? "Huisnummer *" : "House Number *"}
+                          </label>
+                          <input
+                            type="text"
+                            value={houseNumber}
+                            onChange={(e) => setHouseNumber(e.target.value)}
+                            placeholder={language === "nl" ? "bijv. 42A" : "e.g. 42A"}
+                            className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                        </div>
+                      </div>
+
+                      {/* City */}
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                          {language === "nl" ? "Stad *" : "City *"}
                         </label>
                         <input
                           type="text"
-                          value={streetName}
-                          onChange={(e) => setStreetName(e.target.value)}
-                          placeholder={language === "nl" ? "bijv. Coolsingel" : "e.g. Coolsingel"}
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          placeholder="Rotterdam"
                           className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                          {language === "nl" ? "Huisnummer *" : "House Number *"}
-                        </label>
-                        <input
-                          type="text"
-                          value={houseNumber}
-                          onChange={(e) => setHouseNumber(e.target.value)}
-                          placeholder={language === "nl" ? "bijv. 42A" : "e.g. 42A"}
-                          className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
-                        />
-                      </div>
-                    </div>
-
-                    {/* City */}
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
-                        {language === "nl" ? "Stad *" : "City *"}
-                      </label>
-                      <input
-                        type="text"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        placeholder="Rotterdam"
-                        className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
-                      />
                     </div>
                   </div>
-                </div>
+                )}
+
+                {/* Notice for offers-only orders (dine-in specials) */}
+                {isOffersOnly && (
+                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-2">
+                      <MapPin className="text-amber-600 dark:text-amber-400" size={24} />
+                      <h2 className="font-display text-xl text-amber-800 dark:text-amber-200">
+                        {language === "nl" ? "Afhalen in Restaurant" : "Restaurant Pickup"}
+                      </h2>
+                    </div>
+                    <p className="text-sm text-amber-700 dark:text-amber-300">
+                      {language === "nl" 
+                        ? "Speciale aanbiedingen zijn alleen beschikbaar voor afhalen in het restaurant. Geen bezorging beschikbaar voor deze items." 
+                        : "Special offers are only available for pickup at the restaurant. Delivery is not available for these items."}
+                    </p>
+                  </div>
+                )}
 
                 {/* Contact Mobile */}
                 <div className="bg-card border border-border rounded-lg p-6">
