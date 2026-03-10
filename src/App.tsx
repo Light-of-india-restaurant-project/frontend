@@ -8,6 +8,7 @@ import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { CartProvider } from "@/contexts/CartContext";
 import { UserAuthProvider } from "@/contexts/UserAuthContext";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+import CookieConsent from "@/components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
             <BrowserRouter>
               <ScrollToTop />
               <AnimatedRoutes />
+              <CookieConsent />
             </BrowserRouter>
           </TooltipProvider>
         </CartProvider>

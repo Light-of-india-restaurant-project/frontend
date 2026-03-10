@@ -16,6 +16,8 @@ import CateringPackDetail from "@/pages/CateringPackDetail";
 import CateringOrder from "@/pages/CateringOrder";
 import CateringSuccess from "@/pages/CateringSuccess";
 import Specials from "@/pages/Specials";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TermsOfService from "@/pages/TermsOfService";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -144,7 +146,25 @@ export const AnimatedRoutes = () => {
             </PageTransition>
           }
         />
-        
+
+        {/* Legal Pages */}
+        <Route
+          path="/privacy"
+          element={
+            <PageTransition>
+              <PrivacyPolicy />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/terms"
+          element={
+            <PageTransition>
+              <TermsOfService />
+            </PageTransition>
+          }
+        />
+
         {/* Admin Routes */}
         <Route
           path="/admin/login"
