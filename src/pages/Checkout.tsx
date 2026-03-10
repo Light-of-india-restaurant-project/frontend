@@ -512,17 +512,17 @@ const Checkout = () => {
                     <div key={item.offerId} className="flex justify-between gap-4 pt-2 border-t border-border/50">
                       <div className="flex-1">
                         <p className="font-serif text-foreground">
-                          {item.name}
+                          {item.offer.name}
                           <span className="ml-2 text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
                             {language === "nl" ? "Aanbieding" : "Offer"}
                           </span>
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {item.quantity} × €{formatPrice(item.price)}
+                          {item.quantity} × €{formatPrice(item.offer.price)}
                         </p>
                       </div>
                       <span className="font-serif text-foreground">
-                        €{formatPrice(item.price * item.quantity)}
+                        €{formatPrice(item.offer.price * item.quantity)}
                       </span>
                     </div>
                   ))}

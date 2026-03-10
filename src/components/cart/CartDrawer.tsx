@@ -309,10 +309,10 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             className="flex gap-4 p-4 bg-muted rounded-lg border-l-4 border-secondary"
                           >
                             {/* Item Image */}
-                            {item.image && (
+                            {item.offer.image && (
                               <img
-                                src={item.image}
-                                alt={item.name}
+                                src={item.offer.image}
+                                alt={item.offer.name}
                                 className="w-20 h-20 object-cover rounded"
                               />
                             )}
@@ -320,10 +320,10 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             {/* Item Details */}
                             <div className="flex-1">
                               <h3 className="font-display text-lg text-foreground">
-                                {item.name}
+                                {language === "nl" && item.offer.descriptionNl ? item.offer.name : item.offer.name}
                               </h3>
                               <p className="font-serif text-secondary mt-1">
-                                €{formatPrice(item.price)}
+                                €{formatPrice(item.offer.price)}
                               </p>
 
                               {/* Quantity Controls */}

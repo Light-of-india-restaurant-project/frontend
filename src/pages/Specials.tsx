@@ -34,14 +34,7 @@ const Specials = () => {
   }, [language]);
 
   const handleAddToCart = (offer: Offer) => {
-    addOffer({
-      offerId: offer._id,
-      name: offer.name,
-      nameNl: offer.name,
-      price: offer.price,
-      image: offer.image,
-      quantity: 1,
-    });
+    addOffer(offer);
   };
 
   const handleIncrement = (offer: Offer) => {

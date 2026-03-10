@@ -153,6 +153,8 @@ const loadOfferCart = (): OfferCartItem[] => {
           (item) =>
             item.offerId &&
             item.offer &&
+            typeof item.offer.price === "number" &&
+            typeof item.offer.name === "string" &&
             typeof item.quantity === "number"
         );
       }
