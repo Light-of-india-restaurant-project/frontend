@@ -1,9 +1,30 @@
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
 import { useLanguage } from "@/lib/i18n";
 
 const Footer = () => {
   const { t, language } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Handle navigation for hash links - smooth scroll
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("#")) {
+      return;
+    }
+
+    e.preventDefault();
+    
+    if (location.pathname !== "/") {
+      navigate("/" + href);
+    } else {
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   return (
     <footer className="bg-brown text-cream py-16">
@@ -70,16 +91,16 @@ const Footer = () => {
               {language === 'nl' ? 'Snelle Links' : 'Quick Links'}
             </h4>
             <div className="space-y-2 font-serif">
-              <a href="#menu" className="block text-cream/80 hover:text-secondary transition-colors">
+              <a href="#menu" onClick={(e) => handleNavClick(e, "#menu")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.menu")}
               </a>
-              <a href="#about" className="block text-cream/80 hover:text-secondary transition-colors">
+              <a href="#about" onClick={(e) => handleNavClick(e, "#about")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.about")}
               </a>
-              <a href="#gallery" className="block text-cream/80 hover:text-secondary transition-colors">
+              <a href="#gallery" onClick={(e) => handleNavClick(e, "#gallery")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.gallery")}
               </a>
-              <a href="#contact" className="block text-cream/80 hover:text-secondary transition-colors">
+              <a href="#contact" onClick={(e) => handleNavClick(e, "#contact")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.contact")}
               </a>
             </div>
@@ -100,7 +121,7 @@ const Footer = () => {
               <a href="/specials" className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.specials")}
               </a>
-              <a href="#reservation" className="block text-cream/80 hover:text-secondary transition-colors">
+              <a href="#reservation" onClick={(e) => handleNavClick(e, "#reservation")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.reserve")}
               </a>
             </div>
