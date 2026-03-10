@@ -3,12 +3,12 @@ import Logo from "@/components/Logo";
 import { useLanguage } from "@/lib/i18n";
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <footer className="bg-brown text-cream py-16">
       <div className="container mx-auto px-6">
-        <div className="grid md:grid-cols-4 gap-12">
+        <div className="grid md:grid-cols-5 gap-12">
           {/* Logo & Description */}
           <div className="md:col-span-1">
             <Logo variant="image" size="lg" className="mb-6 brightness-0 invert" />
@@ -64,10 +64,47 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Quick Links & Social */}
+          {/* Quick Links */}
           <div>
-            <h4 className="font-display text-lg mb-6 text-secondary">Follow Us</h4>
-            <div className="flex gap-4 mb-8">
+            <h4 className="font-display text-lg mb-6 text-secondary">
+              {language === 'nl' ? 'Snelle Links' : 'Quick Links'}
+            </h4>
+            <div className="space-y-2 font-serif">
+              <a href="#menu" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.menu")}
+              </a>
+              <a href="#about" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.about")}
+              </a>
+              <a href="#gallery" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.gallery")}
+              </a>
+              <a href="#contact" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.contact")}
+              </a>
+            </div>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h4 className="font-display text-lg mb-6 text-secondary">
+              {language === 'nl' ? 'Diensten' : 'Services'}
+            </h4>
+            <div className="space-y-2 font-serif">
+              <a href="/private-events" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.events")}
+              </a>
+              <a href="/catering" className="block text-cream/80 hover:text-secondary transition-colors">
+                Catering
+              </a>
+              <a href="/specials" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.specials")}
+              </a>
+              <a href="#reservation" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.reserve")}
+              </a>
+            </div>
+            <div className="flex gap-4 mt-6">
               <a
                 href="https://facebook.com"
                 target="_blank"
@@ -85,19 +122,6 @@ const Footer = () => {
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
-              </a>
-            </div>
-            <div className="space-y-2 font-serif">
-              <a href="#menu" className="block text-cream/80 hover:text-secondary transition-colors">
-                {t("nav.menu")}
-              </a>
-              {/* TEMPORARILY HIDDEN - Uncomment when restaurant opens
-              <a href="#reservation" className="block text-cream/80 hover:text-secondary transition-colors">
-                {t("nav.reserve")}
-              </a>
-              */}
-              <a href="#contact" className="block text-cream/80 hover:text-secondary transition-colors">
-                {t("nav.contact")}
               </a>
             </div>
           </div>

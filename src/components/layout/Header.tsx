@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Menu, X, User, Package, LogOut, LogIn, ChevronDown } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -17,18 +17,18 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const navLinks = [
+  const navLinks = useMemo(() => [
     { label: t("nav.menu"), href: "#menu" },
     { label: t("nav.about"), href: "#about" },
     { label: t("nav.gallery"), href: "#gallery" },
     { label: t("nav.contact"), href: "#contact" },
-  ];
+  ], [t]);
 
-  const servicesLinks = [
+  const servicesLinks = useMemo(() => [
     { label: t("nav.events"), href: "/private-events" },
     { label: language === 'nl' ? 'Catering' : 'Catering', href: "/catering" },
     { label: t("nav.specials"), href: "/specials" },
-  ];
+  ], [t, language]);
 
   // Handle navigation for hash links
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -86,9 +86,7 @@ const Header = () => {
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="transition-colors font-serif text-lg" style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'hsl(43, 74%, 49%)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'hsla(40, 33%, 96%, 0.85)'}
+              className="nav-link font-serif text-lg"
             >
               {link.label}
             </a>
@@ -98,10 +96,7 @@ const Header = () => {
           <div className="relative" ref={servicesMenuRef}>
             <button
               onClick={() => setIsServicesOpen(!isServicesOpen)}
-              className="flex items-center gap-1 transition-colors font-serif text-lg" 
-              style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'hsl(43, 74%, 49%)'}
-              onMouseLeave={(e) => !isServicesOpen && (e.currentTarget.style.color = 'hsla(40, 33%, 96%, 0.85)')}
+              className="nav-link flex items-center gap-1 font-serif text-lg"
             >
               {language === 'nl' ? 'Diensten' : 'Services'}
               <ChevronDown size={16} className={`transition-transform ${isServicesOpen ? "rotate-180" : ""}`} />
@@ -114,16 +109,7 @@ const Header = () => {
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsServicesOpen(false)}
-                    className="block px-4 py-2 transition-colors font-serif"
-                    style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = 'hsl(43, 74%, 49%)';
-                      e.currentTarget.style.backgroundColor = 'hsla(43, 74%, 49%, 0.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'hsla(40, 33%, 96%, 0.85)';
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
+                    className="nav-dropdown-item block px-4 py-2 font-serif"
                   >
                     {link.label}
                   </a>
@@ -140,7 +126,7 @@ const Header = () => {
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2 px-4 py-2 transition-colors font-serif" style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
+                className="nav-link flex items-center gap-2 px-4 py-2 font-serif"
               >
                 <User size={20} />
                 <span className="max-w-[100px] truncate">{user?.fullName || user?.email?.split("@")[0]}</span>
@@ -170,7 +156,7 @@ const Header = () => {
           ) : (
             <a
               href="/login"
-              className="flex items-center gap-2 px-4 py-2 transition-colors font-serif" style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
+              className="nav-link flex items-center gap-2 px-4 py-2 font-serif"
             >
               <LogIn size={20} />
               {language === "nl" ? "Inloggen" : "Login"}

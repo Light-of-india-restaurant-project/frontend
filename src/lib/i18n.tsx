@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback } from "react";
 
 export type Language = "en" | "nl";
 
@@ -199,14 +199,14 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("language", lang);
   };
 
-  const t = (key: string): string => {
+  const t = useCallback((key: string): string => {
     const translation = translations[key];
     if (!translation) {
       console.warn(`Missing translation for key: ${key}`);
       return key;
     }
     return translation[language];
-  };
+  }, [language]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>

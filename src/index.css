@@ -123,3 +123,23 @@
     border-image: linear-gradient(135deg, hsl(43, 74%, 49%), hsl(43, 85%, 65%)) 1;
   }
 }
+
+/* Header nav link styles */
+@layer components {
+  .nav-link {
+    color: hsla(40, 33%, 96%, 0.85);
+    transition: color 0.2s ease;
+  }
+  .nav-link:hover {
+    color: hsl(43, 74%, 49%);
+  }
+  
+  .nav-dropdown-item {
+    color: hsla(40, 33%, 96%, 0.85);
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+  .nav-dropdown-item:hover {
+    color: hsl(43, 74%, 49%);
+    background-color: hsla(43, 74%, 49%, 0.1);
+  }
+}
