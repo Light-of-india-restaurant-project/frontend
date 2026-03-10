@@ -9,7 +9,9 @@ import { useUserAuth } from "@/contexts/UserAuthContext";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const servicesMenuRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
   const { user, isAuthenticated, logout } = useUserAuth();
   const navigate = useNavigate();
@@ -19,10 +21,13 @@ const Header = () => {
     { label: t("nav.menu"), href: "#menu" },
     { label: t("nav.about"), href: "#about" },
     { label: t("nav.gallery"), href: "#gallery" },
+    { label: t("nav.contact"), href: "#contact" },
+  ];
+
+  const servicesLinks = [
     { label: t("nav.events"), href: "/private-events" },
     { label: language === 'nl' ? 'Catering' : 'Catering', href: "/catering" },
     { label: t("nav.specials"), href: "/specials" },
-    { label: t("nav.contact"), href: "#contact" },
   ];
 
   // Handle navigation for hash links
@@ -52,6 +57,9 @@ const Header = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false);
+      }
+      if (servicesMenuRef.current && !servicesMenuRef.current.contains(event.target as Node)) {
+        setIsServicesOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -85,6 +93,45 @@ const Header = () => {
               {link.label}
             </a>
           ))}
+          
+          {/* Services Dropdown */}
+          <div className="relative" ref={servicesMenuRef}>
+            <button
+              onClick={() => setIsServicesOpen(!isServicesOpen)}
+              className="flex items-center gap-1 transition-colors font-serif text-lg" 
+              style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'hsl(43, 74%, 49%)'}
+              onMouseLeave={(e) => !isServicesOpen && (e.currentTarget.style.color = 'hsla(40, 33%, 96%, 0.85)')}
+            >
+              {language === 'nl' ? 'Diensten' : 'Services'}
+              <ChevronDown size={16} className={`transition-transform ${isServicesOpen ? "rotate-180" : ""}`} />
+            </button>
+            
+            {isServicesOpen && (
+              <div className="absolute left-0 top-full mt-2 w-48 border border-border rounded-lg shadow-lg py-2 z-50" style={{ backgroundColor: 'hsl(25, 30%, 12%)' }}>
+                {servicesLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsServicesOpen(false)}
+                    className="block px-4 py-2 transition-colors font-serif"
+                    style={{ color: 'hsla(40, 33%, 96%, 0.85)' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = 'hsl(43, 74%, 49%)';
+                      e.currentTarget.style.backgroundColor = 'hsla(43, 74%, 49%, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'hsla(40, 33%, 96%, 0.85)';
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+          
           <LanguageSwitcher />
           <CartButton />
           
@@ -166,6 +213,23 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
+            
+            {/* Mobile Services Section */}
+            <div className="border-t border-border pt-4 mt-2">
+              <p className="font-serif text-muted-foreground text-sm mb-2">
+                {language === 'nl' ? 'Diensten' : 'Services'}
+              </p>
+              {servicesLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="block text-foreground/80 hover:text-primary transition-colors font-serif text-lg py-2 pl-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
             
             {/* Mobile User Menu */}
             {isAuthenticated ? (
