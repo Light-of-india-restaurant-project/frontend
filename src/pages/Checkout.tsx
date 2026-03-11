@@ -231,35 +231,109 @@ const Checkout = () => {
               {language === "nl" ? "Afrekenen" : "Checkout"}
             </h1>
 
-            {/* Login Required Notice */}
+            {/* Login Required Notice - Show full page block if not authenticated */}
             {!authLoading && !isAuthenticated && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8"
-              >
-                <div className="flex items-start gap-4">
-                  <AlertCircle className="text-amber-600 flex-shrink-0 mt-1" size={24} />
-                  <div>
-                    <h3 className="font-display text-lg text-amber-800 mb-2">
-                      {language === "nl" ? "Login Vereist" : "Login Required"}
-                    </h3>
-                    <p className="font-serif text-amber-700 mb-4">
-                      {language === "nl"
-                        ? "Je moet ingelogd zijn om een bestelling te plaatsen."
-                        : "You need to be logged in to place an order."}
-                    </p>
-                    <button
-                      onClick={() => navigate("/login?redirect=/checkout")}
-                      className="px-6 py-2 bg-amber-600 text-white font-serif hover:bg-amber-700 transition-colors rounded"
-                    >
-                      {language === "nl" ? "Inloggen" : "Login"}
-                    </button>
+              <div className="max-w-xl mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-amber-50 border border-amber-200 rounded-lg p-8 mb-8 text-center"
+                >
+                  <AlertCircle className="text-amber-600 mx-auto mb-4" size={48} />
+                  <h3 className="font-display text-2xl text-amber-800 mb-4">
+                    {language === "nl" ? "Login Vereist" : "Login Required"}
+                  </h3>
+                  <p className="font-serif text-amber-700 mb-6">
+                    {language === "nl"
+                      ? "Je moet ingelogd zijn om een bestelling te plaatsen. Log in of maak een account aan om door te gaan."
+                      : "You need to be logged in to place an order. Login or create an account to continue."}
+                  </p>
+                  <button
+                    onClick={() => navigate("/login?redirect=/checkout")}
+                    className="px-8 py-3 bg-primary text-primary-foreground font-serif hover:bg-primary/90 transition-colors rounded"
+                  >
+                    {language === "nl" ? "Inloggen / Registreren" : "Login / Register"}
+                  </button>
+                </motion.div>
+
+                {/* Order Summary for non-authenticated users */}
+                <div className="bg-card border border-border rounded-lg p-6">
+                  <h2 className="font-display text-xl text-foreground mb-6">
+                    {language === "nl" ? "Besteloverzicht" : "Order Summary"}
+                  </h2>
+
+                  <div className="space-y-4 mb-6">
+                    {/* Menu Items */}
+                    {items.map((item) => (
+                      <div key={item.menuItemId} className="flex justify-between gap-4">
+                        <div className="flex-1">
+                          <p className="font-serif text-foreground">
+                            {language === "nl" && item.nameNl ? item.nameNl : item.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.quantity} × €{formatPrice(item.price)}
+                          </p>
+                        </div>
+                        <span className="font-serif text-foreground">
+                          €{formatPrice(item.price * item.quantity)}
+                        </span>
+                      </div>
+                    ))}
+                    
+                    {/* Catering Packs */}
+                    {cateringItems.map((item) => (
+                      <div key={item.packId} className="flex justify-between gap-4 pt-2 border-t border-border/50">
+                        <div className="flex-1">
+                          <p className="font-serif text-foreground">
+                            {item.pack.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.quantity} × {item.peopleCount} {language === "nl" ? "personen" : "people"} × €{formatPrice(item.pack.pricePerPerson)}
+                          </p>
+                        </div>
+                        <span className="font-serif text-foreground">
+                          €{formatPrice(item.pack.pricePerPerson * item.peopleCount * item.quantity)}
+                        </span>
+                      </div>
+                    ))}
+                    
+                    {/* Offer Items */}
+                    {offerItems.map((item) => (
+                      <div key={item.offerId} className="flex justify-between gap-4 pt-2 border-t border-border/50">
+                        <div className="flex-1">
+                          <p className="font-serif text-foreground">
+                            {item.offer.name}
+                            <span className="ml-2 text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
+                              {language === "nl" ? "Aanbieding" : "Offer"}
+                            </span>
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.quantity} × €{formatPrice(item.offer.price)}
+                          </p>
+                        </div>
+                        <span className="font-serif text-foreground">
+                          €{formatPrice(item.offer.price * item.quantity)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-serif text-lg text-foreground">
+                        {language === "nl" ? "Totaal" : "Total"} ({totalItemCount} items)
+                      </span>
+                      <span className="font-display text-2xl text-secondary">
+                        €{formatPrice(grandTotal)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
 
+            {/* Main checkout form - Only show when authenticated */}
+            {isAuthenticated && (
             <div className="grid md:grid-cols-[1fr,400px] gap-8">
               {/* Order Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -579,6 +653,7 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
+            )}
           </div>
         </div>
       </main>
