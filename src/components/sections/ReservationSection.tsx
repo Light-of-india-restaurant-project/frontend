@@ -1,9 +1,19 @@
 import { useState, useEffect } from "react";
-import { Calendar, Users, Check, AlertCircle, Loader2, User, Mail, Phone } from "lucide-react";
+import { Calendar, Users, Check, AlertCircle, Loader2, User, Mail, Phone, Clock } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
 import { api, SimpleReservationData, OpenDate } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+
+// Time slots from 16:00 to 21:45 in 15-minute intervals
+const TIME_SLOTS = [
+  '16:00', '16:15', '16:30', '16:45',
+  '17:00', '17:15', '17:30', '17:45',
+  '18:00', '18:15', '18:30', '18:45',
+  '19:00', '19:15', '19:30', '19:45',
+  '20:00', '20:15', '20:30', '20:45',
+  '21:00', '21:15', '21:30', '21:45',
+];
 
 const ReservationSection = () => {
   const { t, language } = useLanguage();
@@ -14,6 +24,7 @@ const ReservationSection = () => {
     contactNumber: "",
     numberOfGuests: "2",
     reservationDate: "",
+    reservationTime: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -58,6 +69,7 @@ const ReservationSection = () => {
         contactNumber: formData.contactNumber.trim(),
         numberOfGuests: parseInt(formData.numberOfGuests, 10),
         reservationDate: formData.reservationDate,
+        reservationTime: formData.reservationTime,
       };
 
       await api.createSimpleReservation(reservationData);
@@ -80,6 +92,7 @@ const ReservationSection = () => {
           contactNumber: "",
           numberOfGuests: "2",
           reservationDate: "",
+          reservationTime: "",
         });
       }, 10000);
     } catch (err) {
@@ -208,6 +221,36 @@ const ReservationSection = () => {
                 )}
               </div>
 
+              {/* Time Selection */}
+              <div>
+                <label htmlFor="reservationTime" className="block font-serif mb-2 text-cream/80">
+                  <Clock size={16} className="inline mr-2" />
+                  {language === "nl" ? "Tijd" : "Time"} *
+                </label>
+                <select
+                  id="reservationTime"
+                  name="reservationTime"
+                  value={formData.reservationTime}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border border-cream/20 text-cream focus:border-secondary focus:outline-none transition-colors font-serif"
+                  style={{ backgroundColor: "hsl(25, 30%, 20%)" }}
+                >
+                  <option value="" style={{ backgroundColor: "hsl(25, 30%, 20%)", color: "hsl(40, 33%, 96%)" }}>
+                    {language === "nl" ? "Selecteer een tijd" : "Select a time"}
+                  </option>
+                  {TIME_SLOTS.map((time) => (
+                    <option 
+                      key={time} 
+                      value={time}
+                      style={{ backgroundColor: "hsl(25, 30%, 20%)", color: "hsl(40, 33%, 96%)" }}
+                    >
+                      {time}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* Name */}
               <div>
                 <label htmlFor="name" className="block font-serif mb-2 text-cream/80">
@@ -292,7 +335,7 @@ const ReservationSection = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting || !formData.reservationDate || !formData.name || !formData.email || !formData.contactNumber}
+                disabled={isSubmitting || !formData.reservationDate || !formData.reservationTime || !formData.name || !formData.email || !formData.contactNumber}
                 className="w-full bg-secondary text-secondary-foreground py-4 font-serif text-lg hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (

@@ -176,6 +176,7 @@ export interface SimpleReservationData {
   contactNumber: string;
   numberOfGuests: number;
   reservationDate: string;
+  reservationTime: string;
 }
 
 export interface SimpleReservationResponse {
@@ -188,6 +189,7 @@ export interface SimpleReservationResponse {
     contactNumber: string;
     numberOfGuests: number;
     reservationDate: string;
+    reservationTime: string;
     status: 'pending' | 'accepted' | 'rejected' | 'cancelled';
     createdAt: string;
   };

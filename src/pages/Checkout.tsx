@@ -169,18 +169,18 @@ const Checkout = () => {
     return () => clearTimeout(timer);
   }, [postalCode, checkPostalCode]);
 
-  // Generate pickup time options (next 2 hours in 15-min intervals)
+  // Fixed pickup time slots from 16:00 to 21:30 in 30-minute intervals
+  const PICKUP_TIME_SLOTS = [
+    '16:00', '16:30',
+    '17:00', '17:30',
+    '18:00', '18:30',
+    '19:00', '19:30',
+    '20:00', '20:30',
+    '21:00', '21:30',
+  ];
+
   const pickupTimeOptions = () => {
-    const options: string[] = [];
-    const now = new Date();
-    const start = new Date(now.getTime() + 30 * 60000); // 30 min from now
-    start.setMinutes(Math.ceil(start.getMinutes() / 15) * 15, 0, 0); // Round to next 15 min
-    
-    for (let i = 0; i < 8; i++) {
-      const time = new Date(start.getTime() + i * 15 * 60000);
-      options.push(time.toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" }));
-    }
-    return options;
+    return PICKUP_TIME_SLOTS;
   };
 
   // Validate form before submission

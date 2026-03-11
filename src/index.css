@@ -124,6 +124,37 @@
   }
 }
 
+/* Fallback backgrounds for CSS variable compatibility */
+.bg-background {
+  background-color: hsl(40, 33%, 96%);
+  background-color: hsl(var(--background));
+}
+
+.dark .bg-background {
+  background-color: hsl(25, 30%, 8%);
+  background-color: hsl(var(--background));
+}
+
+.bg-muted {
+  background-color: hsl(35, 20%, 90%);
+  background-color: hsl(var(--muted));
+}
+
+.dark .bg-muted {
+  background-color: hsl(25, 25%, 20%);
+  background-color: hsl(var(--muted));
+}
+
+.bg-card {
+  background-color: hsl(0, 0%, 100%);
+  background-color: hsl(var(--card));
+}
+
+.dark .bg-card {
+  background-color: hsl(25, 30%, 12%);
+  background-color: hsl(var(--card));
+}
+
 /* Header nav link styles */
 @layer components {
   .nav-link {
