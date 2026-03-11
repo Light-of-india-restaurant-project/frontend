@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Mail, Lock, Phone, Loader2, Eye, EyeOff, User, MapPin, Hash } from "lucide-react";
+import { ArrowLeft, Mail, Lock, Phone, Loader2, Eye, EyeOff, User, MapPin, Hash, Home, Building, AlertTriangle, CheckCircle } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useUserAuth } from "@/contexts/UserAuthContext";
+import { orderApi } from "@/lib/user-api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -22,13 +23,59 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [mobile, setMobile] = useState("");
   const [fullName, setFullName] = useState("");
-  const [address, setAddress] = useState("");
+  const [streetName, setStreetName] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
+  const [city, setCity] = useState("Rotterdam");
   const [postalCode, setPostalCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  
+  // Postal code delivery zone validation
+  const [isCheckingPostalCode, setIsCheckingPostalCode] = useState(false);
+  const [postalCodeDeliverable, setPostalCodeDeliverable] = useState<boolean | null>(null);
+  const [postalCodeWarning, setPostalCodeWarning] = useState<string | null>(null);
+
+  // Check postal code deliverability (warn but allow)
+  const checkPostalCodeDeliverable = useCallback(async (code: string) => {
+    if (!code || code.replace(/\s/g, '').length < 6) {
+      setPostalCodeDeliverable(null);
+      setPostalCodeWarning(null);
+      return;
+    }
+
+    setIsCheckingPostalCode(true);
+    try {
+      const result = await orderApi.checkDeliveryArea(code);
+      setPostalCodeDeliverable(result.deliverable);
+      if (!result.deliverable) {
+        setPostalCodeWarning(
+          language === "nl"
+            ? "Let op: We bezorgen momenteel niet in dit gebied. U kunt uw bestelling nog steeds afhalen."
+            : "Note: We don't currently deliver to this area. You can still pick up your order."
+        );
+      } else {
+        setPostalCodeWarning(null);
+      }
+    } catch {
+      setPostalCodeDeliverable(null);
+      setPostalCodeWarning(null);
+    } finally {
+      setIsCheckingPostalCode(false);
+    }
+  }, [language]);
+
+  // Debounced postal code check
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (postalCode.replace(/\s/g, '').length >= 6) {
+        checkPostalCodeDeliverable(postalCode);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [postalCode, checkPostalCodeDeliverable]);
 
   // Redirect if already authenticated
   if (isAuthenticated) {
@@ -83,8 +130,10 @@ const Login = () => {
           password,
           mobile,
           fullName: fullName || undefined,
-          address: address || undefined,
           postalCode: postalCode || undefined,
+          streetName: streetName || undefined,
+          houseNumber: houseNumber || undefined,
+          city: city || undefined,
         });
         if (result.success) {
           setSuccess(
@@ -218,20 +267,58 @@ const Login = () => {
                   </div>
                 )}
 
-                {/* Address (Register only) */}
+                {/* Street Name (Register only) */}
+                {mode === "register" && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-serif text-foreground mb-2">
+                        {language === "nl" ? "Straatnaam" : "Street Name"}
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <input
+                          type="text"
+                          value={streetName}
+                          onChange={(e) => setStreetName(e.target.value)}
+                          required
+                          placeholder={language === "nl" ? "Coolsingel" : "Main Street"}
+                          className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-serif text-foreground mb-2">
+                        {language === "nl" ? "Huisnummer" : "House Number"}
+                      </label>
+                      <div className="relative">
+                        <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <input
+                          type="text"
+                          value={houseNumber}
+                          onChange={(e) => setHouseNumber(e.target.value)}
+                          required
+                          placeholder={language === "nl" ? "42A" : "42A"}
+                          className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* City (Register only) */}
                 {mode === "register" && (
                   <div>
                     <label className="block font-serif text-foreground mb-2">
-                      {language === "nl" ? "Adres" : "Address"}
+                      {language === "nl" ? "Stad" : "City"}
                     </label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                      <Building className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                       <input
                         type="text"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
                         required
-                        placeholder={language === "nl" ? "Straatnaam 123" : "Street name 123"}
+                        placeholder="Rotterdam"
                         className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
@@ -249,17 +336,42 @@ const Login = () => {
                       <input
                         type="text"
                         value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
+                        onChange={(e) => {
+                          setPostalCode(e.target.value.toUpperCase());
+                          setPostalCodeDeliverable(null);
+                          setPostalCodeWarning(null);
+                        }}
                         required
                         placeholder="1234 AB"
-                        className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                        maxLength={7}
+                        className={`w-full pl-10 pr-12 py-3 bg-background border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary ${
+                          postalCodeDeliverable === true ? 'border-green-500' : 
+                          postalCodeDeliverable === false ? 'border-amber-500' : 'border-border'
+                        }`}
                       />
+                      {isCheckingPostalCode && (
+                        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-muted-foreground" />
+                      )}
+                      {!isCheckingPostalCode && postalCodeDeliverable === true && (
+                        <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
+                      )}
+                      {!isCheckingPostalCode && postalCodeDeliverable === false && (
+                        <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-amber-500" />
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       {language === "nl" 
                         ? "Nederlandse postcode (bijv. 1234 AB)" 
                         : "Dutch postal code (e.g., 1234 AB)"}
                     </p>
+                    {postalCodeWarning && (
+                      <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded">
+                        <p className="text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2">
+                          <AlertTriangle size={16} />
+                          {postalCodeWarning}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 

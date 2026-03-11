@@ -8,8 +8,10 @@ export interface User {
   email: string;
   mobile?: string;
   fullName?: string;
-  address?: string;
   postalCode?: string;
+  streetName?: string;
+  houseNumber?: string;
+  city?: string;
   verified: boolean;
   status: string;
 }
@@ -25,8 +27,10 @@ export interface RegisterData {
   password: string;
   mobile: string;
   fullName?: string;
-  address?: string;
   postalCode?: string;
+  streetName?: string;
+  houseNumber?: string;
+  city?: string;
 }
 
 export interface OrderItem {

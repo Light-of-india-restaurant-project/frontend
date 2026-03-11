@@ -6,7 +6,7 @@ interface UserAuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (data: { email: string; password: string; mobile: string; fullName?: string; address?: string; postalCode?: string }) => Promise<{ success: boolean; error?: string }>;
+  register: (data: { email: string; password: string; mobile: string; fullName?: string; postalCode?: string; streetName?: string; houseNumber?: string; city?: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -64,7 +64,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const register = async (data: { email: string; password: string; mobile: string; fullName?: string; address?: string; postalCode?: string }) => {
+  const register = async (data: { email: string; password: string; mobile: string; fullName?: string; postalCode?: string; streetName?: string; houseNumber?: string; city?: string }) => {
     try {
       await userApi.register(data);
       return { success: true };

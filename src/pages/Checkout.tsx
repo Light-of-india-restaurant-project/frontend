@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard, MapPin, Phone, CheckCircle, Mail } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard, MapPin, Phone, CheckCircle, Mail, Truck, Store } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useCart } from "@/contexts/CartContext";
@@ -10,11 +10,14 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { formatPrice } from "@/lib/formatPrice";
 
+type OrderType = "pickup" | "delivery";
+type AddressSource = "saved" | "new";
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const { items, total, itemCount, cateringItems, cateringTotal, cateringItemCount, offerItems, offerTotal, offerItemCount, totalItemCount, grandTotal } = useCart();
-  const { isAuthenticated, isLoading: authLoading } = useUserAuth();
+  const { isAuthenticated, isLoading: authLoading, user } = useUserAuth();
   
   const [pickupTime, setPickupTime] = useState("");
   const [notes, setNotes] = useState("");
@@ -23,6 +26,10 @@ const Checkout = () => {
 
   // Check if cart only has specials/offers (no delivery needed - dine-in only)
   const isOffersOnly = offerItems.length > 0 && items.length === 0 && cateringItems.length === 0;
+
+  // Order type selection (pickup or delivery)
+  const [orderType, setOrderType] = useState<OrderType>("delivery");
+  const [addressSource, setAddressSource] = useState<AddressSource>("saved");
 
   // Delivery address state
   const [postalCode, setPostalCode] = useState("");
@@ -36,6 +43,13 @@ const Checkout = () => {
   const [isCheckingPostalCode, setIsCheckingPostalCode] = useState(false);
   const [postalCodeValid, setPostalCodeValid] = useState<boolean | null>(null);
   const [postalCodeMessage, setPostalCodeMessage] = useState<string | null>(null);
+
+  // Check if user has saved address (at least postal code or street info)
+  const hasSavedAddress = !!(user?.postalCode || user?.streetName);
+  const hasCompleteAddress = !!(user?.postalCode && user?.streetName && user?.houseNumber && user?.city);
+  
+  // Track if saved address is deliverable
+  const [savedAddressDeliverable, setSavedAddressDeliverable] = useState<boolean | null>(null);
 
   // Debounced postal code check
   const checkPostalCode = useCallback(async (code: string) => {
@@ -60,6 +74,56 @@ const Checkout = () => {
       setIsCheckingPostalCode(false);
     }
   }, [language]);
+
+  // Check saved address deliverability on mount
+  useEffect(() => {
+    const checkSavedAddressDeliverable = async () => {
+      if (hasSavedAddress && user?.postalCode) {
+        try {
+          const result = await orderApi.checkDeliveryArea(user.postalCode);
+          setSavedAddressDeliverable(result.deliverable);
+          // Don't force new address - let user see their saved address and the warning
+        } catch {
+          setSavedAddressDeliverable(false);
+        }
+      }
+    };
+    checkSavedAddressDeliverable();
+  }, [hasSavedAddress, user?.postalCode]);
+
+  // Load saved address when addressSource changes to "saved" or when user data loads
+  useEffect(() => {
+    if (addressSource === "saved" && hasSavedAddress && user) {
+      setPostalCode(user.postalCode || "");
+      setStreetName(user.streetName || "");
+      setHouseNumber(user.houseNumber || "");
+      setCity(user.city || "");
+      // Trigger postal code validation for saved address
+      if (user.postalCode) {
+        checkPostalCode(user.postalCode);
+      }
+    } else if (addressSource === "new") {
+      // Clear form for new address entry
+      setPostalCode("");
+      setStreetName("");
+      setHouseNumber("");
+      setCity("Rotterdam");
+      setPostalCodeValid(null);
+      setPostalCodeMessage(null);
+    }
+  }, [addressSource, user, hasSavedAddress, checkPostalCode, savedAddressDeliverable]);
+
+  // Pre-fill contact info from user profile
+  useEffect(() => {
+    if (user) {
+      if (!contactMobile && user.mobile) {
+        setContactMobile(user.mobile);
+      }
+      if (!email && user.email) {
+        setEmail(user.email);
+      }
+    }
+  }, [user]);
 
   // Check postal code with debounce
   useEffect(() => {
@@ -89,24 +153,31 @@ const Checkout = () => {
   const isFormValid = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
+    // Basic contact info required for all orders
+    const hasValidContact = (
+      contactMobile.trim() !== "" &&
+      email.trim() !== "" &&
+      emailRegex.test(email)
+    );
+
+    if (!hasValidContact) return false;
+    
     // For offers only (dine-in specials), only need contact info
     if (isOffersOnly) {
-      return (
-        contactMobile.trim() !== "" &&
-        email.trim() !== "" &&
-        emailRegex.test(email)
-      );
+      return true;
     }
     
-    // For delivery orders, need full address
+    // For pickup orders, no address needed
+    if (orderType === "pickup") {
+      return true;
+    }
+    
+    // For delivery orders, need full address and valid postal code
     return (
       postalCodeValid === true &&
       streetName.trim() !== "" &&
       houseNumber.trim() !== "" &&
-      city.trim() !== "" &&
-      contactMobile.trim() !== "" &&
-      email.trim() !== "" &&
-      emailRegex.test(email)
+      city.trim() !== ""
     );
   };
 
@@ -124,13 +195,23 @@ const Checkout = () => {
     }
 
     if (!isFormValid()) {
-      setError(isOffersOnly 
-        ? (language === "nl" 
+      if (isOffersOnly) {
+        setError(language === "nl" 
           ? "Vul uw contactgegevens in" 
-          : "Please fill in your contact details")
-        : (language === "nl" 
+          : "Please fill in your contact details");
+      } else if (orderType === "delivery" && postalCodeValid === false) {
+        setError(language === "nl"
+          ? "Sorry, we bezorgen niet in dit gebied. Kies alstublieft voor afhalen."
+          : "Sorry, we don't deliver to this area. Please choose pickup instead.");
+      } else if (orderType === "delivery") {
+        setError(language === "nl" 
           ? "Vul alle bezorggegevens in en zorg ervoor dat uw postcode binnen ons bezorggebied valt" 
-          : "Please fill in all delivery details and ensure your postal code is within our delivery area"));
+          : "Please fill in all delivery details and ensure your postal code is within our delivery area");
+      } else {
+        setError(language === "nl"
+          ? "Vul uw contactgegevens in"
+          : "Please fill in your contact details");
+      }
       return;
     }
 
@@ -154,14 +235,14 @@ const Checkout = () => {
         })) : undefined,
         pickupTime: pickupTime ? new Date(`${new Date().toDateString()} ${pickupTime}`).toISOString() : undefined,
         notes: notes || undefined,
-        // Only include delivery address if not offers-only (dine-in)
-        deliveryAddress: isOffersOnly ? undefined : {
+        // Only include delivery address for delivery orders (not pickup or offers-only)
+        deliveryAddress: (isOffersOnly || orderType === "pickup") ? undefined : {
           postalCode: postalCode.trim(),
           streetName: streetName.trim(),
           houseNumber: houseNumber.trim(),
           city: city.trim(),
         },
-        isPickup: isOffersOnly, // Flag for pickup/dine-in orders
+        isPickup: isOffersOnly || orderType === "pickup", // Flag for pickup/dine-in orders
         contactMobile: contactMobile.trim(),
         email: email.trim(),
       };
@@ -337,32 +418,76 @@ const Checkout = () => {
             <div className="grid md:grid-cols-[1fr,400px] gap-8">
               {/* Order Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Pickup Time */}
-                <div className="bg-card border border-border rounded-lg p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Clock className="text-primary" size={24} />
-                    <h2 className="font-display text-xl text-foreground">
-                      {language === "nl" ? "Afhaaltijd" : "Pickup Time"}
-                    </h2>
-                  </div>
-                  <select
-                    value={pickupTime}
-                    onChange={(e) => setPickupTime(e.target.value)}
-                    className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="">
-                      {language === "nl" ? "Zo snel mogelijk" : "As soon as possible"}
-                    </option>
-                    {pickupTimeOptions().map((time) => (
-                      <option key={time} value={time}>
-                        {time}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Delivery Address - Hidden for offers-only orders (dine-in specials) */}
+                {/* Order Type Selection - Pickup or Delivery (hidden for offers-only) */}
                 {!isOffersOnly && (
+                  <div className="bg-card border border-border rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Truck className="text-primary" size={24} />
+                      <h2 className="font-display text-xl text-foreground">
+                        {language === "nl" ? "Bestelmethode" : "Order Type"}
+                      </h2>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setOrderType("delivery")}
+                        className={`p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2 ${
+                          orderType === "delivery"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                      >
+                        <Truck size={32} className={orderType === "delivery" ? "text-primary" : "text-muted-foreground"} />
+                        <span className={`font-serif ${orderType === "delivery" ? "text-primary" : "text-foreground"}`}>
+                          {language === "nl" ? "Bezorgen" : "Delivery"}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setOrderType("pickup")}
+                        className={`p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2 ${
+                          orderType === "pickup"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                      >
+                        <Store size={32} className={orderType === "pickup" ? "text-primary" : "text-muted-foreground"} />
+                        <span className={`font-serif ${orderType === "pickup" ? "text-primary" : "text-foreground"}`}>
+                          {language === "nl" ? "Afhalen" : "Pickup"}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Pickup Time - Only show for pickup orders */}
+                {(isOffersOnly || orderType === "pickup") && (
+                  <div className="bg-card border border-border rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Clock className="text-primary" size={24} />
+                      <h2 className="font-display text-xl text-foreground">
+                        {language === "nl" ? "Afhaaltijd" : "Pickup Time"}
+                      </h2>
+                    </div>
+                    <select
+                      value={pickupTime}
+                      onChange={(e) => setPickupTime(e.target.value)}
+                      className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="">
+                        {language === "nl" ? "Zo snel mogelijk" : "As soon as possible"}
+                      </option>
+                      {pickupTimeOptions().map((time) => (
+                        <option key={time} value={time}>
+                          {time}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Delivery Address - Only show for delivery orders (not pickup or offers-only) */}
+                {!isOffersOnly && orderType === "delivery" && (
                   <div className="bg-card border border-border rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
                       <MapPin className="text-primary" size={24} />
@@ -370,12 +495,94 @@ const Checkout = () => {
                         {language === "nl" ? "Bezorgadres" : "Delivery Address"}
                       </h2>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {language === "nl" 
-                        ? "Wij bezorgen alleen in Rotterdam (postcodes 3000-3199)" 
-                        : "We only deliver to Rotterdam area (postal codes 3000-3199)"}
-                    </p>
+
+                    {/* Address Source Selector - Show if user has saved address */}
+                    {hasSavedAddress && (
+                      <div className="mb-4 p-4 bg-muted/30 rounded-lg">
+                        <p className="font-serif font-medium text-foreground mb-3">
+                          {language === "nl" ? "Kies bezorgadres:" : "Choose delivery address:"}
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <label className="flex items-center gap-2 cursor-pointer p-3 rounded-lg border-2 transition-all hover:border-primary/50" style={{ borderColor: addressSource === "saved" ? 'var(--primary)' : 'var(--border)' }}>
+                            <input
+                              type="radio"
+                              name="addressSource"
+                              value="saved"
+                              checked={addressSource === "saved"}
+                              onChange={() => setAddressSource("saved")}
+                              className="w-4 h-4 text-primary focus:ring-primary"
+                            />
+                            <span className="font-serif text-foreground">
+                              {language === "nl" ? "Opgeslagen adres" : "Saved address"}
+                            </span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer p-3 rounded-lg border-2 transition-all hover:border-primary/50" style={{ borderColor: addressSource === "new" ? 'var(--primary)' : 'var(--border)' }}>
+                            <input
+                              type="radio"
+                              name="addressSource"
+                              value="new"
+                              checked={addressSource === "new"}
+                              onChange={() => setAddressSource("new")}
+                              className="w-4 h-4 text-primary focus:ring-primary"
+                            />
+                            <span className="font-serif text-foreground">
+                              {language === "nl" ? "Nieuw adres" : "New address"}
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Notice when saved address is not deliverable */}
+                    {hasSavedAddress && savedAddressDeliverable === false && addressSource === "saved" && (
+                      <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                        <p className="text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2">
+                          <AlertCircle size={16} />
+                          {language === "nl" 
+                            ? "Dit adres valt buiten ons bezorggebied. Kies een nieuw adres of wijzig naar afhalen."
+                            : "This address is outside our delivery area. Choose a new address or switch to pickup."}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Notice when saved address is incomplete */}
+                    {hasSavedAddress && !hasCompleteAddress && addressSource === "saved" && (
+                      <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                        <p className="text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2">
+                          <AlertCircle size={16} />
+                          {language === "nl" 
+                            ? "Uw opgeslagen adres is onvolledig. Kies 'Nieuw adres' om alle adresgegevens in te vullen."
+                            : "Your saved address is incomplete. Choose 'New address' to fill in all address details."}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Saved Address Display */}
+                    {hasSavedAddress && addressSource === "saved" && user && (
+                      <div className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                        <p className="font-serif text-foreground">
+                          {user.streetName || "-"} {user.houseNumber || ""}
+                        </p>
+                        <p className="font-serif text-foreground">
+                          {user.postalCode || "-"}, {user.city || "-"}
+                        </p>
+                        {postalCodeValid === true && hasCompleteAddress && (
+                          <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
+                            <CheckCircle size={16} />
+                            {postalCodeMessage}
+                          </p>
+                        )}
+                        {postalCodeValid === false && (
+                          <p className="text-sm text-red-600 mt-2 flex items-center gap-1">
+                            <AlertCircle size={16} />
+                            {postalCodeMessage}
+                          </p>
+                        )}
+                      </div>
+                    )}
                     
+                    {/* Address Form - Show for new address or if no saved address */}
+                    {(!hasSavedAddress || addressSource === "new") && (
                     <div className="space-y-4">
                       {/* Postal Code */}
                       <div>
@@ -456,6 +663,24 @@ const Checkout = () => {
                         />
                       </div>
                     </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Pickup Notice - Show when pickup is selected */}
+                {!isOffersOnly && orderType === "pickup" && (
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Store className="text-green-600 dark:text-green-400" size={24} />
+                      <h2 className="font-display text-xl text-green-800 dark:text-green-200">
+                        {language === "nl" ? "Afhalen in Restaurant" : "Restaurant Pickup"}
+                      </h2>
+                    </div>
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      {language === "nl" 
+                        ? "Uw bestelling is klaar voor afhalen op het opgegeven tijdstip. Ons adres: Witte de Withstraat 96, 3012 BS Rotterdam" 
+                        : "Your order will be ready for pickup at the specified time. Our address: Witte de Withstraat 96, 3012 BS Rotterdam"}
+                    </p>
                   </div>
                 )}
 
