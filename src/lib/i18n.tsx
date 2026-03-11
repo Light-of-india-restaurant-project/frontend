@@ -160,6 +160,9 @@ export const translations: Translations = {
   "newsletter.success": { en: "Successfully subscribed!", nl: "Succesvol geabonneerd!" },
   "newsletter.welcome": { en: "Welcome to our newsletter.", nl: "Welkom bij onze nieuwsbrief." },
 
+  // Hero
+  "hero.openingHours": { en: "16:00 - 22:00 Wed till Mon", nl: "16:00 - 22:00 Wo t/m Ma" },
+
   // Footer
   "footer.tagline": {
     en: "Experience the royal taste of authentic Indian cuisine",

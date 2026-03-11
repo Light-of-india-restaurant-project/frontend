@@ -32,16 +32,16 @@ const HeroSection = () => {
           {t("hero.tagline")}
         </p>
         
-        {/* Opening Date Banner */}
+        {/* Opening Hours Banner */}
         <div
           className="my-8 animate-fade-in"
           style={{ animationDelay: "0.25s" }}
         >
           <h2
-            className="text-5xl md:text-7xl lg:text-8xl font-display tracking-wide uppercase animate-pulse"
+            className="text-4xl md:text-6xl lg:text-7xl font-display tracking-wide uppercase"
             style={{ color: "hsl(43, 74%, 49%)", textShadow: "0 0 30px hsla(43, 74%, 49%, 0.4)" }}
           >
-            Opening on 11 March 2026
+            {t("hero.openingHours")}
           </h2>
         </div>
 
