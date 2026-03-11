@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard, MapPin, Phone, CheckCircle, Mail, Truck, Store } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard, MapPin, Phone, CheckCircle, Mail, Truck, Store, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useCart } from "@/contexts/CartContext";
 import { useUserAuth } from "@/contexts/UserAuthContext";
-import { paymentApi, orderApi } from "@/lib/user-api";
+import { paymentApi, orderApi, discountApi, Discount } from "@/lib/user-api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { formatPrice } from "@/lib/formatPrice";
@@ -50,6 +50,40 @@ const Checkout = () => {
   
   // Track if saved address is deliverable
   const [savedAddressDeliverable, setSavedAddressDeliverable] = useState<boolean | null>(null);
+  
+  // Discount state
+  const [discounts, setDiscounts] = useState<Discount[]>([]);
+  const [activeDiscount, setActiveDiscount] = useState<Discount | null>(null);
+
+  // Fetch active discounts
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      try {
+        const result = await discountApi.getActiveDiscounts();
+        if (result.success) {
+          setDiscounts(result.discounts);
+        }
+      } catch (err) {
+        console.error('Failed to fetch discounts:', err);
+      }
+    };
+    fetchDiscounts();
+  }, []);
+
+  // Update active discount based on order type
+  useEffect(() => {
+    const discountType = (isOffersOnly || orderType === "pickup") ? "pickup" : "delivery";
+    const discount = discounts.find(d => d.type === discountType && d.isActive);
+    setActiveDiscount(discount || null);
+  }, [orderType, discounts, isOffersOnly]);
+
+  // Calculate discounted total
+  const discountAmount = activeDiscount ? (grandTotal * activeDiscount.percentage) / 100 : 0;
+  const finalTotal = grandTotal - discountAmount;
+
+  // Get discounts for showing badges on buttons
+  const deliveryDiscount = discounts.find(d => d.type === "delivery" && d.isActive && d.percentage > 0);
+  const pickupDiscount = discounts.find(d => d.type === "pickup" && d.isActive && d.percentage > 0);
 
   // Debounced postal code check
   const checkPostalCode = useCallback(async (code: string) => {
@@ -399,13 +433,37 @@ const Checkout = () => {
                     ))}
                   </div>
 
-                  <div className="border-t border-border pt-4">
+                  <div className="border-t border-border pt-4 space-y-2">
                     <div className="flex justify-between items-center">
+                      <span className="font-serif text-foreground">
+                        {language === "nl" ? "Subtotaal" : "Subtotal"} ({totalItemCount} items)
+                      </span>
+                      <span className="font-serif text-foreground">
+                        €{formatPrice(grandTotal)}
+                      </span>
+                    </div>
+                    
+                    {activeDiscount && activeDiscount.percentage > 0 && (
+                      <div className="flex justify-between items-center text-green-600">
+                        <span className="font-serif flex items-center gap-2">
+                          <Tag size={16} />
+                          {activeDiscount.type === "pickup" 
+                            ? (language === "nl" ? "Afhaalkorting" : "Pickup Discount")
+                            : (language === "nl" ? "Bezorgkorting" : "Delivery Discount")
+                          } ({activeDiscount.percentage}%)
+                        </span>
+                        <span className="font-serif">
+                          -€{formatPrice(discountAmount)}
+                        </span>
+                      </div>
+                    )}
+                    
+                    <div className="flex justify-between items-center pt-2 border-t border-border/50">
                       <span className="font-serif text-lg text-foreground">
-                        {language === "nl" ? "Totaal" : "Total"} ({totalItemCount} items)
+                        {language === "nl" ? "Totaal" : "Total"}
                       </span>
                       <span className="font-display text-2xl text-secondary">
-                        €{formatPrice(grandTotal)}
+                        €{formatPrice(finalTotal)}
                       </span>
                     </div>
                   </div>
@@ -431,12 +489,17 @@ const Checkout = () => {
                       <button
                         type="button"
                         onClick={() => setOrderType("delivery")}
-                        className={`p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2 ${
+                        className={`p-4 rounded-lg border transition-all flex flex-col items-center gap-2 relative ${
                           orderType === "delivery"
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary/50 bg-primary/5"
+                            : "border-border hover:bg-muted/50"
                         }`}
                       >
+                        {deliveryDiscount && (
+                          <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                            -{deliveryDiscount.percentage}%
+                          </span>
+                        )}
                         <Truck size={32} className={orderType === "delivery" ? "text-primary" : "text-muted-foreground"} />
                         <span className={`font-serif ${orderType === "delivery" ? "text-primary" : "text-foreground"}`}>
                           {language === "nl" ? "Bezorgen" : "Delivery"}
@@ -445,12 +508,17 @@ const Checkout = () => {
                       <button
                         type="button"
                         onClick={() => setOrderType("pickup")}
-                        className={`p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2 ${
+                        className={`p-4 rounded-lg border transition-all flex flex-col items-center gap-2 relative ${
                           orderType === "pickup"
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary/50 bg-primary/5"
+                            : "border-border hover:bg-muted/50"
                         }`}
                       >
+                        {pickupDiscount && (
+                          <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                            -{pickupDiscount.percentage}%
+                          </span>
+                        )}
                         <Store size={32} className={orderType === "pickup" ? "text-primary" : "text-muted-foreground"} />
                         <span className={`font-serif ${orderType === "pickup" ? "text-primary" : "text-foreground"}`}>
                           {language === "nl" ? "Afhalen" : "Pickup"}
@@ -498,12 +566,12 @@ const Checkout = () => {
 
                     {/* Address Source Selector - Show if user has saved address */}
                     {hasSavedAddress && (
-                      <div className="mb-4 p-4 bg-muted/30 rounded-lg">
+                      <div className="mb-4">
                         <p className="font-serif font-medium text-foreground mb-3">
                           {language === "nl" ? "Kies bezorgadres:" : "Choose delivery address:"}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3">
-                          <label className="flex items-center gap-2 cursor-pointer p-3 rounded-lg border-2 transition-all hover:border-primary/50" style={{ borderColor: addressSource === "saved" ? 'var(--primary)' : 'var(--border)' }}>
+                          <label className={`flex items-center gap-2 cursor-pointer p-3 rounded-lg transition-all ${addressSource === "saved" ? "bg-primary/10" : "bg-muted/30 hover:bg-muted/50"}`}>
                             <input
                               type="radio"
                               name="addressSource"
@@ -512,11 +580,11 @@ const Checkout = () => {
                               onChange={() => setAddressSource("saved")}
                               className="w-4 h-4 text-primary focus:ring-primary"
                             />
-                            <span className="font-serif text-foreground">
+                            <span className={`font-serif ${addressSource === "saved" ? "text-primary" : "text-foreground"}`}>
                               {language === "nl" ? "Opgeslagen adres" : "Saved address"}
                             </span>
                           </label>
-                          <label className="flex items-center gap-2 cursor-pointer p-3 rounded-lg border-2 transition-all hover:border-primary/50" style={{ borderColor: addressSource === "new" ? 'var(--primary)' : 'var(--border)' }}>
+                          <label className={`flex items-center gap-2 cursor-pointer p-3 rounded-lg transition-all ${addressSource === "new" ? "bg-primary/10" : "bg-muted/30 hover:bg-muted/50"}`}>
                             <input
                               type="radio"
                               name="addressSource"
@@ -525,7 +593,7 @@ const Checkout = () => {
                               onChange={() => setAddressSource("new")}
                               className="w-4 h-4 text-primary focus:ring-primary"
                             />
-                            <span className="font-serif text-foreground">
+                            <span className={`font-serif ${addressSource === "new" ? "text-primary" : "text-foreground"}`}>
                               {language === "nl" ? "Nieuw adres" : "New address"}
                             </span>
                           </label>
@@ -866,13 +934,37 @@ const Checkout = () => {
                   ))}
                 </div>
 
-                <div className="border-t border-border pt-4">
+                <div className="border-t border-border pt-4 space-y-2">
                   <div className="flex justify-between items-center">
+                    <span className="font-serif text-foreground">
+                      {language === "nl" ? "Subtotaal" : "Subtotal"} ({totalItemCount} items)
+                    </span>
+                    <span className="font-serif text-foreground">
+                      €{formatPrice(grandTotal)}
+                    </span>
+                  </div>
+                  
+                  {activeDiscount && activeDiscount.percentage > 0 && (
+                    <div className="flex justify-between items-center text-green-600">
+                      <span className="font-serif flex items-center gap-2">
+                        <Tag size={16} />
+                        {activeDiscount.type === "pickup" 
+                          ? (language === "nl" ? "Afhaalkorting" : "Pickup Discount")
+                          : (language === "nl" ? "Bezorgkorting" : "Delivery Discount")
+                        } ({activeDiscount.percentage}%)
+                      </span>
+                      <span className="font-serif">
+                        -€{formatPrice(discountAmount)}
+                      </span>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between items-center pt-2 border-t border-border/50">
                     <span className="font-serif text-lg text-foreground">
-                      {language === "nl" ? "Totaal" : "Total"} ({totalItemCount} items)
+                      {language === "nl" ? "Totaal" : "Total"}
                     </span>
                     <span className="font-display text-2xl text-secondary">
-                      €{formatPrice(grandTotal)}
+                      €{formatPrice(finalTotal)}
                     </span>
                   </div>
                 </div>

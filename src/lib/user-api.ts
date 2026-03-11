@@ -425,6 +425,16 @@ export interface Offer {
   validUntil?: string;
 }
 
+// Discount interface
+export interface Discount {
+  _id: string;
+  type: 'delivery' | 'pickup';
+  percentage: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Offer API
 export const offerApi = {
   // Get all active offers (public)
@@ -433,6 +443,47 @@ export const offerApi = {
     offers: Offer[];
   }> => {
     const response = await fetch(`${API_V1_URL}/offers/active`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+};
+
+// Discount API
+export const discountApi = {
+  // Get active discounts (public)
+  getActiveDiscounts: async (): Promise<{
+    success: boolean;
+    discounts: Discount[];
+  }> => {
+    const response = await fetch(`${API_V1_URL}/discounts/active`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+
+  // Calculate discount (public)
+  calculateDiscount: async (type: 'delivery' | 'pickup', originalAmount: number): Promise<{
+    success: boolean;
+    data: {
+      type: string;
+      originalAmount: number;
+      discountPercentage: number;
+      discountAmount: number;
+      finalAmount: number;
+    };
+  }> => {
+    const response = await fetch(`${API_V1_URL}/discounts/calculate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ type, originalAmount }),
+    });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `API Error: ${response.status}`);
