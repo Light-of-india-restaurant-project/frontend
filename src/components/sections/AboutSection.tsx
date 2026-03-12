@@ -11,10 +11,11 @@ const AboutSection = () => {
           {/* Image Side */}
           <div className="relative">
             <div className="aspect-[4/5] bg-muted rounded-sm overflow-hidden">
-              {/* Placeholder for restaurant interior image */}
-              <div className="w-full h-full bg-gradient-to-br from-brown/20 to-primary/20 flex items-center justify-center">
-                <span className="text-muted-foreground font-serif">Restaurant Interior</span>
-              </div>
+              <img 
+                src="/interior-res.jpeg" 
+                alt="Restaurant Interior" 
+                className="w-full h-full object-cover"
+              />
             </div>
             {/* Decorative frame */}
             <div className="absolute -bottom-4 -right-4 w-full h-full border-2 border-secondary -z-10" />
