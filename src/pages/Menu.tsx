@@ -39,7 +39,7 @@ const localImageMap: Record<string, string> = {
 };
 
 const Menu = () => {
-  const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("dine-in");
+  const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("takeaway");
   const { t, language } = useLanguage();
   const { addItem, isInCart, getItemQuantity, updateQuantity } = useCart();
   
@@ -118,16 +118,6 @@ const Menu = () => {
           <div className="container mx-auto px-6">
             <div className="flex justify-center gap-4">
               <button
-                onClick={() => setActiveTab("dine-in")}
-                className={`px-8 py-3 font-serif text-lg transition-all ${
-                  activeTab === "dine-in"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground hover:bg-muted/80"
-                }`}
-              >
-                {t("menu.dinein")}
-              </button>
-              <button
                 onClick={() => setActiveTab("takeaway")}
                 className={`px-8 py-3 font-serif text-lg transition-all ${
                   activeTab === "takeaway"
@@ -136,6 +126,16 @@ const Menu = () => {
                 }`}
               >
                 {t("menu.takeaway")}
+              </button>
+              <button
+                onClick={() => setActiveTab("dine-in")}
+                className={`px-8 py-3 font-serif text-lg transition-all ${
+                  activeTab === "dine-in"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-foreground hover:bg-muted/80"
+                }`}
+              >
+                {t("menu.dinein")}
               </button>
             </div>
           </div>
