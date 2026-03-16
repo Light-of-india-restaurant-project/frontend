@@ -515,7 +515,7 @@ const Checkout = () => {
                         }`}
                       >
                         {pickupDiscount && (
-                          <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                          <span className="absolute -top-3 -right-3 bg-green-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
                             -{pickupDiscount.percentage}%
                           </span>
                         )}
