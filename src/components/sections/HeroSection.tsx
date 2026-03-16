@@ -32,17 +32,18 @@ const HeroSection = () => {
           {t("hero.tagline")}
         </p>
         
-        {/* Opening Hours Banner */}
+        {/* Order Online Banner */}
         <div
           className="my-8 animate-fade-in"
           style={{ animationDelay: "0.25s" }}
         >
-          <h2
-            className="text-4xl md:text-6xl lg:text-7xl font-display tracking-wide uppercase"
+          <a
+            href="/menu"
+            className="inline-block text-4xl md:text-6xl lg:text-7xl font-display tracking-wide uppercase hover:scale-105 transition-transform cursor-pointer"
             style={{ color: "hsl(43, 74%, 49%)", textShadow: "0 0 30px hsla(43, 74%, 49%, 0.4)" }}
           >
-            {t("hero.openingHours")}
-          </h2>
+            {t("nav.orderOnline")}
+          </a>
         </div>
 
         <div
