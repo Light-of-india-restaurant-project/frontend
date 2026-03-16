@@ -94,6 +94,9 @@ const Footer = () => {
               <a href="#menu" onClick={(e) => handleNavClick(e, "#menu")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.menu")}
               </a>
+              <a href="/menu" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.orderOnline")}
+              </a>
               <a href="#about" onClick={(e) => handleNavClick(e, "#about")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.about")}
               </a>

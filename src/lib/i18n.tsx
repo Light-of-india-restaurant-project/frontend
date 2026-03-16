@@ -18,6 +18,7 @@ export const translations: Translations = {
   "nav.contact": { en: "Contact", nl: "Contact" },
   "nav.reserve": { en: "Reserve Table", nl: "Reserveren" },
   "nav.specials": { en: "Specials", nl: "Aanbiedingen" },
+  "nav.orderOnline": { en: "Order Online", nl: "Online Bestellen" },
 
   // Hero
   "hero.tagline": { en: "Authentic Indian Cuisine", nl: "Authentieke Indiase Keuken" },
