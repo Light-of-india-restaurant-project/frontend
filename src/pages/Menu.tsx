@@ -97,15 +97,15 @@ const Menu = () => {
       
       <main className="pt-24">
         {/* Hero Section */}
-        <section className="py-20 bg-muted">
+        <section className="py-10 bg-muted">
           <div className="container mx-auto px-6 text-center">
-            <span className="inline-block text-secondary font-serif tracking-[0.3em] uppercase text-sm mb-4">
+            <span className="inline-block text-secondary font-serif tracking-[0.3em] uppercase text-sm mb-2">
               {language === "nl" ? "Culinaire Reis" : "Culinary Journey"}
             </span>
-            <h1 className="font-display text-5xl md:text-7xl text-foreground mb-6">
+            <h1 className="font-display text-4xl md:text-5xl text-foreground mb-3">
               {t("menu.title")}
             </h1>
-            <p className="font-serif text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="font-serif text-lg text-muted-foreground max-w-2xl mx-auto">
               {language === "nl" 
                 ? "Een verfijnde selectie van traditionele Indiase gerechten, opnieuw geïnterpreteerd met moderne culinaire technieken"
                 : "A refined selection of traditional Indian dishes, reimagined with modern culinary techniques"}
