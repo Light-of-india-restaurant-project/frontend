@@ -4,10 +4,13 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
 import { api, ContactData } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useOperatingHours } from "@/hooks/use-operating-hours";
 
 const ContactSection = () => {
   const { t, language } = useLanguage();
   const { toast } = useToast();
+  const { getGroupedHours } = useOperatingHours();
+  const hoursGroups = getGroupedHours(language);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -137,8 +140,11 @@ const ContactSection = () => {
                 <div>
                   <h3 className="font-display text-lg mb-2">{t("contact.hours")}</h3>
                   <div className="font-serif text-muted-foreground space-y-1">
-                    <p>{language === "nl" ? "Woensdag t/m Maandag" : "Wednesday to Monday"}: 16:00 - 22:00</p>
-                    <p className="text-muted-foreground/60">{language === "nl" ? "Dinsdag: Gesloten" : "Tuesday: Closed"}</p>
+                    {hoursGroups.map((group, idx) => (
+                      <p key={idx} className={group.isOpen ? "" : "text-muted-foreground/60"}>
+                        {group.days}: {group.hours}
+                      </p>
+                    ))}
                   </div>
                 </div>
               </div>

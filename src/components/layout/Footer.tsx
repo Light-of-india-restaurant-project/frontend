@@ -2,11 +2,14 @@ import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
 import { useLanguage } from "@/lib/i18n";
+import { useOperatingHours } from "@/hooks/use-operating-hours";
 
 const Footer = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
+  const { getGroupedHours } = useOperatingHours();
+  const hoursGroups = getGroupedHours(language);
 
   // Handle navigation for hash links - smooth scroll
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -68,20 +71,15 @@ const Footer = () => {
           <div>
             <h4 className="font-display text-lg mb-6 text-secondary">{t("footer.hours")}</h4>
             <ul className="space-y-3 font-serif text-cream/80">
-              <li className="flex items-start gap-3">
-                <Clock size={18} className="text-secondary mt-1 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-cream">{t("footer.wedmon")}</p>
-                  <p>16:00 - 22:00</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock size={18} className="text-secondary mt-1 flex-shrink-0 opacity-0" />
-                <div>
-                  <p className="font-medium text-cream/60">{t("footer.tuesday")}</p>
-                  <p className="text-cream/60">{t("footer.closed")}</p>
-                </div>
-              </li>
+              {hoursGroups.map((group, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <Clock size={18} className={`text-secondary mt-1 flex-shrink-0${idx > 0 ? " opacity-0" : ""}`} />
+                  <div>
+                    <p className={`font-medium ${group.isOpen ? "text-cream" : "text-cream/60"}`}>{group.days}</p>
+                    <p className={group.isOpen ? "" : "text-cream/60"}>{group.hours}</p>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
 

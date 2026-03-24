@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
+import { useOperatingHours } from "@/hooks/use-operating-hours";
 
 // Import venue images
 import interiorDining from "@/assets/gallery/interior-dining.jpg";
@@ -70,6 +71,7 @@ const eventTypes = [
 
 const PrivateEvents = () => {
   const { t, language } = useLanguage();
+  const { getSummary } = useOperatingHours();
 
   return (
     <div className="min-h-screen bg-background">
@@ -265,7 +267,7 @@ const PrivateEvents = () => {
                   </h3>
                   <p className="font-serif text-primary-foreground/80">010 307 22 99</p>
                   <p className="font-serif text-primary-foreground/60 text-sm mt-1">
-                    {language === "nl" ? "Wo t/m Ma: 16:00 - 22:00" : "Wed - Mon: 16:00 - 22:00"}
+                    {getSummary(language)}
                   </p>
                 </div>
               </div>
