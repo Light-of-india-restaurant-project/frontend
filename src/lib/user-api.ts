@@ -56,9 +56,10 @@ export interface CreateOrderData {
     offerId: string;
     quantity: number;
   }>;
+  isPickup?: boolean;
   pickupTime?: string;
   notes?: string;
-  deliveryAddress: DeliveryAddress;
+  deliveryAddress?: DeliveryAddress;
   contactMobile: string;
   email: string;
 }
