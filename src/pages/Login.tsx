@@ -242,7 +242,7 @@ const Login = () => {
                     <p className="text-sm text-muted-foreground mt-1">
                       {language === "nl" 
                         ? "Voer uw telefoonnummer in (bijv. 0612345678)" 
-                        : "Enter your phone number (e.g. 0612345678)"
+                        : "Enter your phone number (e.g. 0612345678)"}
                     </p>
                   </div>
                 )}
