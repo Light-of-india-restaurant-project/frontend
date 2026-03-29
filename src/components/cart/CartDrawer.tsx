@@ -142,7 +142,8 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -100 }}
-                            className="flex gap-4 p-4 bg-muted rounded-lg"
+                            style={{ backgroundColor: 'hsl(25, 25%, 20%)' }}
+                            className="flex gap-4 p-4 rounded-lg"
                           >
                             {/* Item Image */}
                             {item.image && (
@@ -211,7 +212,8 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -100 }}
-                            className="p-4 bg-muted rounded-lg border-l-4 border-primary"
+                            style={{ backgroundColor: 'hsl(25, 25%, 20%)' }}
+                            className="p-4 rounded-lg border-l-4 border-primary"
                           >
                             <div className="flex justify-between items-start mb-2">
                               <h3 className="font-display text-lg text-foreground">
@@ -307,7 +309,8 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -100 }}
-                            className="flex gap-4 p-4 bg-muted rounded-lg border-l-4 border-secondary"
+                            style={{ backgroundColor: 'hsl(25, 25%, 20%)' }}
+                            className="flex gap-4 p-4 rounded-lg border-l-4 border-secondary"
                           >
                             {/* Item Image */}
                             {item.offer.image && (
