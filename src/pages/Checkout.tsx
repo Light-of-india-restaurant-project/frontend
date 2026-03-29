@@ -218,6 +218,9 @@ const Checkout = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Prevent double submission
+    if (isSubmitting) return;
+    
     if (!isAuthenticated) {
       navigate("/login?redirect=/checkout");
       return;
