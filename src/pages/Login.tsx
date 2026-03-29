@@ -108,10 +108,10 @@ const Login = () => {
           return;
         }
 
-        if (!mobile.startsWith("+")) {
+        if (!mobile.startsWith("0") || mobile.replace(/[\s-]/g, '').length !== 10) {
           setError(language === "nl" 
-            ? "Telefoonnummer moet beginnen met + en landcode (bijv. +31)" 
-            : "Phone number must start with + and country code (e.g. +31)");
+            ? "Telefoonnummer moet beginnen met 0 (bijv. 0612345678)" 
+            : "Phone number must start with 0 (e.g. 0612345678)");
           setIsSubmitting(false);
           return;
         }
@@ -235,14 +235,14 @@ const Login = () => {
                         value={mobile}
                         onChange={(e) => setMobile(e.target.value)}
                         required
-                        placeholder="+31 612345678"
+                        placeholder="0612345678"
                         className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       {language === "nl" 
-                        ? "Inclusief landcode (bijv. +31 voor Nederland)" 
-                        : "Include country code (e.g. +31 for Netherlands)"}
+                        ? "Voer uw telefoonnummer in (bijv. 0612345678)" 
+                        : "Enter your phone number (e.g. 0612345678)"
                     </p>
                   </div>
                 )}

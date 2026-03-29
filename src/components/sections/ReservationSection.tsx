@@ -305,7 +305,7 @@ const ReservationSection = () => {
                   minLength={8}
                   maxLength={20}
                   className="w-full px-4 py-3 bg-cream/10 border border-cream/20 text-cream placeholder:text-cream/40 focus:border-secondary focus:outline-none transition-colors font-serif"
-                  placeholder="+31 6 1234 5678"
+                  placeholder="0612345678"
                 />
               </div>
 

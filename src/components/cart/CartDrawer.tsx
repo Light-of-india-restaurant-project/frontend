@@ -94,6 +94,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            style={{ backgroundColor: 'hsl(25, 30%, 12%)' }}
             className="fixed top-0 right-0 h-screen w-full max-w-md bg-background border-l border-border z-[9999] flex flex-col"
           >
             {/* Header */}
