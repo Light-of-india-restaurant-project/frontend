@@ -94,7 +94,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            style={{ backgroundColor: 'hsl(25, 30%, 12%)' }}
+            style={{ backgroundColor: 'hsl(40, 33%, 96%)' }}
             className="fixed top-0 right-0 h-screen w-full max-w-md bg-background border-l border-border z-[9999] flex flex-col"
           >
             {/* Header */}
@@ -142,8 +142,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -100 }}
-                            style={{ backgroundColor: 'hsl(25, 25%, 20%)' }}
-                            className="flex gap-4 p-4 rounded-lg"
+                            className="flex gap-4 p-4 bg-muted rounded-lg"
                           >
                             {/* Item Image */}
                             {item.image && (
@@ -156,10 +155,10 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
 
                             {/* Item Details */}
                             <div className="flex-1">
-                              <h3 className="font-display text-lg text-foreground">
+                              <h3 className="font-display text-lg" style={{ color: 'hsl(25, 30%, 15%)' }}>
                                 {language === "nl" && item.nameNl ? item.nameNl : item.name}
                               </h3>
-                              <p className="font-serif text-secondary mt-1">
+                              <p className="font-serif mt-1" style={{ color: 'hsl(345, 55%, 35%)' }}>
                                 €{formatPrice(item.price)}
                               </p>
 
@@ -167,24 +166,27 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                               <div className="flex items-center gap-3 mt-3">
                                 <button
                                   onClick={() => updateQuantity(item.menuItemId, item.quantity - 1)}
-                                  className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                                  className="p-1 transition-colors"
+                                  style={{ color: 'hsl(25, 30%, 40%)' }}
                                   aria-label="Decrease quantity"
                                 >
                                   <Minus size={18} />
                                 </button>
-                                <span className="font-serif text-foreground min-w-[2ch] text-center">
+                                <span className="font-serif min-w-[2ch] text-center" style={{ color: 'hsl(25, 30%, 15%)' }}>
                                   {item.quantity}
                                 </span>
                                 <button
                                   onClick={() => updateQuantity(item.menuItemId, item.quantity + 1)}
-                                  className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                                  className="p-1 transition-colors"
+                                  style={{ color: 'hsl(25, 30%, 40%)' }}
                                   aria-label="Increase quantity"
                                 >
                                   <Plus size={18} />
                                 </button>
                                 <button
                                   onClick={() => removeItem(item.menuItemId)}
-                                  className="ml-auto p-1 text-destructive hover:text-destructive/80 transition-colors"
+                                  style={{ color: 'hsl(0, 62%, 30%)' }}
+                                  className="ml-auto p-1 transition-colors"
                                   aria-label="Remove item"
                                 >
                                   <Trash2 size={18} />
@@ -212,8 +214,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -100 }}
-                            style={{ backgroundColor: 'hsl(25, 25%, 20%)' }}
-                            className="p-4 rounded-lg border-l-4 border-primary"
+                            className="p-4 bg-muted rounded-lg border-l-4 border-primary"
                           >
                             <div className="flex justify-between items-start mb-2">
                               <h3 className="font-display text-lg text-foreground">
@@ -309,8 +310,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -100 }}
-                            style={{ backgroundColor: 'hsl(25, 25%, 20%)' }}
-                            className="flex gap-4 p-4 rounded-lg border-l-4 border-secondary"
+                            className="flex gap-4 p-4 bg-muted rounded-lg border-l-4 border-secondary"
                           >
                             {/* Item Image */}
                             {item.offer.image && (
