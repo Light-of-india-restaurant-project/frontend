@@ -196,13 +196,6 @@ const Login = () => {
                 </div>
               )}
 
-              {/* Error Message */}
-              {error && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
-                  <p className="font-serif text-destructive">{error}</p>
-                </div>
-              )}
-
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email */}
                 <div>
@@ -440,6 +433,13 @@ const Login = () => {
                           : "Passwords do not match"}
                       </p>
                     )}
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                    <p className="font-serif text-destructive">{error}</p>
                   </div>
                 )}
 
