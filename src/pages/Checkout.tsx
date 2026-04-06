@@ -749,8 +749,8 @@ const Checkout = () => {
                     </div>
                     <p className="text-sm text-green-700 dark:text-green-300">
                       {language === "nl" 
-                        ? "Uw bestelling is klaar voor afhalen op het opgegeven tijdstip. Ons adres: Witte de Withstraat 96, 3012 BS Rotterdam" 
-                        : "Your order will be ready for pickup at the specified time. Our address: Witte de Withstraat 96, 3012 BS Rotterdam"}
+                        ? "Uw bestelling is klaar voor afhalen op het opgegeven tijdstip. Ons adres: Kortekade 1, Rotterdam, Netherlands" 
+                        : "Your order will be ready for pickup at the specified time. Our address: Kortekade 1, Rotterdam, Netherlands"}
                     </p>
                   </div>
                 )}
