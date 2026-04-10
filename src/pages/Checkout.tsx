@@ -517,8 +517,8 @@ const Checkout = () => {
             <div className="grid md:grid-cols-[1fr,400px] gap-8">
               {/* Order Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Order Type Selection - Pickup or Delivery (hidden for offers-only or when one is disabled) */}
-                {!isOffersOnly && deliveryEnabled && pickupEnabled && (
+                {/* Order Type Selection */}
+                {!isOffersOnly && (
                   <div className="bg-card border border-border rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
                       <Truck className="text-primary" size={24} />
@@ -526,67 +526,48 @@ const Checkout = () => {
                         {language === "nl" ? "Bestelmethode" : "Order Type"}
                       </h2>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        type="button"
-                        onClick={() => setOrderType("delivery")}
-                        className={`p-4 rounded-lg border transition-all flex flex-col items-center gap-2 relative ${
-                          orderType === "delivery"
-                            ? "border-primary/50 bg-primary/5"
-                            : "border-border hover:bg-muted/50"
-                        }`}
-                      >
-                        {deliveryDiscount && (
-                          <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                            -{deliveryDiscount.percentage}%
+                    <div className={`grid gap-4 ${deliveryEnabled && pickupEnabled ? "grid-cols-2" : "grid-cols-1"}`}>
+                      {deliveryEnabled && (
+                        <button
+                          type="button"
+                          onClick={() => setOrderType("delivery")}
+                          className={`p-4 rounded-lg border transition-all flex flex-col items-center gap-2 relative ${
+                            orderType === "delivery"
+                              ? "border-primary/50 bg-primary/5"
+                              : "border-border hover:bg-muted/50"
+                          }`}
+                        >
+                          {deliveryDiscount && (
+                            <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                              -{deliveryDiscount.percentage}%
+                            </span>
+                          )}
+                          <Truck size={32} className={orderType === "delivery" ? "text-primary" : "text-muted-foreground"} />
+                          <span className={`font-serif ${orderType === "delivery" ? "text-primary" : "text-foreground"}`}>
+                            {language === "nl" ? "Bezorgen" : "Delivery"}
                           </span>
-                        )}
-                        <Truck size={32} className={orderType === "delivery" ? "text-primary" : "text-muted-foreground"} />
-                        <span className={`font-serif ${orderType === "delivery" ? "text-primary" : "text-foreground"}`}>
-                          {language === "nl" ? "Bezorgen" : "Delivery"}
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setOrderType("pickup")}
-                        className={`p-4 rounded-lg border transition-all flex flex-col items-center gap-2 relative ${
-                          orderType === "pickup"
-                            ? "border-primary/50 bg-primary/5"
-                            : "border-border hover:bg-muted/50"
-                        }`}
-                      >
-                        {pickupDiscount && (
-                          <span className="absolute -top-3 -right-3 bg-green-500 text-white text-base font-bold px-3 py-1.5 rounded-full shadow-lg">
-                            -{pickupDiscount.percentage}%
+                        </button>
+                      )}
+                      {pickupEnabled && (
+                        <button
+                          type="button"
+                          onClick={() => setOrderType("pickup")}
+                          className={`p-4 rounded-lg border transition-all flex flex-col items-center gap-2 relative ${
+                            orderType === "pickup"
+                              ? "border-primary/50 bg-primary/5"
+                              : "border-border hover:bg-muted/50"
+                          }`}
+                        >
+                          {pickupDiscount && (
+                            <span className="absolute -top-3 -right-3 bg-green-500 text-white text-base font-bold px-3 py-1.5 rounded-full shadow-lg">
+                              -{pickupDiscount.percentage}%
+                            </span>
+                          )}
+                          <Store size={32} className={orderType === "pickup" ? "text-primary" : "text-muted-foreground"} />
+                          <span className={`font-serif ${orderType === "pickup" ? "text-primary" : "text-foreground"}`}>
+                            {language === "nl" ? "Afhalen" : "Pickup"}
                           </span>
-                        )}
-                        <Store size={32} className={orderType === "pickup" ? "text-primary" : "text-muted-foreground"} />
-                        <span className={`font-serif ${orderType === "pickup" ? "text-primary" : "text-foreground"}`}>
-                          {language === "nl" ? "Afhalen" : "Pickup"}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Single-option banner when one method is disabled */}
-                {!isOffersOnly && !(deliveryEnabled && pickupEnabled) && (
-                  <div className="bg-card border border-border rounded-lg p-6">
-                    <div className="flex items-center gap-3">
-                      {deliveryEnabled ? (
-                        <>
-                          <Truck className="text-primary" size={24} />
-                          <h2 className="font-display text-xl text-foreground">
-                            {language === "nl" ? "Alleen bezorging beschikbaar" : "Delivery only"}
-                          </h2>
-                        </>
-                      ) : (
-                        <>
-                          <Store className="text-primary" size={24} />
-                          <h2 className="font-display text-xl text-foreground">
-                            {language === "nl" ? "Alleen afhalen beschikbaar" : "Pickup only"}
-                          </h2>
-                        </>
+                        </button>
                       )}
                     </div>
                   </div>
