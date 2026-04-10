@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useCart } from "@/contexts/CartContext";
 import { useUserAuth } from "@/contexts/UserAuthContext";
-import { paymentApi, orderApi, discountApi, Discount } from "@/lib/user-api";
+import { paymentApi, orderApi, discountApi, settingsApi, Discount } from "@/lib/user-api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { formatPrice } from "@/lib/formatPrice";
@@ -54,6 +54,35 @@ const Checkout = () => {
   // Discount state
   const [discounts, setDiscounts] = useState<Discount[]>([]);
   const [activeDiscount, setActiveDiscount] = useState<Discount | null>(null);
+
+  // Order method availability
+  const [deliveryEnabled, setDeliveryEnabled] = useState(true);
+  const [pickupEnabled, setPickupEnabled] = useState(true);
+
+  // Fetch order settings (delivery/pickup enabled)
+  useEffect(() => {
+    const fetchOrderSettings = async () => {
+      try {
+        const result = await settingsApi.getOrderSettings();
+        if (result.success) {
+          setDeliveryEnabled(result.data.deliveryEnabled ?? true);
+          setPickupEnabled(result.data.pickupEnabled ?? true);
+        }
+      } catch (err) {
+        console.error('Failed to fetch order settings:', err);
+      }
+    };
+    fetchOrderSettings();
+  }, []);
+
+  // Auto-select available order type
+  useEffect(() => {
+    if (!deliveryEnabled && pickupEnabled) {
+      setOrderType("pickup");
+    } else if (deliveryEnabled && !pickupEnabled) {
+      setOrderType("delivery");
+    }
+  }, [deliveryEnabled, pickupEnabled]);
 
   // Fetch active discounts
   useEffect(() => {
@@ -479,8 +508,8 @@ const Checkout = () => {
             <div className="grid md:grid-cols-[1fr,400px] gap-8">
               {/* Order Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Order Type Selection - Pickup or Delivery (hidden for offers-only) */}
-                {!isOffersOnly && (
+                {/* Order Type Selection - Pickup or Delivery (hidden for offers-only or when one is disabled) */}
+                {!isOffersOnly && deliveryEnabled && pickupEnabled && (
                   <div className="bg-card border border-border rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
                       <Truck className="text-primary" size={24} />
@@ -527,6 +556,29 @@ const Checkout = () => {
                           {language === "nl" ? "Afhalen" : "Pickup"}
                         </span>
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Single-option banner when one method is disabled */}
+                {!isOffersOnly && !(deliveryEnabled && pickupEnabled) && (
+                  <div className="bg-card border border-border rounded-lg p-6">
+                    <div className="flex items-center gap-3">
+                      {deliveryEnabled ? (
+                        <>
+                          <Truck className="text-primary" size={24} />
+                          <h2 className="font-display text-xl text-foreground">
+                            {language === "nl" ? "Alleen bezorging beschikbaar" : "Delivery only"}
+                          </h2>
+                        </>
+                      ) : (
+                        <>
+                          <Store className="text-primary" size={24} />
+                          <h2 className="font-display text-xl text-foreground">
+                            {language === "nl" ? "Alleen afhalen beschikbaar" : "Pickup only"}
+                          </h2>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}

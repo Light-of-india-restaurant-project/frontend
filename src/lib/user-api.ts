@@ -492,3 +492,21 @@ export const discountApi = {
     return response.json();
   },
 };
+
+// Settings API
+export const settingsApi = {
+  getOrderSettings: async (): Promise<{
+    success: boolean;
+    data: {
+      deliveryEnabled: boolean;
+      pickupEnabled: boolean;
+    };
+  }> => {
+    const response = await fetch(`${API_V1_URL}/reservations/settings`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+    return response.json();
+  },
+};
