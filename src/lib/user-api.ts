@@ -503,6 +503,8 @@ export const settingsApi = {
       pickupStartTime: string;
       pickupEndTime: string;
       pickupInterval: number;
+      minimumOrderAmount: number;
+      deliveryCharge: number;
     };
   }> => {
     const response = await fetch(`${API_V1_URL}/reservations/settings`);

@@ -58,6 +58,8 @@ const Checkout = () => {
   // Order method availability
   const [deliveryEnabled, setDeliveryEnabled] = useState(true);
   const [pickupEnabled, setPickupEnabled] = useState(true);
+  const [minimumOrderAmount, setMinimumOrderAmount] = useState(0);
+  const [deliveryChargeAmount, setDeliveryChargeAmount] = useState(0);
 
   // Fetch order settings (delivery/pickup enabled)
   useEffect(() => {
@@ -70,6 +72,8 @@ const Checkout = () => {
           if (result.data.pickupStartTime) setPickupStartTime(result.data.pickupStartTime);
           if (result.data.pickupEndTime) setPickupEndTime(result.data.pickupEndTime);
           if (result.data.pickupInterval) setPickupIntervalMin(result.data.pickupInterval);
+          setMinimumOrderAmount(result.data.minimumOrderAmount ?? 0);
+          setDeliveryChargeAmount(result.data.deliveryCharge ?? 0);
         }
       } catch (err) {
         console.error('Failed to fetch order settings:', err);
@@ -111,7 +115,10 @@ const Checkout = () => {
 
   // Calculate discounted total
   const discountAmount = activeDiscount ? (grandTotal * activeDiscount.percentage) / 100 : 0;
-  const finalTotal = grandTotal - discountAmount;
+  const isDeliveryOrder = !isOffersOnly && orderType === "delivery";
+  const belowMinimum = minimumOrderAmount > 0 && grandTotal < minimumOrderAmount;
+  const appliedDeliveryCharge = (isDeliveryOrder && !belowMinimum) ? deliveryChargeAmount : 0;
+  const finalTotal = grandTotal - discountAmount + appliedDeliveryCharge;
 
   // Get discounts for showing badges on buttons
   const deliveryDiscount = discounts.find(d => d.type === "delivery" && d.isActive && d.percentage > 0);
@@ -496,6 +503,29 @@ const Checkout = () => {
                         <span className="font-serif">
                           -€{formatPrice(discountAmount)}
                         </span>
+                      </div>
+                    )}
+
+                    {appliedDeliveryCharge > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-serif text-foreground flex items-center gap-2">
+                          <Truck size={16} />
+                          {language === "nl" ? "Bezorgkosten" : "Delivery Fee"}
+                        </span>
+                        <span className="font-serif text-foreground">
+                          €{formatPrice(appliedDeliveryCharge)}
+                        </span>
+                      </div>
+                    )}
+
+                    {belowMinimum && (
+                      <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                        <AlertTriangle className="text-amber-600 flex-shrink-0" size={16} />
+                        <p className="text-xs text-amber-800 font-serif">
+                          {language === "nl"
+                            ? `Minimaal bestelbedrag is €${formatPrice(minimumOrderAmount)}. Voeg nog €${formatPrice(minimumOrderAmount - grandTotal)} toe.`
+                            : `Minimum order amount is €${formatPrice(minimumOrderAmount)}. Add €${formatPrice(minimumOrderAmount - grandTotal)} more.`}
+                        </p>
                       </div>
                     )}
                     
@@ -918,7 +948,7 @@ const Checkout = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting || !isAuthenticated || !isFormValid()}
+                  disabled={isSubmitting || !isAuthenticated || !isFormValid() || belowMinimum}
                   className="w-full py-4 bg-primary text-primary-foreground font-serif text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {isSubmitting ? (
@@ -1025,6 +1055,29 @@ const Checkout = () => {
                       <span className="font-serif">
                         -€{formatPrice(discountAmount)}
                       </span>
+                    </div>
+                  )}
+
+                  {appliedDeliveryCharge > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="font-serif text-foreground flex items-center gap-2">
+                        <Truck size={16} />
+                        {language === "nl" ? "Bezorgkosten" : "Delivery Fee"}
+                      </span>
+                      <span className="font-serif text-foreground">
+                        €{formatPrice(appliedDeliveryCharge)}
+                      </span>
+                    </div>
+                  )}
+
+                  {belowMinimum && (
+                    <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <AlertTriangle className="text-amber-600 flex-shrink-0" size={16} />
+                      <p className="text-xs text-amber-800 font-serif">
+                        {language === "nl"
+                          ? `Minimaal bestelbedrag is €${formatPrice(minimumOrderAmount)}. Voeg nog €${formatPrice(minimumOrderAmount - grandTotal)} toe.`
+                          : `Minimum order amount is €${formatPrice(minimumOrderAmount)}. Add €${formatPrice(minimumOrderAmount - grandTotal)} more.`}
+                      </p>
                     </div>
                   )}
                   
