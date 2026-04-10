@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, Loader2, CreditCard, MapPin, Phone, CheckCircle, Mail, Truck, Store, Tag } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Clock, FileText, AlertCircle, AlertTriangle, Loader2, CreditCard, MapPin, Phone, CheckCircle, Mail, Truck, Store, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useCart } from "@/contexts/CartContext";
@@ -573,6 +573,30 @@ const Checkout = () => {
                   </div>
                 )}
 
+                {/* Notice when delivery is disabled */}
+                {!isOffersOnly && !deliveryEnabled && (
+                  <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <AlertTriangle className="text-amber-600 flex-shrink-0" size={20} />
+                    <p className="text-sm text-amber-800 font-serif">
+                      {language === "nl"
+                        ? "Bezorging is momenteel niet beschikbaar. U kunt uw bestelling afhalen bij ons restaurant."
+                        : "Delivery is currently unavailable. You can pick up your order at our restaurant."}
+                    </p>
+                  </div>
+                )}
+
+                {/* Notice when pickup is disabled */}
+                {!isOffersOnly && !pickupEnabled && (
+                  <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <AlertTriangle className="text-amber-600 flex-shrink-0" size={20} />
+                    <p className="text-sm text-amber-800 font-serif">
+                      {language === "nl"
+                        ? "Afhalen is momenteel niet beschikbaar. U kunt uw bestelling laten bezorgen."
+                        : "Pickup is currently unavailable. You can have your order delivered."}
+                    </p>
+                  </div>
+                )}
+
                 {/* Pickup Time - Only show for pickup orders */}
                 {(isOffersOnly || orderType === "pickup") && (
                   <div className="bg-card border border-border rounded-lg p-6">
@@ -588,7 +612,7 @@ const Checkout = () => {
                       className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       <option value="">
-                        {language === "nl" ? "Zo snel mogelijk" : "As soon as possible"}
+                        {language === "nl" ? "Selecteer een tijd" : "Select a time"}
                       </option>
                       {pickupTimeOptions().map((time) => (
                         <option key={time} value={time}>
