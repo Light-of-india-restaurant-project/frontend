@@ -500,6 +500,9 @@ export const settingsApi = {
     data: {
       deliveryEnabled: boolean;
       pickupEnabled: boolean;
+      pickupStartTime: string;
+      pickupEndTime: string;
+      pickupInterval: number;
     };
   }> => {
     const response = await fetch(`${API_V1_URL}/reservations/settings`);

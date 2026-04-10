@@ -67,6 +67,9 @@ const Checkout = () => {
         if (result.success) {
           setDeliveryEnabled(result.data.deliveryEnabled ?? true);
           setPickupEnabled(result.data.pickupEnabled ?? true);
+          if (result.data.pickupStartTime) setPickupStartTime(result.data.pickupStartTime);
+          if (result.data.pickupEndTime) setPickupEndTime(result.data.pickupEndTime);
+          if (result.data.pickupInterval) setPickupIntervalMin(result.data.pickupInterval);
         }
       } catch (err) {
         console.error('Failed to fetch order settings:', err);
@@ -198,18 +201,24 @@ const Checkout = () => {
     return () => clearTimeout(timer);
   }, [postalCode, checkPostalCode]);
 
-  // Fixed pickup time slots from 16:00 to 21:30 in 30-minute intervals
-  const PICKUP_TIME_SLOTS = [
-    '16:00', '16:30',
-    '17:00', '17:30',
-    '18:00', '18:30',
-    '19:00', '19:30',
-    '20:00', '20:30',
-    '21:00', '21:30',
-  ];
+  // Dynamic pickup time slots from settings
+  const [pickupStartTime, setPickupStartTime] = useState('16:00');
+  const [pickupEndTime, setPickupEndTime] = useState('21:30');
+  const [pickupIntervalMin, setPickupIntervalMin] = useState(30);
 
   const pickupTimeOptions = () => {
-    return PICKUP_TIME_SLOTS;
+    const slots: string[] = [];
+    const [startH, startM] = pickupStartTime.split(':').map(Number);
+    const [endH, endM] = pickupEndTime.split(':').map(Number);
+    let current = startH * 60 + startM;
+    const end = endH * 60 + endM;
+    while (current <= end) {
+      const h = Math.floor(current / 60).toString().padStart(2, '0');
+      const m = (current % 60).toString().padStart(2, '0');
+      slots.push(`${h}:${m}`);
+      current += pickupIntervalMin;
+    }
+    return slots;
   };
 
   // Validate form before submission
