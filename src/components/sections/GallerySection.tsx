@@ -181,6 +181,7 @@ const GallerySection = () => {
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 loading="lazy"
               />
+              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/0 transition-all duration-300" />
               <div className="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <span className="text-primary-foreground font-serif text-xl text-center px-4">
                   {featured.title}
@@ -204,6 +205,7 @@ const GallerySection = () => {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
                   />
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/0 transition-all duration-300" />
                   <div className="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <span className="text-primary-foreground font-serif text-sm text-center px-2">
                       {image.title}
@@ -232,6 +234,7 @@ const GallerySection = () => {
                     className="w-full h-[200px] md:h-[300px] object-cover transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
                   />
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/0 transition-all duration-300" />
                   <div className="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <span className="text-primary-foreground font-serif text-sm text-center px-2">
                       {image.title}
@@ -253,6 +256,7 @@ const GallerySection = () => {
                   className="w-full h-[200px] md:h-[300px] object-cover transition-transform duration-500 group-hover:scale-110"
                   loading="lazy"
                 />
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/0 transition-all duration-300" />
                 <div className="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <span className="text-primary-foreground font-serif text-sm text-center px-2">
                     {bottomImages[2].title}
@@ -278,6 +282,7 @@ const GallerySection = () => {
                   className="w-full h-[200px] md:h-[300px] object-cover transition-transform duration-500 group-hover:scale-110"
                   loading="lazy"
                 />
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/0 transition-all duration-300" />
                 <div className="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <span className="text-primary-foreground font-serif text-sm text-center px-2">
                     {image.title}
