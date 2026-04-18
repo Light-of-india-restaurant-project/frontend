@@ -1,5 +1,5 @@
 // User authentication and order API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://lightofrestaurant.nl/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://api.lightofindia.nl/api";
 const API_V1_URL = `${API_BASE_URL}/v1`;
 
 // Types
