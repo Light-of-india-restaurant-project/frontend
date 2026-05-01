@@ -152,6 +152,8 @@ export interface ReservationSettingsResponse {
   success: boolean;
   data: {
     operatingHours: OperatingHours[];
+    closedDates: string[];
+    openDates: string[];
     reservationDuration: number;
     slotInterval: number;
     maxAdvanceDays: number;
