@@ -3,6 +3,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
 import { useLanguage } from "@/lib/i18n";
 import { useOperatingHours } from "@/hooks/use-operating-hours";
+import googleReviewQR from "@/assets/googleReviews.jpeg";
+
+const GOOGLE_REVIEWS_URL =
+  "https://www.google.com/search?sca_esv=b1ec7e9b937f628a&sxsrf=ANbL-n7radCMRW6OQhvzQeOFV-D7CbdMGw:1777831189115&q=light+of+india+rotterdam&si=AL3DRZEsmMGCryMMFSHJ3StBhOdZ2-6yYkXd_doETEE1OR-qOR2i7IU9qfASmjpUeX5yRvkcnV0lEAcPa8uhbirXnchKHt9_x7lvPcmf6cBtkUn2ED6hE0w%3D&uds=ALYpb_kG5vW-vCilX_Rbjx0DZ5HJZVa4JqFcCkR-fTQnbKegva9k6y3ExKCwgS49737G58y3_661NEaxtdiqIJ4BKN6Zt0FYL9xc0z7PEgXf40BsmoQOK9L2vj06KH5xqhV1PEgNKIeQ&sa=X&ved=2ahUKEwjVu_2j2Z2UAxV6wQIHHcOWFNcQ3PALegQIGBAE&biw=1536&bih=730&dpr=1.25";
 
 const Footer = () => {
   const { t, language } = useLanguage();
@@ -39,6 +43,29 @@ const Footer = () => {
             <p className="font-serif text-cream/80 leading-relaxed">
               {t("footer.tagline")}
             </p>
+            <div className="mt-6">
+              <p className="font-serif text-secondary text-sm font-medium mb-3">
+                {language === "nl" ? "Beoordeel ons op Google" : "Rate Us on Google"}
+              </p>
+              <a
+                href={GOOGLE_REVIEWS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block"
+                aria-label={language === "nl" ? "Scan om een Google recensie achter te laten" : "Scan to leave a Google review"}
+              >
+                <img
+                  src={googleReviewQR}
+                  alt={language === "nl" ? "Google reviews QR-code" : "Google reviews QR code"}
+                  className="w-28 h-28 object-contain bg-white p-1 rounded"
+                />
+              </a>
+              <p className="font-serif text-cream/60 text-xs mt-2">
+                {language === "nl"
+                  ? "Scan of klik om een recensie achter te laten"
+                  : "Scan or click to leave a review"}
+              </p>
+            </div>
           </div>
 
           {/* Contact Info */}

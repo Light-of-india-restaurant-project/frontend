@@ -5,6 +5,10 @@ import { useLanguage } from "@/lib/i18n";
 import { api, ContactData } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useOperatingHours } from "@/hooks/use-operating-hours";
+import googleReviewQR from "@/assets/googleReviews.jpeg";
+
+const GOOGLE_REVIEWS_URL =
+  "https://www.google.com/search?sca_esv=b1ec7e9b937f628a&sxsrf=ANbL-n7radCMRW6OQhvzQeOFV-D7CbdMGw:1777831189115&q=light+of+india+rotterdam&si=AL3DRZEsmMGCryMMFSHJ3StBhOdZ2-6yYkXd_doETEE1OR-qOR2i7IU9qfASmjpUeX5yRvkcnV0lEAcPa8uhbirXnchKHt9_x7lvPcmf6cBtkUn2ED6hE0w%3D&uds=ALYpb_kG5vW-vCilX_Rbjx0DZ5HJZVa4JqFcCkR-fTQnbKegva9k6y3ExKCwgS49737G58y3_661NEaxtdiqIJ4BKN6Zt0FYL9xc0z7PEgXf40BsmoQOK9L2vj06KH5xqhV1PEgNKIeQ&sa=X&ved=2ahUKEwjVu_2j2Z2UAxV6wQIHHcOWFNcQ3PALegQIGBAE&biw=1536&bih=730&dpr=1.25";
 
 const ContactSection = () => {
   const { t, language } = useLanguage();
@@ -162,6 +166,32 @@ const ContactSection = () => {
                 referrerPolicy="no-referrer-when-downgrade"
                 title="Light of India - Kortekade 1, Rotterdam"
               />
+            </div>
+
+            <div className="mt-6 flex items-center gap-5 p-5 bg-card border border-border">
+              <a
+                href={GOOGLE_REVIEWS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0"
+                aria-label={language === "nl" ? "Scan om een Google recensie achter te laten" : "Scan to leave a Google review"}
+              >
+                <img
+                  src={googleReviewQR}
+                  alt={language === "nl" ? "Google reviews QR-code" : "Google reviews QR code"}
+                  className="w-24 h-24 object-contain bg-white p-1 rounded"
+                />
+              </a>
+              <div>
+                <h3 className="font-display text-lg mb-1">
+                  {language === "nl" ? "Beoordeel ons op Google" : "Rate Us on Google"}
+                </h3>
+                <p className="font-serif text-muted-foreground text-sm">
+                  {language === "nl"
+                    ? "Scan de QR-code of klik om een recensie achter te laten"
+                    : "Scan the QR code or click to leave a review"}
+                </p>
+              </div>
             </div>
           </div>
 
