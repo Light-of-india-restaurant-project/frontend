@@ -15,7 +15,7 @@ type AddressSource = "saved" | "new";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { items, total, itemCount, cateringItems, cateringTotal, cateringItemCount, offerItems, offerTotal, offerItemCount, totalItemCount, grandTotal } = useCart();
   const { isAuthenticated, isLoading: authLoading, user } = useUserAuth();
   
@@ -969,7 +969,7 @@ const Checkout = () => {
                     <AlertTriangle className="text-amber-600 mt-0.5" size={20} />
                     <div>
                       <p className="font-serif text-amber-900 font-medium">
-                        {language === "nl" ? "Restaurant is vandaag gesloten" : "Restaurant is closed today"}
+                        {t("closure.closedTodayTitle")}
                       </p>
                       <p className="font-serif text-amber-800 text-sm mt-1">{todayClosureReason}</p>
                     </div>

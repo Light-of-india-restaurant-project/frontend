@@ -134,6 +134,26 @@ export const translations: Translations = {
   "reservation.success": { en: "Reservation submitted successfully!", nl: "Reservering succesvol verzonden!" },
   "reservation.confirm": { en: "We'll confirm your booking shortly.", nl: "We bevestigen uw boeking binnenkort." },
 
+  // Restaurant closure messaging
+  "closure.closedTodayTitle": { en: "Restaurant is closed today", nl: "Restaurant is vandaag gesloten" },
+  "closure.closedTodayBadge": { en: "Closed today", nl: "Vandaag gesloten" },
+  "closure.menuHidden": {
+    en: "The menu is temporarily hidden while the restaurant is closed.",
+    nl: "Het menu is tijdelijk verborgen zolang het restaurant gesloten is.",
+  },
+  "closure.homeMenuHidden": {
+    en: "The homepage menu is temporarily hidden while the restaurant is closed.",
+    nl: "Het menu op de homepage is tijdelijk verborgen zolang het restaurant gesloten is.",
+  },
+  "closure.reservationsDisabled": {
+    en: "Reservations are temporarily disabled while the restaurant is closed.",
+    nl: "Reserveringen zijn tijdelijk uitgeschakeld zolang het restaurant gesloten is.",
+  },
+  "closure.closedOnSelectedDate": {
+    en: "Restaurant is closed on this date",
+    nl: "Restaurant is gesloten op deze datum",
+  },
+
   // Contact
   "contact.title": { en: "Contact Us", nl: "Neem Contact Op" },
   "contact.subtitle": { en: "Get in Touch", nl: "Neem Contact Op" },

@@ -173,13 +173,11 @@ const Menu = () => {
                   <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="font-serif font-medium">
-                      {language === "nl" ? "Restaurant is vandaag gesloten" : "Restaurant is closed today"}
+                      {t("closure.closedTodayTitle")}
                     </p>
                     <p className="font-serif text-sm mt-1 text-amber-800">{todayClosureReason}</p>
                     <p className="font-serif text-sm mt-2 text-amber-800/90">
-                      {language === "nl"
-                        ? "Het menu is tijdelijk verborgen zolang het restaurant gesloten is."
-                        : "The menu is temporarily hidden while the restaurant is closed."}
+                      {t("closure.menuHidden")}
                     </p>
                   </div>
                 </div>
@@ -374,7 +372,7 @@ const Menu = () => {
                                 <>
                                   {todayClosureReason ? (
                                     <span className="px-3 py-2 bg-amber-100 text-amber-800 rounded text-xs font-serif border border-amber-200">
-                                      {language === "nl" ? "Vandaag gesloten" : "Closed today"}
+                                      {t("closure.closedTodayBadge")}
                                     </span>
                                   ) : isInCart(item._id) ? (
                                     <div className="flex items-center gap-2 bg-muted rounded-lg p-1">

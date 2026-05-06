@@ -190,15 +190,13 @@ const ReservationSection = () => {
           ) : todayClosureReason ? (
             <div className="text-center py-10 bg-amber-500/15 border border-amber-400/40 rounded-lg">
               <h3 className="font-display text-2xl mb-3 text-amber-100">
-                {language === "nl" ? "Restaurant is vandaag gesloten" : "Restaurant is closed today"}
+                {t("closure.closedTodayTitle")}
               </h3>
               <p className="font-serif text-amber-100/90 max-w-md mx-auto">
                 {todayClosureReason}
               </p>
               <p className="font-serif text-cream/80 text-sm mt-4">
-                {language === "nl"
-                  ? "Reserveringen zijn tijdelijk uitgeschakeld zolang het restaurant gesloten is."
-                  : "Reservations are temporarily disabled while the restaurant is closed."}
+                {t("closure.reservationsDisabled")}
               </p>
             </div>
           ) : (

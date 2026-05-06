@@ -190,13 +190,11 @@ const MenuSection = () => {
             <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-serif font-medium">
-                {language === "nl" ? "Restaurant is vandaag gesloten" : "Restaurant is closed today"}
+                {t("closure.closedTodayTitle")}
               </p>
               <p className="font-serif text-sm mt-1 text-amber-800">{todayClosureReason}</p>
               <p className="font-serif text-sm mt-2 text-amber-800/90">
-                {language === "nl"
-                  ? "Het menu op de homepage is tijdelijk verborgen zolang het restaurant gesloten is."
-                  : "The homepage menu is temporarily hidden while the restaurant is closed."}
+                {t("closure.homeMenuHidden")}
               </p>
             </div>
           </div>

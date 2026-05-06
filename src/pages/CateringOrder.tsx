@@ -23,7 +23,7 @@ import Footer from '@/components/layout/Footer';
 const CateringOrder = () => {
   const navigate = useNavigate();
   const { packId } = useParams<{ packId: string }>();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   
   const [pack, setPack] = useState<CateringPack | null>(null);
   const [loading, setLoading] = useState(true);
@@ -270,7 +270,7 @@ const CateringOrder = () => {
                       <AlertCircle size={20} className="mt-0.5" />
                       <div>
                         <p className="font-serif font-medium">
-                          {language === 'nl' ? 'Restaurant is gesloten op deze datum' : 'Restaurant is closed on this date'}
+                          {t('closure.closedOnSelectedDate')}
                         </p>
                         <p className="font-serif text-sm mt-1 text-amber-800">{selectedDateClosureReason}</p>
                       </div>
