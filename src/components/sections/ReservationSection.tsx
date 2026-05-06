@@ -34,6 +34,21 @@ const ReservationSection = () => {
   const [openDates, setOpenDates] = useState<OpenDate[]>([]);
   const [isLoadingDates, setIsLoadingDates] = useState(true);
 
+  const toDateKey = (value: Date | string): string => {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayKey = toDateKey(new Date());
+  const todayClosureReason =
+    openDates.find((entry) => toDateKey(entry.date) === todayKey && !entry.isOpen)?.closureReason || null;
+
+  const selectedDateClosureReason =
+    openDates.find((entry) => entry.date === formData.reservationDate)?.closureReason || null;
+
   // Fetch open dates on mount
   useEffect(() => {
     const fetchOpenDates = async () => {
@@ -61,6 +76,12 @@ const ReservationSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+
+    if (selectedDateClosureReason) {
+      setError(selectedDateClosureReason);
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const reservationData: SimpleReservationData = {
@@ -166,6 +187,20 @@ const ReservationSection = () => {
                   : "We have received your reservation request. We will contact you soon to confirm your reservation."}
               </p>
             </div>
+          ) : todayClosureReason ? (
+            <div className="text-center py-10 bg-amber-500/15 border border-amber-400/40 rounded-lg">
+              <h3 className="font-display text-2xl mb-3 text-amber-100">
+                {language === "nl" ? "Restaurant is vandaag gesloten" : "Restaurant is closed today"}
+              </h3>
+              <p className="font-serif text-amber-100/90 max-w-md mx-auto">
+                {todayClosureReason}
+              </p>
+              <p className="font-serif text-cream/80 text-sm mt-4">
+                {language === "nl"
+                  ? "Reserveringen zijn tijdelijk uitgeschakeld zolang het restaurant gesloten is."
+                  : "Reservations are temporarily disabled while the restaurant is closed."}
+              </p>
+            </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
@@ -190,8 +225,10 @@ const ReservationSection = () => {
                   </div>
                 ) : openDates.filter(d => d.isOpen).length === 0 ? (
                   <div className="py-3 px-4 bg-cream/10 border border-cream/20 text-cream/60 font-serif text-center">
-                    {language === "nl" 
-                      ? "Geen beschikbare datums. Bel ons om te reserveren." 
+                    {todayClosureReason
+                      ? todayClosureReason
+                      : language === "nl"
+                      ? "Geen beschikbare datums. Bel ons om te reserveren."
                       : "No available dates. Please call us to make a reservation."}
                   </div>
                 ) : (
@@ -335,7 +372,7 @@ const ReservationSection = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting || !formData.reservationDate || !formData.reservationTime || !formData.name || !formData.email || !formData.contactNumber}
+                disabled={isSubmitting || !formData.reservationDate || !formData.reservationTime || !formData.name || !formData.email || !formData.contactNumber || !!selectedDateClosureReason}
                 className="w-full bg-secondary text-secondary-foreground py-4 font-serif text-lg hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (

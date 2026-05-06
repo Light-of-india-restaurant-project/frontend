@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
 import { useCart } from "@/contexts/CartContext";
 import { useUserAuth } from "@/contexts/UserAuthContext";
-import { paymentApi, orderApi, discountApi, settingsApi, Discount } from "@/lib/user-api";
+import { paymentApi, orderApi, discountApi, settingsApi, Discount, RestaurantClosedDate } from "@/lib/user-api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { formatPrice } from "@/lib/formatPrice";
@@ -60,6 +60,19 @@ const Checkout = () => {
   const [pickupEnabled, setPickupEnabled] = useState(true);
   const [minimumOrderAmount, setMinimumOrderAmount] = useState(0);
   const [deliveryChargeAmount, setDeliveryChargeAmount] = useState(0);
+  const [restaurantClosedDates, setRestaurantClosedDates] = useState<RestaurantClosedDate[]>([]);
+
+  const toDateKey = (value: Date | string): string => {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayDateKey = toDateKey(new Date());
+  const todayClosureReason =
+    restaurantClosedDates.find((entry) => toDateKey(entry.date) === todayDateKey)?.reason || null;
 
   // Fetch order settings (delivery/pickup enabled)
   useEffect(() => {
@@ -74,6 +87,7 @@ const Checkout = () => {
           if (result.data.pickupInterval) setPickupIntervalMin(result.data.pickupInterval);
           setMinimumOrderAmount(result.data.minimumOrderAmount ?? 0);
           setDeliveryChargeAmount(result.data.deliveryCharge ?? 0);
+          setRestaurantClosedDates(result.data.restaurantClosedDates ?? []);
         }
       } catch (err) {
         console.error('Failed to fetch order settings:', err);
@@ -294,6 +308,11 @@ const Checkout = () => {
           ? "Vul uw contactgegevens in"
           : "Please fill in your contact details");
       }
+      return;
+    }
+
+    if (todayClosureReason) {
+      setError(todayClosureReason);
       return;
     }
 
@@ -945,10 +964,22 @@ const Checkout = () => {
                   </div>
                 )}
 
+                {todayClosureReason && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
+                    <AlertTriangle className="text-amber-600 mt-0.5" size={20} />
+                    <div>
+                      <p className="font-serif text-amber-900 font-medium">
+                        {language === "nl" ? "Restaurant is vandaag gesloten" : "Restaurant is closed today"}
+                      </p>
+                      <p className="font-serif text-amber-800 text-sm mt-1">{todayClosureReason}</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting || !isAuthenticated || !isFormValid() || belowMinimum}
+                  disabled={isSubmitting || !isAuthenticated || !isFormValid() || belowMinimum || !!todayClosureReason}
                   className="w-full py-4 bg-primary text-primary-foreground font-serif text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {isSubmitting ? (

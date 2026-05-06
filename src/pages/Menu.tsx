@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Leaf, Flame, Star, ZoomIn, AlertCircle, RefreshCw, ShoppingCart, Plus, Minus, Check } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
@@ -10,6 +10,7 @@ import { MenuCategorySkeleton } from "@/components/menu/MenuItemSkeleton";
 import { useMenu } from "@/hooks/use-menu";
 import { useCart } from "@/contexts/CartContext";
 import type { MenuItem } from "@/lib/api";
+import { settingsApi, type RestaurantClosedDate } from "@/lib/user-api";
 import { formatPrice } from "@/lib/formatPrice";
 
 // Import food images for local fallback
@@ -42,9 +43,37 @@ const Menu = () => {
   const [activeTab, setActiveTab] = useState<"dine-in" | "takeaway">("takeaway");
   const { t, language } = useLanguage();
   const { addItem, isInCart, getItemQuantity, updateQuantity } = useCart();
+  const [restaurantClosedDates, setRestaurantClosedDates] = useState<RestaurantClosedDate[]>([]);
   
   // Fetch menu data from API
   const { data: menuData, isLoading, isError, refetch } = useMenu(activeTab);
+
+  const toDateKey = (value: Date | string): string => {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayDateKey = toDateKey(new Date());
+  const todayClosureReason =
+    restaurantClosedDates.find((entry) => toDateKey(entry.date) === todayDateKey)?.reason || null;
+
+  useEffect(() => {
+    const fetchOrderSettings = async () => {
+      try {
+        const response = await settingsApi.getOrderSettings();
+        if (response.success) {
+          setRestaurantClosedDates(response.data.restaurantClosedDates ?? []);
+        }
+      } catch (error) {
+        console.error('Failed to load restaurant closed dates:', error);
+      }
+    };
+
+    fetchOrderSettings();
+  }, []);
 
   // Map API data with language support and image resolution
   const menuCategories = useMemo(() => {
@@ -139,44 +168,61 @@ const Menu = () => {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto space-y-24">
-              {/* Loading State */}
-              {isLoading && <MenuCategorySkeleton />}
-
-              {/* Error State */}
-              {isError && !isLoading && (
-                <div className="text-center py-16">
-                  <AlertCircle size={48} className="mx-auto text-destructive mb-4" />
-                  <h3 className="font-display text-2xl text-foreground mb-2">
-                    {language === "nl" ? "Menu kon niet worden geladen" : "Unable to load menu"}
-                  </h3>
-                  <p className="font-serif text-muted-foreground mb-6">
-                    {language === "nl" 
-                      ? "Er is een probleem opgetreden bij het ophalen van het menu." 
-                      : "There was a problem fetching the menu."}
-                  </p>
-                  <button
-                    onClick={() => refetch()}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-serif hover:bg-primary/90 transition-colors"
-                  >
-                    <RefreshCw size={18} />
-                    {language === "nl" ? "Opnieuw proberen" : "Try again"}
-                  </button>
+              {todayClosureReason ? (
+                <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 flex items-start gap-3">
+                  <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-serif font-medium">
+                      {language === "nl" ? "Restaurant is vandaag gesloten" : "Restaurant is closed today"}
+                    </p>
+                    <p className="font-serif text-sm mt-1 text-amber-800">{todayClosureReason}</p>
+                    <p className="font-serif text-sm mt-2 text-amber-800/90">
+                      {language === "nl"
+                        ? "Het menu is tijdelijk verborgen zolang het restaurant gesloten is."
+                        : "The menu is temporarily hidden while the restaurant is closed."}
+                    </p>
+                  </div>
                 </div>
-              )}
+              ) : (
+                <>
+                  {/* Loading State */}
+                  {isLoading && <MenuCategorySkeleton />}
 
-              {/* Empty State */}
-              {!isLoading && !isError && menuCategories.length === 0 && (
-                <div className="text-center py-16">
-                  <p className="font-serif text-xl text-muted-foreground">
-                    {language === "nl" 
-                      ? "Geen menu-items beschikbaar voor deze categorie." 
-                      : "No menu items available for this category."}
-                  </p>
-                </div>
-              )}
+                  {/* Error State */}
+                  {isError && !isLoading && (
+                    <div className="text-center py-16">
+                      <AlertCircle size={48} className="mx-auto text-destructive mb-4" />
+                      <h3 className="font-display text-2xl text-foreground mb-2">
+                        {language === "nl" ? "Menu kon niet worden geladen" : "Unable to load menu"}
+                      </h3>
+                      <p className="font-serif text-muted-foreground mb-6">
+                        {language === "nl"
+                          ? "Er is een probleem opgetreden bij het ophalen van het menu."
+                          : "There was a problem fetching the menu."}
+                      </p>
+                      <button
+                        onClick={() => refetch()}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-serif hover:bg-primary/90 transition-colors"
+                      >
+                        <RefreshCw size={18} />
+                        {language === "nl" ? "Opnieuw proberen" : "Try again"}
+                      </button>
+                    </div>
+                  )}
 
-              {/* Menu Content */}
-              {!isLoading && !isError && menuCategories.map((category, categoryIndex) => (
+                  {/* Empty State */}
+                  {!isLoading && !isError && menuCategories.length === 0 && (
+                    <div className="text-center py-16">
+                      <p className="font-serif text-xl text-muted-foreground">
+                        {language === "nl"
+                          ? "Geen menu-items beschikbaar voor deze categorie."
+                          : "No menu items available for this category."}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Menu Content */}
+                  {!isLoading && !isError && menuCategories.map((category, categoryIndex) => (
                 <motion.div 
                   key={category.id}
                   initial={{ opacity: 0, y: 40 }}
@@ -326,7 +372,11 @@ const Menu = () => {
                               {/* Add to Cart Button (only for takeaway) */}
                               {activeTab === "takeaway" && (
                                 <>
-                                  {isInCart(item._id) ? (
+                                  {todayClosureReason ? (
+                                    <span className="px-3 py-2 bg-amber-100 text-amber-800 rounded text-xs font-serif border border-amber-200">
+                                      {language === "nl" ? "Vandaag gesloten" : "Closed today"}
+                                    </span>
+                                  ) : isInCart(item._id) ? (
                                     <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
                                       <button
                                         onClick={(e) => {
@@ -334,6 +384,7 @@ const Menu = () => {
                                           const qty = getItemQuantity(item._id);
                                           updateQuantity(item._id, qty - 1);
                                         }}
+                                        disabled={!!todayClosureReason}
                                         className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                                         aria-label="Decrease quantity"
                                       >
@@ -348,6 +399,7 @@ const Menu = () => {
                                           const qty = getItemQuantity(item._id);
                                           updateQuantity(item._id, qty + 1);
                                         }}
+                                        disabled={!!todayClosureReason}
                                         className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                                         aria-label="Increase quantity"
                                       >
@@ -387,11 +439,13 @@ const Menu = () => {
                     ))}
                   </div>
                 </motion.div>
-              ))}
+                  ))}
+                </>
+              )}
             </div>
 
             {/* Legend */}
-            {menuCategories.length > 0 && (
+            {!todayClosureReason && menuCategories.length > 0 && (
               <div className="flex flex-wrap justify-center gap-8 mt-16 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Star size={14} className="text-secondary fill-secondary" />
@@ -411,7 +465,7 @@ const Menu = () => {
         </section>
 
         {/* Takeaway Notice */}
-        {activeTab === "takeaway" && menuCategories.length > 0 && (
+        {activeTab === "takeaway" && menuCategories.length > 0 && !todayClosureReason && (
           <section className="py-12 bg-muted">
             <div className="container mx-auto px-6 text-center">
               <p className="font-serif text-lg text-muted-foreground">

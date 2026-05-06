@@ -44,7 +44,8 @@ export async function apiFetch<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `API Error: ${response.status} ${response.statusText}`);
   }
 
   return response.json();
@@ -154,6 +155,10 @@ export interface ReservationSettingsResponse {
     operatingHours: OperatingHours[];
     closedDates: string[];
     openDates: string[];
+    restaurantClosedDates: Array<{
+      date: string;
+      reason: string;
+    }>;
     reservationDuration: number;
     slotInterval: number;
     maxAdvanceDays: number;
@@ -201,6 +206,7 @@ export interface OpenDate {
   date: string;
   dayName: string;
   isOpen: boolean;
+  closureReason?: string | null;
 }
 
 export interface SimpleReservationOpenDatesResponse {

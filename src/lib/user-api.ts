@@ -45,6 +45,11 @@ export interface DeliveryAddress {
   city: string;
 }
 
+export interface RestaurantClosedDate {
+  date: string;
+  reason: string;
+}
+
 export interface CreateOrderData {
   items?: OrderItem[];
   cateringItems?: Array<{
@@ -505,6 +510,7 @@ export const settingsApi = {
       pickupInterval: number;
       minimumOrderAmount: number;
       deliveryCharge: number;
+      restaurantClosedDates: RestaurantClosedDate[];
     };
   }> => {
     const response = await fetch(`${API_V1_URL}/reservations/settings`);

@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Leaf, Flame, Star, ShoppingCart, Plus, Minus } from "lucide-react";
+import { Leaf, Flame, Star, ShoppingCart, Plus, Minus, AlertCircle } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
 import { useMenu } from "@/hooks/use-menu";
 import { useCart } from "@/contexts/CartContext";
 import type { MenuItem } from "@/lib/api";
+import { settingsApi, type RestaurantClosedDate } from "@/lib/user-api";
 import { formatPrice } from "@/lib/formatPrice";
 
 const containerVariants = {
@@ -49,6 +50,34 @@ const MenuSection = () => {
   const { t, language } = useLanguage();
   const { data: menuData, isLoading, isError } = useMenu(activeTab);
   const { addItem, isInCart, getItemQuantity, updateQuantity } = useCart();
+  const [restaurantClosedDates, setRestaurantClosedDates] = useState<RestaurantClosedDate[]>([]);
+
+  const toDateKey = (value: Date | string): string => {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayDateKey = toDateKey(new Date());
+  const todayClosureReason =
+    restaurantClosedDates.find((entry) => toDateKey(entry.date) === todayDateKey)?.reason || null;
+
+  useEffect(() => {
+    const fetchOrderSettings = async () => {
+      try {
+        const response = await settingsApi.getOrderSettings();
+        if (response.success) {
+          setRestaurantClosedDates(response.data.restaurantClosedDates ?? []);
+        }
+      } catch (error) {
+        console.error('Failed to load restaurant closed dates:', error);
+      }
+    };
+
+    fetchOrderSettings();
+  }, []);
 
   // Transform API data - limit to 3 items per category for preview
   const menuCategories = menuData?.categories
@@ -111,7 +140,7 @@ const MenuSection = () => {
         </div>
 
         {/* Loading State */}
-        {isLoading && (
+        {!todayClosureReason && isLoading && (
           <div className="max-w-5xl mx-auto space-y-16">
             {[1, 2, 3].map((i) => (
               <div key={i} className="animate-pulse">
@@ -139,7 +168,7 @@ const MenuSection = () => {
         )}
 
         {/* Error State */}
-        {isError && !isLoading && (
+        {!todayClosureReason && isError && !isLoading && (
           <div className="text-center py-16">
             <p className="text-muted-foreground text-lg">
               {t("menu.error") || "Unable to load menu. Please try again later."}
@@ -148,7 +177,7 @@ const MenuSection = () => {
         )}
 
         {/* Empty State */}
-        {!isLoading && !isError && menuCategories.length === 0 && (
+        {!todayClosureReason && !isLoading && !isError && menuCategories.length === 0 && (
           <div className="text-center py-16">
             <p className="text-muted-foreground text-lg">
               {t("menu.empty") || "No menu items available at the moment."}
@@ -156,8 +185,25 @@ const MenuSection = () => {
           </div>
         )}
 
+        {todayClosureReason && (
+          <div className="max-w-5xl mx-auto p-5 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 flex items-start gap-3">
+            <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-serif font-medium">
+                {language === "nl" ? "Restaurant is vandaag gesloten" : "Restaurant is closed today"}
+              </p>
+              <p className="font-serif text-sm mt-1 text-amber-800">{todayClosureReason}</p>
+              <p className="font-serif text-sm mt-2 text-amber-800/90">
+                {language === "nl"
+                  ? "Het menu op de homepage is tijdelijk verborgen zolang het restaurant gesloten is."
+                  : "The homepage menu is temporarily hidden while the restaurant is closed."}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Menu Categories */}
-        {!isLoading && !isError && menuCategories.length > 0 && (
+        {!todayClosureReason && !isLoading && !isError && menuCategories.length > 0 && (
           <motion.div
             key={activeTab}
             className="max-w-5xl mx-auto space-y-16"
@@ -333,6 +379,7 @@ const MenuSection = () => {
         )}
 
         {/* View Full Menu CTA */}
+        {!todayClosureReason && (
         <div className="text-center mt-16">
           <a
             href="/menu"
@@ -341,8 +388,10 @@ const MenuSection = () => {
             {t("menu.viewfull")}
           </a>
         </div>
+        )}
 
         {/* Legend */}
+        {!todayClosureReason && (
         <div className="flex flex-wrap justify-center gap-8 mt-10 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Star size={14} className="text-secondary fill-secondary" />
@@ -357,6 +406,7 @@ const MenuSection = () => {
             <span>Spicy</span>
           </div>
         </div>
+        )}
       </div>
     </section>
   );

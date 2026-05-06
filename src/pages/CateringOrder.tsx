@@ -16,7 +16,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
-import { cateringApi, CateringPack } from '@/lib/user-api';
+import { cateringApi, CateringPack, settingsApi, RestaurantClosedDate } from '@/lib/user-api';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -29,6 +29,7 @@ const CateringOrder = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [restaurantClosedDates, setRestaurantClosedDates] = useState<RestaurantClosedDate[]>([]);
 
   // Form state
   const [peopleCount, setPeopleCount] = useState<number>(10);
@@ -43,6 +44,18 @@ const CateringOrder = () => {
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [notes, setNotes] = useState('');
+
+  const toDateKey = (value: Date | string): string => {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const selectedDateClosureReason = deliveryDate
+    ? restaurantClosedDates.find((entry) => toDateKey(entry.date) === toDateKey(deliveryDate))?.reason || null
+    : null;
 
   // Fetch pack details
   useEffect(() => {
@@ -66,6 +79,21 @@ const CateringOrder = () => {
 
     fetchPack();
   }, [packId]);
+
+  useEffect(() => {
+    const fetchOrderSettings = async () => {
+      try {
+        const response = await settingsApi.getOrderSettings();
+        if (response.success) {
+          setRestaurantClosedDates(response.data.restaurantClosedDates ?? []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch restaurant closed dates:', err);
+      }
+    };
+
+    fetchOrderSettings();
+  }, []);
 
   // Calculate total price
   const totalPrice = pack ? pack.pricePerPerson * peopleCount : 0;
@@ -111,6 +139,11 @@ const CateringOrder = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (selectedDateClosureReason) {
+      setError(selectedDateClosureReason);
+      return;
+    }
     
     if (!pack || !isFormValid()) {
       setError(language === 'nl' 
@@ -229,6 +262,18 @@ const CateringOrder = () => {
                     <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3 text-destructive">
                       <AlertCircle size={20} />
                       <span className="font-serif text-sm">{error}</span>
+                    </div>
+                  )}
+
+                  {selectedDateClosureReason && (
+                    <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3 text-amber-900">
+                      <AlertCircle size={20} className="mt-0.5" />
+                      <div>
+                        <p className="font-serif font-medium">
+                          {language === 'nl' ? 'Restaurant is gesloten op deze datum' : 'Restaurant is closed on this date'}
+                        </p>
+                        <p className="font-serif text-sm mt-1 text-amber-800">{selectedDateClosureReason}</p>
+                      </div>
                     </div>
                   )}
 
@@ -420,7 +465,7 @@ const CateringOrder = () => {
                     {/* Submit Button */}
                     <button
                       type="submit"
-                      disabled={isSubmitting || !isFormValid()}
+                      disabled={isSubmitting || !isFormValid() || !!selectedDateClosureReason}
                       className="w-full flex items-center justify-center gap-3 py-4 bg-primary text-primary-foreground font-serif text-lg hover:bg-primary/90 transition-colors rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? (
