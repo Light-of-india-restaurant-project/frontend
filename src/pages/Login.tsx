@@ -108,10 +108,19 @@ const Login = () => {
           return;
         }
 
-        if (!mobile.startsWith("0") || mobile.replace(/[\s-]/g, '').length !== 10) {
+        if (!mobile.startsWith("0") && !mobile.startsWith("+31")) {
           setError(language === "nl" 
-            ? "Telefoonnummer moet beginnen met 0 (bijv. 0612345678)" 
-            : "Phone number must start with 0 (e.g. 0612345678)");
+            ? "Telefoonnummer moet beginnen met 0 of +31 (bijv. 0612345678 of +31612345678)" 
+            : "Phone number must start with 0 or +31 (e.g. 0612345678 or +31612345678)");
+          setIsSubmitting(false);
+          return;
+        }
+        
+        const cleanMobile = mobile.replace(/[\s-]/g, '');
+        if (!/^(?:\+31|0)[1-9]\d{8}$/.test(cleanMobile)) {
+          setError(language === "nl" 
+            ? "Ongeldig telefoonnummer (bijv. 0612345678 of +31612345678)" 
+            : "Invalid phone number (e.g. 0612345678 or +31612345678)");
           setIsSubmitting(false);
           return;
         }
@@ -223,19 +232,19 @@ const Login = () => {
                     </label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-                      <input
+                    <input
                         type="tel"
                         value={mobile}
                         onChange={(e) => setMobile(e.target.value)}
                         required
-                        placeholder="0612345678"
+                        placeholder={language === "nl" ? "0612345678 of +31612345678" : "0612345678 or +31612345678"}
                         className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       {language === "nl" 
-                        ? "Voer uw telefoonnummer in (bijv. 0612345678)" 
-                        : "Enter your phone number (e.g. 0612345678)"}
+                        ? "Voer uw telefoonnummer in (bijv. 0612345678 of +31612345678)" 
+                        : "Enter your phone number (e.g. 0612345678 or +31612345678)"}
                     </p>
                   </div>
                 )}

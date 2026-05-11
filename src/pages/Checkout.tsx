@@ -319,6 +319,16 @@ const Checkout = () => {
     setIsSubmitting(true);
     setError(null);
 
+    // Validate phone number format
+    const cleanMobile = contactMobile.replace(/[\s-]/g, '');
+    if (!/^(?:\+31|0)[1-9]\d{8}$/.test(cleanMobile)) {
+      setError(language === "nl"
+        ? "Ongeldig contactnummer (bijv. 0612345678 of +31612345678)"
+        : "Invalid contact number (e.g. 0612345678 or +31612345678)");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const orderData = {
         items: items.length > 0 ? items.map((item) => ({
@@ -904,7 +914,7 @@ const Checkout = () => {
                     type="tel"
                     value={contactMobile}
                     onChange={(e) => setContactMobile(e.target.value)}
-                    placeholder={language === "nl" ? "bijv. 0612345678" : "e.g. 0612345678"}
+                    placeholder={language === "nl" ? "bijv. 0612345678 of +31612345678" : "e.g. 0612345678 or +31612345678"}
                     className="w-full p-3 bg-background border border-border rounded font-serif focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>

@@ -152,6 +152,15 @@ const CateringOrder = () => {
       return;
     }
 
+    // Validate phone number format
+    const cleanPhone = customerPhone.replace(/[\s-]/g, '');
+    if (!/^(?:\+31|0)[1-9]\d{8}$/.test(cleanPhone)) {
+      setError(language === 'nl'
+        ? 'Ongeldig telefoonnummer (bijv. 0612345678 of +31612345678)'
+        : 'Invalid phone number (e.g. 0612345678 or +31612345678)');
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
 
