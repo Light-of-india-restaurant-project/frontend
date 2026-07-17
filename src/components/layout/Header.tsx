@@ -166,8 +166,7 @@ const Header = () => {
           
           <a
             href="/desi-nashta-brunch"
-            className="font-serif text-lg transition-colors hover:opacity-80"
-            style={{ color: 'hsl(43, 74%, 49%)' }}
+            className="nav-link font-serif text-lg"
           >
             Nashta / Brunch
           </a>
@@ -268,8 +267,7 @@ const Header = () => {
             </div>
             <a
               href="/desi-nashta-brunch"
-              className="font-serif text-lg py-2 transition-colors"
-              style={{ color: 'hsl(43, 74%, 49%)' }}
+              className="text-foreground/80 hover:text-primary transition-colors font-serif text-lg py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Nashta / Brunch
