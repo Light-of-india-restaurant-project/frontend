@@ -17,6 +17,7 @@ export const translations: Translations = {
   "nav.events": { en: "Private Events", nl: "Privé Evenementen" },
   "nav.contact": { en: "Contact", nl: "Contact" },
   "nav.reserve": { en: "Reserve Table", nl: "Reserveren" },
+  "nav.reserveBreakfast": { en: "Reserve Breakfast", nl: "Ontbijt Reserveren" },
   "nav.specials": { en: "Specials", nl: "Aanbiedingen" },
   "nav.orderOnline": { en: "Order Online", nl: "Online Bestellen" },
 
@@ -134,6 +135,17 @@ export const translations: Translations = {
   "reservation.success": { en: "Reservation submitted successfully!", nl: "Reservering succesvol verzonden!" },
   "reservation.confirm": { en: "We'll confirm your booking shortly.", nl: "We bevestigen uw boeking binnenkort." },
 
+  // Breakfast Reservation
+  "breakfastReservation.title": { en: "Breakfast Reservations", nl: "Ontbijtreserveringen" },
+  "breakfastReservation.subtitle": { en: "Reserve Your Breakfast", nl: "Reserveer Uw Ontbijt" },
+  "breakfastReservation.submit": { en: "Reserve Breakfast", nl: "Reserveer Ontbijt" },
+  "breakfastReservation.submitting": { en: "Sending...", nl: "Versturen..." },
+  "breakfastReservation.successTitle": { en: "Breakfast Request Sent!", nl: "Ontbijtverzoek verzonden!" },
+  "breakfastReservation.successDescription": {
+    en: "We have received your breakfast reservation request. We will contact you soon to confirm.",
+    nl: "We hebben uw ontbijtreserveringsverzoek ontvangen. We nemen snel contact met u op om te bevestigen.",
+  },
+
   // Restaurant closure messaging
   "closure.closedTodayTitle": { en: "Restaurant is closed today", nl: "Restaurant is vandaag gesloten" },
   "closure.closedTodayBadge": { en: "Closed today", nl: "Vandaag gesloten" },
@@ -180,6 +192,73 @@ export const translations: Translations = {
   "newsletter.subscribing": { en: "Subscribing...", nl: "Abonneren..." },
   "newsletter.success": { en: "Successfully subscribed!", nl: "Succesvol geabonneerd!" },
   "newsletter.welcome": { en: "Welcome to our newsletter.", nl: "Welkom bij onze nieuwsbrief." },
+
+  // Desi Nashta / Brunch page
+  "nashta.badge": { en: "Saturday & Sunday", nl: "Zaterdag & Zondag" },
+  "nashta.hero.title": { en: "Nashta / Brunch", nl: "Nashta / Brunch" },
+  "nashta.hero.subtitle": {
+    en: "A leisurely morning feast rooted in the rich breakfast traditions of India",
+    nl: "Een ontspannen ochtendfestijn geworteld in de rijke ontbijttradities van India",
+  },
+  "nashta.hero.cta": { en: "Book Your Spot", nl: "Reserveer Uw Plek" },
+  "nashta.about.title": { en: "What is Desi Nashta?", nl: "Wat is Desi Nashta?" },
+  "nashta.about.p1": {
+    en: "Nashta — Urdu and Hindi for morning meal — is far more than breakfast. It is a ritual. Across the subcontinent, families gather over steaming chai, sizzling parathas, and fragrant chutneys before the day begins in earnest. At Light of India, we bring that unhurried warmth to Rotterdam.",
+    nl: "Nashta — Urdu en Hindi voor ochtendmaal — is veel meer dan ontbijt. Het is een ritueel. Op het hele subcontinent komen families samen bij dampende chai, ssissende paratha's en geurige chutneys voordat de dag echt begint. Bij Light of India brengen wij die rustige warmte naar Rotterdam.",
+  },
+  "nashta.about.p2": {
+    en: "Our Desi Nashta & Brunch is a curated journey through regional Indian morning traditions — from the spiced street-food energy of Delhi and Mumbai to the delicate South Indian flavours of Chennai and Kerala. Everything is prepared fresh each weekend morning in our kitchen.",
+    nl: "Onze Desi Nashta & Brunch is een samengestelde reis door regionale Indiase ochtendrituelen — van de gekruide straatvoedselenergie van Delhi en Mumbai tot de delicate Zuid-Indiase smaken van Chennai en Kerala. Alles wordt elke weekendochtend vers bereid in onze keuken.",
+  },
+  "nashta.hours.label": { en: "Brunch Hours", nl: "Brunch Tijden" },
+  "nashta.hours.value": { en: "Saturday & Sunday · 10:00 — 13:30", nl: "Zaterdag & Zondag · 10:00 — 13:30" },
+  "nashta.where.label": { en: "Where", nl: "Waar" },
+  "nashta.where.value": { en: "Light of India · Veerhaven 7, Rotterdam", nl: "Light of India · Veerhaven 7, Rotterdam" },
+  "nashta.experience.label": { en: "The Experience", nl: "De Beleving" },
+  "nashta.experience.value": {
+    en: "Shared platters, bottomless masala chai, freshly fried breads, and the aromas of a real Indian kitchen — all in our relaxed riverside setting.",
+    nl: "Gedeelde schotels, onbeperkte masala chai, vers gebakken broden en de geuren van een echte Indiase keuken — allemaal in onze ontspannen oeverlocatie.",
+  },
+  "nashta.quote": {
+    en: "\"The best mornings are slow ones — chai in hand, warm paratha on the plate, and good company around the table.\"",
+    nl: "\"De beste ochtenden zijn de trage — chai in de hand, warme paratha op het bord, en goed gezelschap aan tafel.\"",
+  },
+  "nashta.highlights.title": { en: "Nashta Highlights", nl: "Nashta Hoogtepunten" },
+  "nashta.highlights.subtitle": { en: "Signature Morning Dishes", nl: "Kenmerkende Ochtendhapjes" },
+  "nashta.highlights.note": {
+    en: "Menu items rotate seasonally. Vegetarian, vegan & gluten-free options available — ask your server.",
+    nl: "Menu-items wisselen seizoensgebonden. Vegetarische, veganistische en glutenvrije opties beschikbaar — vraag uw bediening.",
+  },
+  "nashta.dish.chai.name": { en: "Masala Chai", nl: "Masala Chai" },
+  "nashta.dish.chai.desc": {
+    en: "Freshly brewed spiced tea with cardamom, ginger, and saffron-kissed milk — the soul of every Indian morning.",
+    nl: "Vers gezette gekruide thee met kardemom, gember en saffraan-melk — de ziel van elke Indiase ochtend.",
+  },
+  "nashta.dish.paratha.name": { en: "Aloo Paratha", nl: "Aloo Paratha" },
+  "nashta.dish.paratha.desc": {
+    en: "Crisp whole-wheat flatbread stuffed with spiced potatoes, served with homemade yoghurt and mint chutney.",
+    nl: "Knapperig volkorenbrood gevuld met gekruide aardappelen, geserveerd met zelfgemaakte yoghurt en muntchutney.",
+  },
+  "nashta.dish.poha.name": { en: "Poha", nl: "Poha" },
+  "nashta.dish.poha.desc": {
+    en: "Light flattened rice tossed with mustard seeds, turmeric, fresh curry leaves, peas, and roasted peanuts.",
+    nl: "Lichte platte rijst gebakken met mosterdzaadjes, kurkuma, verse kerriebladen, erwten en geroosterde pinda's.",
+  },
+  "nashta.dish.chole.name": { en: "Chole Bhature", nl: "Chole Bhature" },
+  "nashta.dish.chole.desc": {
+    en: "Puffy fried bread paired with slow-cooked spiced chickpeas — a Punjabi classic that commands attention.",
+    nl: "Luchtig gefrituurde brood met langzaam gegaarde gekruide kikkererwten — een Punjabi klassieker die aandacht trekt.",
+  },
+  "nashta.dish.dosa.name": { en: "Masala Dosa", nl: "Masala Dosa" },
+  "nashta.dish.dosa.desc": {
+    en: "Golden crispy South Indian crepe filled with seasoned potato masala, served with sambar and coconut chutney.",
+    nl: "Goudkleurige knapperige Zuid-Indiase crêpe gevuld met gekruide aardappelmasala, geserveerd met sambar en kokosnotenkokoschutney.",
+  },
+  "nashta.dish.samosa.name": { en: "Samosa Chaat", nl: "Samosa Chaat" },
+  "nashta.dish.samosa.desc": {
+    en: "Flaky samosas crushed over tangy tamarind chutney, whipped yoghurt, sev, and pomegranate arils.",
+    nl: "Bladerige samosa's gebroken over pittige tamarindechutney, opgeklopte yoghurt, sev en granaatappelpitjes.",
+  },
 
   // Footer
   "footer.tagline": {

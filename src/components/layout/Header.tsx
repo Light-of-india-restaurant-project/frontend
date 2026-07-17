@@ -19,7 +19,6 @@ const Header = () => {
 
   const navLinks = useMemo(() => [
     { label: t("nav.menu"), href: "#menu" },
-    { label: t("nav.orderOnline"), href: "/menu" },
     { label: t("nav.about"), href: "#about" },
     { label: t("nav.gallery"), href: "#gallery" },
     { label: t("nav.contact"), href: "#contact" },
@@ -29,6 +28,7 @@ const Header = () => {
     { label: t("nav.events"), href: "/private-events" },
     { label: language === 'nl' ? 'Catering' : 'Catering', href: "/catering" },
     { label: t("nav.specials"), href: "/specials" },
+    { label: t("nav.reserveBreakfast"), href: "/desi-nashta-brunch" },
   ], [t, language]);
 
   // Handle navigation for hash links
@@ -165,6 +165,13 @@ const Header = () => {
           )}
           
           <a
+            href="/desi-nashta-brunch"
+            className="font-serif text-lg transition-colors hover:opacity-80"
+            style={{ color: 'hsl(43, 74%, 49%)' }}
+          >
+            Nashta / Brunch
+          </a>
+          <a
             href="#reservation"
             onClick={(e) => handleNavClick(e, "#reservation")}
             className="px-6 py-2.5 font-serif transition-colors" style={{ backgroundColor: 'hsl(345, 65%, 25%)', color: 'hsl(40, 33%, 96%)' }}
@@ -259,6 +266,14 @@ const Header = () => {
             <div className="py-2">
               <LanguageSwitcher />
             </div>
+            <a
+              href="/desi-nashta-brunch"
+              className="font-serif text-lg py-2 transition-colors"
+              style={{ color: 'hsl(43, 74%, 49%)' }}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Nashta / Brunch
+            </a>
             <a
               href="#reservation"
               className="bg-primary text-primary-foreground px-6 py-3 font-serif text-center hover:bg-primary/90 transition-colors mt-2"

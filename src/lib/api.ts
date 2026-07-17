@@ -20,6 +20,10 @@ export const apiConfig = {
     // Simple Reservation endpoints (v1)
     simpleReservations: `${API_V1_URL}/reservations/simple`,
     simpleReservationsOpenDates: `${API_V1_URL}/reservations/simple/open-dates`,
+
+    // Breakfast Reservation endpoints (v1)
+    breakfastReservations: `${API_V1_URL}/reservations/breakfast`,
+    breakfastReservationsOpenDates: `${API_V1_URL}/reservations/breakfast/open-dates`,
     
     // Contact & Newsletter
     contact: `${API_V1_URL}/contact`,
@@ -77,6 +81,15 @@ export const api = {
     }),
   getSimpleReservationOpenDates: () =>
     apiFetch<SimpleReservationOpenDatesResponse>(apiConfig.endpoints.simpleReservationsOpenDates),
+
+  // Breakfast Reservations
+  createBreakfastReservation: (data: BreakfastReservationData) =>
+    apiFetch<BreakfastReservationResponse>(apiConfig.endpoints.breakfastReservations, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  getBreakfastReservationOpenDates: () =>
+    apiFetch<SimpleReservationOpenDatesResponse>(apiConfig.endpoints.breakfastReservationsOpenDates),
 
   // Contact
   sendContactMessage: (data: ContactData) =>
@@ -213,6 +226,30 @@ export interface SimpleReservationOpenDatesResponse {
   message: string;
   success: boolean;
   data: OpenDate[];
+}
+
+// Breakfast Reservation Types
+export interface BreakfastReservationData {
+  name: string;
+  email: string;
+  contactNumber: string;
+  numberOfGuests: number;
+  reservationDate: string;
+}
+
+export interface BreakfastReservationResponse {
+  message: string;
+  success: boolean;
+  data: {
+    _id: string;
+    name: string;
+    email: string;
+    contactNumber: string;
+    numberOfGuests: number;
+    reservationDate: string;
+    status: 'pending' | 'accepted' | 'rejected' | 'cancelled';
+    createdAt: string;
+  };
 }
 
 export interface MenuItem {

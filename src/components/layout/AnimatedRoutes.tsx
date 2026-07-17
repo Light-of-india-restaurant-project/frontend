@@ -18,6 +18,7 @@ import CateringSuccess from "@/pages/CateringSuccess";
 import Specials from "@/pages/Specials";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
+import DesiNashtaBrunch from "@/pages/DesiNashtaBrunch";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -161,6 +162,15 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <TermsOfService />
+            </PageTransition>
+          }
+        />
+
+        <Route
+          path="/desi-nashta-brunch"
+          element={
+            <PageTransition>
+              <DesiNashtaBrunch />
             </PageTransition>
           }
         />
