@@ -27,6 +27,7 @@ export const apiConfig = {
     
     // Contact & Newsletter
     contact: `${API_V1_URL}/contact`,
+    formGuardToken: `${API_V1_URL}/security/form-guard-token`,
     newsletter: `${API_BASE_URL}/newsletter`,
     
     // Gallery (v1)
@@ -97,6 +98,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+
+  // No-CAPTCHA form guard token
+  getFormGuardToken: (form: "contact" | "simple-reservation" | "breakfast-reservation") =>
+    apiFetch<FormGuardTokenResponse>(`${apiConfig.endpoints.formGuardToken}?form=${encodeURIComponent(form)}`),
 
   // Newsletter
   subscribeNewsletter: (email: string) =>
@@ -187,6 +192,9 @@ export interface ContactData {
   subject: string;
   message: string;
   language?: 'en' | 'nl';
+  website?: string;
+  guardToken?: string;
+  guardStartedAt?: number;
 }
 
 // Simple Reservation Types
@@ -197,6 +205,9 @@ export interface SimpleReservationData {
   numberOfGuests: number;
   reservationDate: string;
   reservationTime: string;
+  website?: string;
+  guardToken?: string;
+  guardStartedAt?: number;
 }
 
 export interface SimpleReservationResponse {
@@ -235,6 +246,17 @@ export interface BreakfastReservationData {
   contactNumber: string;
   numberOfGuests: number;
   reservationDate: string;
+  website?: string;
+  guardToken?: string;
+  guardStartedAt?: number;
+}
+
+export interface FormGuardTokenResponse {
+  success: boolean;
+  data: {
+    token: string;
+    expiresInMs: number;
+  };
 }
 
 export interface BreakfastReservationResponse {

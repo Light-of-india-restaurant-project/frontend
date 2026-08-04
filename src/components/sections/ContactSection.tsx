@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Phone, Mail, MapPin, Clock, Send, AlertCircle } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
@@ -20,10 +20,27 @@ const ContactSection = () => {
     email: "",
     subject: "",
     message: "",
+    website: "",
   });
+  const [guardToken, setGuardToken] = useState("");
+  const [guardStartedAt, setGuardStartedAt] = useState<number>(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const bootstrapGuard = async () => {
+      try {
+        const result = await api.getFormGuardToken("contact");
+        setGuardToken(result.data.token);
+        setGuardStartedAt(Date.now());
+      } catch {
+        setGuardToken("");
+      }
+    };
+
+    bootstrapGuard();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +55,9 @@ const ContactSection = () => {
         subject: formData.subject,
         message: formData.message.trim(),
         language: language as 'en' | 'nl',
+        website: formData.website,
+        guardToken,
+        guardStartedAt,
       };
 
       // Call the actual backend API
@@ -55,7 +75,7 @@ const ContactSection = () => {
       // Reset after 5 seconds
       setTimeout(() => {
         setIsSuccess(false);
-        setFormData({ name: "", email: "", subject: "", message: "" });
+        setFormData({ name: "", email: "", subject: "", message: "", website: "" });
       }, 5000);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
@@ -216,6 +236,18 @@ const ContactSection = () => {
                   </div>
                 )}
                 <div className="grid sm:grid-cols-2 gap-6">
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="contact-website">Website</label>
+                    <input
+                      type="text"
+                      id="contact-website"
+                      name="website"
+                      autoComplete="off"
+                      tabIndex={-1}
+                      value={formData.website}
+                      onChange={handleChange}
+                    />
+                  </div>
                   <div>
                     <label htmlFor="contact-name" className="block font-serif mb-2 text-foreground">
                       {t("contact.name")} *
@@ -288,7 +320,7 @@ const ContactSection = () => {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !guardToken}
                   className="w-full bg-primary text-primary-foreground py-4 font-serif text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (

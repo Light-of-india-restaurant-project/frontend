@@ -25,7 +25,10 @@ const ReservationSection = () => {
     numberOfGuests: "2",
     reservationDate: "",
     reservationTime: "",
+    website: "",
   });
+  const [guardToken, setGuardToken] = useState("");
+  const [guardStartedAt, setGuardStartedAt] = useState<number>(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +75,20 @@ const ReservationSection = () => {
     fetchOpenDates();
   }, [language, toast]);
 
+  useEffect(() => {
+    const bootstrapGuard = async () => {
+      try {
+        const result = await api.getFormGuardToken('simple-reservation');
+        setGuardToken(result.data.token);
+        setGuardStartedAt(Date.now());
+      } catch {
+        setGuardToken('');
+      }
+    };
+
+    bootstrapGuard();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -91,6 +108,9 @@ const ReservationSection = () => {
         numberOfGuests: parseInt(formData.numberOfGuests, 10),
         reservationDate: formData.reservationDate,
         reservationTime: formData.reservationTime,
+        website: formData.website,
+        guardToken,
+        guardStartedAt,
       };
 
       await api.createSimpleReservation(reservationData);
@@ -114,6 +134,7 @@ const ReservationSection = () => {
           numberOfGuests: "2",
           reservationDate: "",
           reservationTime: "",
+          website: "",
         });
       }, 10000);
     } catch (err) {
@@ -209,6 +230,19 @@ const ReservationSection = () => {
               )}
 
               {/* Date Selection */}
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="reservation-website">Website</label>
+                <input
+                  type="text"
+                  id="reservation-website"
+                  name="website"
+                  autoComplete="off"
+                  tabIndex={-1}
+                  value={formData.website}
+                  onChange={handleChange}
+                />
+              </div>
+
               <div>
                 <label htmlFor="reservationDate" className="block font-serif mb-2 text-cream/80">
                   <Calendar size={16} className="inline mr-2" />
@@ -370,7 +404,7 @@ const ReservationSection = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting || !formData.reservationDate || !formData.reservationTime || !formData.name || !formData.email || !formData.contactNumber || !!selectedDateClosureReason}
+                disabled={isSubmitting || !guardToken || !formData.reservationDate || !formData.reservationTime || !formData.name || !formData.email || !formData.contactNumber || !!selectedDateClosureReason}
                 className="w-full bg-secondary text-secondary-foreground py-4 font-serif text-lg hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (

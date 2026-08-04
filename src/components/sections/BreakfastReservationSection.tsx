@@ -18,7 +18,10 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
     contactNumber: "",
     numberOfGuests: "2",
     reservationDate: "",
+    website: "",
   });
+  const [guardToken, setGuardToken] = useState("");
+  const [guardStartedAt, setGuardStartedAt] = useState<number>(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +65,20 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
     fetchOpenDates();
   }, [language, toast]);
 
+  useEffect(() => {
+    const bootstrapGuard = async () => {
+      try {
+        const result = await api.getFormGuardToken('breakfast-reservation');
+        setGuardToken(result.data.token);
+        setGuardStartedAt(Date.now());
+      } catch {
+        setGuardToken('');
+      }
+    };
+
+    bootstrapGuard();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -80,6 +97,9 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
         contactNumber: formData.contactNumber.trim(),
         numberOfGuests: parseInt(formData.numberOfGuests, 10),
         reservationDate: formData.reservationDate,
+        website: formData.website,
+        guardToken,
+        guardStartedAt,
       };
 
       await api.createBreakfastReservation(reservationData);
@@ -102,6 +122,7 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
           contactNumber: "",
           numberOfGuests: "2",
           reservationDate: "",
+          website: "",
         });
       }, 10000);
     } catch (err) {
@@ -176,6 +197,19 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
               )}
 
               <div>
+                <div className="hidden" aria-hidden="true">
+                  <label htmlFor="breakfast-reservation-website">Website</label>
+                  <input
+                    type="text"
+                    id="breakfast-reservation-website"
+                    name="website"
+                    autoComplete="off"
+                    tabIndex={-1}
+                    value={formData.website}
+                    onChange={handleChange}
+                  />
+                </div>
+
                 <label htmlFor="reservationDate" className="block font-serif mb-2 text-cream/80">
                   <Calendar size={16} className="inline mr-2" />
                   {t("reservation.date")} *
@@ -300,7 +334,7 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
 
               <button
                 type="submit"
-                disabled={isSubmitting || !formData.reservationDate || !formData.name || !formData.email || !formData.contactNumber || !!selectedDateClosureReason}
+                disabled={isSubmitting || !guardToken || !formData.reservationDate || !formData.name || !formData.email || !formData.contactNumber || !!selectedDateClosureReason}
                 className="w-full bg-secondary text-secondary-foreground py-4 font-serif text-lg hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
