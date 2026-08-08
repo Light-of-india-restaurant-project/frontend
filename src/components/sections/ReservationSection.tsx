@@ -18,6 +18,26 @@ const TIME_SLOTS = [
 const ReservationSection = () => {
   const { t, language } = useLanguage();
   const { toast } = useToast();
+
+  const isDuplicateReservationError = (message: string): boolean => {
+    const normalized = message.toLowerCase();
+    return (
+      normalized.includes('already submitted recently') ||
+      normalized.includes('too many reservation attempts with this email') ||
+      normalized.includes('please wait a moment before trying again')
+    );
+  };
+
+  const getReservationErrorMessage = (message: string): string => {
+    if (!isDuplicateReservationError(message)) {
+      return message;
+    }
+
+    return language === 'nl'
+      ? 'Er bestaat al een recente reservering met dit e-mailadres. Controleer uw e-mail of probeer het later opnieuw.'
+      : 'A recent reservation with this email already exists. Please check your email or try again later.';
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -139,13 +159,12 @@ const ReservationSection = () => {
       }, 10000);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
-      setError(errorMessage);
+      const displayMessage = getReservationErrorMessage(errorMessage);
+      setError(displayMessage);
       toast({
         variant: "destructive",
         title: language === "nl" ? "Reservering mislukt" : "Reservation failed",
-        description: language === "nl" 
-          ? "Probeer het opnieuw of bel ons direct." 
-          : "Please try again or call us directly.",
+        description: displayMessage,
         duration: 5000,
       });
     } finally {
