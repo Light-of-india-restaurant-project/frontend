@@ -48,6 +48,22 @@ const ContactSection = () => {
     setError(null);
 
     try {
+      let tokenToSend = guardToken;
+      let startedAtToSend = guardStartedAt;
+
+      // If the guard token failed to load on mount, try once more at submit time.
+      if (!tokenToSend) {
+        try {
+          const result = await api.getFormGuardToken("contact");
+          tokenToSend = result.data.token;
+          startedAtToSend = Date.now();
+          setGuardToken(tokenToSend);
+          setGuardStartedAt(startedAtToSend);
+        } catch {
+          // Keep graceful fallback so the form is not blocked by token endpoint issues.
+        }
+      }
+
       // Prepare contact data for API
       const contactData: ContactData = {
         name: formData.name.trim(),
@@ -56,8 +72,8 @@ const ContactSection = () => {
         message: formData.message.trim(),
         language: language as 'en' | 'nl',
         website: formData.website,
-        guardToken,
-        guardStartedAt,
+        guardToken: tokenToSend,
+        guardStartedAt: startedAtToSend,
       };
 
       // Call the actual backend API
@@ -320,7 +336,7 @@ const ContactSection = () => {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || !guardToken}
+                  disabled={isSubmitting}
                   className="w-full bg-primary text-primary-foreground py-4 font-serif text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
