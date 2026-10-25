@@ -27,9 +27,7 @@ const Header = () => {
   const servicesLinks = useMemo(() => [
     { label: t("nav.events"), href: "/private-events" },
     { label: language === 'nl' ? 'Catering' : 'Catering', href: "/catering" },
-    { label: t("nav.specials"), href: "/specials" },
-    { label: t("nav.reserveBreakfast"), href: "/desi-nashta-brunch" },
-  ], [t, language]);
+    { label: t("nav.specials"), href: "/specials" },  ], [t, language]);
 
   // Handle navigation for hash links
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -165,12 +163,6 @@ const Header = () => {
           )}
           
           <a
-            href="/desi-nashta-brunch"
-            className="nav-link font-serif text-lg"
-          >
-            Nashta / Brunch
-          </a>
-          <a
             href="#reservation"
             onClick={(e) => handleNavClick(e, "#reservation")}
             className="px-6 py-2.5 font-serif transition-colors" style={{ backgroundColor: 'hsl(345, 65%, 25%)', color: 'hsl(40, 33%, 96%)' }}
@@ -265,13 +257,6 @@ const Header = () => {
             <div className="py-2">
               <LanguageSwitcher />
             </div>
-            <a
-              href="/desi-nashta-brunch"
-              className="text-foreground/80 hover:text-primary transition-colors font-serif text-lg py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Nashta / Brunch
-            </a>
             <a
               href="#reservation"
               className="bg-primary text-primary-foreground px-6 py-3 font-serif text-center hover:bg-primary/90 transition-colors mt-2"

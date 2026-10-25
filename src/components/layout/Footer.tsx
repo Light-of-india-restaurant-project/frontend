@@ -131,9 +131,6 @@ const Footer = () => {
               <a href="#contact" onClick={(e) => handleNavClick(e, "#contact")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.contact")}
               </a>
-              <a href="/desi-nashta-brunch" className="block text-cream/80 hover:text-secondary transition-colors">
-                {t("nav.reserveBreakfast")}
-              </a>
             </div>
           </div>
 
@@ -151,9 +148,6 @@ const Footer = () => {
               </a>
               <a href="/specials" className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.specials")}
-              </a>
-              <a href="/desi-nashta-brunch" className="block text-cream/80 hover:text-secondary transition-colors">
-                {t("nav.reserveBreakfast")}
               </a>
               <a href="#reservation" onClick={(e) => handleNavClick(e, "#reservation")} className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.reserve")}
