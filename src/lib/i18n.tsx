@@ -127,6 +127,7 @@ export const translations: Translations = {
   "reservation.email": { en: "Email", nl: "E-mail" },
   "reservation.phone": { en: "Phone", nl: "Telefoon" },
   "reservation.date": { en: "Date", nl: "Datum" },
+  "reservation.fullyReserved": { en: "Fully Reserved", nl: "Volgeboekt" },
   "reservation.time": { en: "Time", nl: "Tijd" },
   "reservation.guests": { en: "Number of Guests", nl: "Aantal Gasten" },
   "reservation.requests": { en: "Special Requests", nl: "Speciale Verzoeken" },

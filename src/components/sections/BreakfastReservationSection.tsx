@@ -248,7 +248,7 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
                         style={{ backgroundColor: "hsl(25, 30%, 20%)", color: dateObj.isOpen ? "hsl(40, 33%, 96%)" : "hsl(25, 25%, 50%)" }}
                       >
                         {formatDateOption(dateObj.date, dateObj.dayName)}
-                        {!dateObj.isOpen ? (language === "nl" ? " - Gesloten" : " - Closed") : ""}
+                        {!dateObj.isOpen ? ` - ${t("reservation.fullyReserved")}` : ""}
                       </option>
                     ))}
                   </select>
