@@ -19,6 +19,7 @@ import Specials from "@/pages/Specials";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
 import DesiNashtaBrunch from "@/pages/DesiNashtaBrunch";
+import UpcomingEvents from "@/pages/UpcomingEvents";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -171,6 +172,15 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <DesiNashtaBrunch />
+            </PageTransition>
+          }
+        />
+
+        <Route
+          path="/upcoming-events"
+          element={
+            <PageTransition>
+              <UpcomingEvents />
             </PageTransition>
           }
         />

@@ -26,6 +26,7 @@ const Header = () => {
 
   const servicesLinks = useMemo(() => [
     { label: t("nav.events"), href: "/private-events" },
+    { label: t("nav.upcomingEvents"), href: "/upcoming-events" },
     { label: language === 'nl' ? 'Catering' : 'Catering', href: "/catering" },
     { label: t("nav.specials"), href: "/specials" },  ], [t, language]);
 

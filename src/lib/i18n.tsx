@@ -18,6 +18,7 @@ export const translations: Translations = {
   "nav.contact": { en: "Contact", nl: "Contact" },
   "nav.reserve": { en: "Reserve Table", nl: "Reserveren" },
   "nav.reserveBreakfast": { en: "Reserve Breakfast", nl: "Ontbijt Reserveren" },
+  "nav.upcomingEvents": { en: "Upcoming Events", nl: "Aankomende Evenementen" },
   "nav.specials": { en: "Specials", nl: "Aanbiedingen" },
   "nav.orderOnline": { en: "Order Online", nl: "Online Bestellen" },
 
