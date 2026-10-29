@@ -26,9 +26,9 @@ const Header = () => {
 
   const servicesLinks = useMemo(() => [
     { label: t("nav.events"), href: "/private-events" },
-    { label: t("nav.upcomingEvents"), href: "/upcoming-events" },
     { label: language === 'nl' ? 'Catering' : 'Catering', href: "/catering" },
-    { label: t("nav.specials"), href: "/specials" },  ], [t, language]);
+    { label: t("nav.specials"), href: "/specials" },
+  ], [t, language]);
 
   // Handle navigation for hash links
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -91,6 +91,13 @@ const Header = () => {
               {link.label}
             </a>
           ))}
+
+          <a
+            href="/upcoming-events"
+            className="nav-link font-serif text-lg"
+          >
+            {t("nav.upcomingEvents")}
+          </a>
           
           {/* Services Dropdown */}
           <div className="relative" ref={servicesMenuRef}>
@@ -199,6 +206,14 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
+
+            <a
+              href="/upcoming-events"
+              className="text-foreground/80 hover:text-primary transition-colors font-serif text-lg py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t("nav.upcomingEvents")}
+            </a>
             
             {/* Mobile Services Section */}
             <div className="border-t border-border pt-4 mt-2">
