@@ -11,6 +11,7 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import Orders from "@/pages/Orders";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentCancelled from "@/pages/PaymentCancelled";
+import EventPaymentSuccess from "@/pages/EventPaymentSuccess";
 import Catering from "@/pages/Catering";
 import CateringPackDetail from "@/pages/CateringPackDetail";
 import CateringOrder from "@/pages/CateringOrder";
@@ -103,6 +104,14 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <PaymentCancelled />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/events/payment/success"
+          element={
+            <PageTransition>
+              <EventPaymentSuccess />
             </PageTransition>
           }
         />

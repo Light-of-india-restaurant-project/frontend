@@ -24,6 +24,11 @@ export const apiConfig = {
     // Breakfast Reservation endpoints (v1)
     breakfastReservations: `${API_V1_URL}/reservations/breakfast`,
     breakfastReservationsOpenDates: `${API_V1_URL}/reservations/breakfast/open-dates`,
+
+    // Upcoming Event endpoints (v1)
+    eventSettings: `${API_V1_URL}/reservations/events/settings`,
+    eventOpenDates: `${API_V1_URL}/reservations/events/open-dates`,
+    eventPaymentInitiate: `${API_V1_URL}/payments/events/initiate`,
     
     // Contact & Newsletter
     contact: `${API_V1_URL}/contact`,
@@ -91,6 +96,19 @@ export const api = {
     }),
   getBreakfastReservationOpenDates: () =>
     apiFetch<SimpleReservationOpenDatesResponse>(apiConfig.endpoints.breakfastReservationsOpenDates),
+
+  // Upcoming Events
+  getEventSettings: () =>
+    apiFetch<EventSettingsResponse>(apiConfig.endpoints.eventSettings),
+  getEventOpenDates: () =>
+    apiFetch<SimpleReservationOpenDatesResponse>(apiConfig.endpoints.eventOpenDates),
+  initiateEventPayment: (data: EventReservationPaymentData) =>
+    apiFetch<EventPaymentInitiateResponse>(apiConfig.endpoints.eventPaymentInitiate, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  getEventPaymentStatus: (paymentId: string) =>
+    apiFetch<EventPaymentStatusResponse>(`${API_V1_URL}/payments/events/${paymentId}/status`),
 
   // Contact
   sendContactMessage: (data: ContactData) =>
@@ -271,6 +289,57 @@ export interface BreakfastReservationResponse {
     reservationDate: string;
     status: 'pending' | 'accepted' | 'rejected' | 'cancelled';
     createdAt: string;
+  };
+}
+
+export interface EventSettingsResponse {
+  message: string;
+  success: boolean;
+  data: {
+    titleEn: string;
+    titleNl: string;
+    subtitleEn: string;
+    subtitleNl: string;
+    descriptionEn: string;
+    descriptionNl: string;
+    timeEn: string;
+    timeNl: string;
+    locationEn: string;
+    locationNl: string;
+    host: string;
+    contactPhonePrimary: string;
+    contactPhoneSecondary: string;
+    contactEmail: string;
+    pricePerPerson: number;
+    currency: string;
+    eventDay: string;
+    maxAdvanceDays: number;
+    isActive: boolean;
+  };
+}
+
+export interface EventReservationPaymentData {
+  name: string;
+  email: string;
+  contactNumber: string;
+  numberOfGuests: number;
+  reservationDate: string;
+}
+
+export interface EventPaymentInitiateResponse {
+  success: boolean;
+  message: string;
+  paymentUrl: string;
+  paymentId: string;
+}
+
+export interface EventPaymentStatusResponse {
+  success: boolean;
+  status: string;
+  isPaid: boolean;
+  reservation?: {
+    reservationId: string;
+    confirmationCode: string;
   };
 }
 
