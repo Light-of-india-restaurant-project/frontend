@@ -17,6 +17,25 @@ type EventSettingsData = {
   subtitleNl: string;
   descriptionEn: string;
   descriptionNl: string;
+  secondaryEventEnabled: boolean;
+  secondaryTitleEn: string;
+  secondaryTitleNl: string;
+  secondarySubtitleEn: string;
+  secondarySubtitleNl: string;
+  secondaryDescriptionEn: string;
+  secondaryDescriptionNl: string;
+  secondaryDateLabelEn: string;
+  secondaryDateLabelNl: string;
+  secondaryTimeEn: string;
+  secondaryTimeNl: string;
+  secondaryLocationEn: string;
+  secondaryLocationNl: string;
+  secondaryHost: string;
+  secondaryContactPhonePrimary: string;
+  secondaryContactPhoneSecondary: string;
+  secondaryContactEmail: string;
+  secondaryPricePerPerson: number;
+  secondaryCurrency: string;
   timeEn: string;
   timeNl: string;
   locationEn: string;
@@ -28,6 +47,27 @@ type EventSettingsData = {
   pricePerPerson: number;
   currency: string;
   isActive: boolean;
+};
+
+type EventCardData = {
+  key: 'primary' | 'secondary';
+  title: string;
+  subtitle: string;
+  description: string;
+  dateLabel: string;
+  timeLabel: string;
+  locationLabel: string;
+  hostLabel: string;
+  contactPrimary: string;
+  contactSecondary: string;
+  contactEmail: string;
+  pricePerPerson: number;
+  currency: string;
+};
+
+type EventOption = {
+  key: 'primary' | 'secondary';
+  label: string;
 };
 
 const formatDateOption = (language: "en" | "nl", dateStr: string, dayName: string) => {
@@ -79,6 +119,7 @@ const UpcomingEvents = () => {
     contactNumber: "",
     numberOfGuests: 2,
     reservationDate: "",
+    selectedEventKey: 'primary',
   });
 
   useEffect(() => {
@@ -103,6 +144,81 @@ const UpcomingEvents = () => {
     return match?.closureReason || null;
   }, [formData.reservationDate, openDates]);
 
+  const eventCards = useMemo<EventCardData[]>(() => {
+    if (!eventSettings) return [];
+
+    const featuredEvent: EventCardData = {
+      key: 'primary',
+      title: language === "nl" ? eventSettings.titleNl : eventSettings.titleEn,
+      subtitle: language === "nl" ? eventSettings.subtitleNl : eventSettings.subtitleEn,
+      description: language === "nl" ? eventSettings.descriptionNl : eventSettings.descriptionEn,
+      dateLabel: language === "nl" ? "Elke zondag" : "Every Sunday",
+      timeLabel: language === "nl" ? eventSettings.timeNl : eventSettings.timeEn,
+      locationLabel: language === "nl" ? eventSettings.locationNl : eventSettings.locationEn,
+      hostLabel: eventSettings.host,
+      contactPrimary: eventSettings.contactPhonePrimary,
+      contactSecondary: eventSettings.contactPhoneSecondary,
+      contactEmail: eventSettings.contactEmail,
+      pricePerPerson: eventSettings.pricePerPerson,
+      currency: eventSettings.currency,
+    };
+
+    const cards = [featuredEvent];
+
+    if (eventSettings.secondaryEventEnabled && (eventSettings.secondaryTitleEn || eventSettings.secondaryTitleNl)) {
+      cards.push({
+        key: 'secondary',
+        title: language === "nl" ? eventSettings.secondaryTitleNl : eventSettings.secondaryTitleEn,
+        subtitle: language === "nl" ? eventSettings.secondarySubtitleNl : eventSettings.secondarySubtitleEn,
+        description: language === "nl" ? eventSettings.secondaryDescriptionNl : eventSettings.secondaryDescriptionEn,
+        dateLabel: language === "nl" ? eventSettings.secondaryDateLabelNl : eventSettings.secondaryDateLabelEn,
+        timeLabel: language === "nl" ? eventSettings.secondaryTimeNl : eventSettings.secondaryTimeEn,
+        locationLabel: language === "nl" ? eventSettings.secondaryLocationNl : eventSettings.secondaryLocationEn,
+        hostLabel: eventSettings.secondaryHost,
+        contactPrimary: eventSettings.secondaryContactPhonePrimary,
+        contactSecondary: eventSettings.secondaryContactPhoneSecondary,
+        contactEmail: eventSettings.secondaryContactEmail,
+        pricePerPerson: eventSettings.secondaryPricePerPerson,
+        currency: eventSettings.secondaryCurrency,
+      });
+    }
+
+    return cards;
+  }, [eventSettings, language]);
+
+  const eventOptions = useMemo<EventOption[]>(() => {
+    if (!eventSettings) return [];
+
+    const options: EventOption[] = [
+      {
+        key: 'primary',
+        label: language === 'nl' ? eventSettings.titleNl : eventSettings.titleEn,
+      },
+    ];
+
+    if (eventSettings.secondaryEventEnabled && (eventSettings.secondaryTitleEn || eventSettings.secondaryTitleNl)) {
+      options.push({
+        key: 'secondary',
+        label: language === 'nl' ? eventSettings.secondaryTitleNl : eventSettings.secondaryTitleEn,
+      });
+    }
+
+    return options;
+  }, [eventSettings, language]);
+
+  useEffect(() => {
+    if (!eventOptions.length) return;
+
+    const currentKey = formData.selectedEventKey || 'primary';
+    const isValid = eventOptions.some((option) => option.key === currentKey);
+    if (!isValid) {
+      setFormData((prev) => ({
+        ...prev,
+        selectedEventKey: eventOptions[0]?.key || 'primary',
+      }));
+    }
+  }, [eventOptions, formData.selectedEventKey]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -117,6 +233,11 @@ const UpcomingEvents = () => {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
+  const handleReserveClick = (eventKey: 'primary' | 'secondary') => {
+    setFormData((prev) => ({ ...prev, selectedEventKey: eventKey }))
+    scrollToReserveSection()
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,106 +322,105 @@ const UpcomingEvents = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-6">
           <SectionHeading
-            title={language === "nl" ? "Aankomend Event" : "Featured Event"}
-            subtitle={language === "nl" ? "Eén speciale avond" : "One special evening"}
+            title={language === "nl" ? "Aankomende Events" : "Upcoming Events"}
+            subtitle={language === "nl" ? "Speciale avonden" : "Special evenings"}
           />
 
-          <motion.article
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="max-w-5xl mx-auto border border-border bg-card/70 backdrop-blur-sm shadow-sm overflow-hidden"
-          >
-            <div className="relative px-6 py-8 md:px-10 md:py-12 bg-gradient-to-b from-primary/95 via-primary/90 to-primary text-primary-foreground">
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,.35),transparent_45%),radial-gradient(circle_at_80%_30%,rgba(255,215,128,.25),transparent_40%)]" />
+          <div className="max-w-5xl mx-auto space-y-8">
+            {eventCards.map((eventCard, index) => (
+              <motion.article
+                key={`${eventCard.title}-${index}`}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="border border-border bg-card/70 backdrop-blur-sm shadow-sm overflow-hidden"
+              >
+                <div className="relative px-6 py-8 md:px-10 md:py-12 bg-gradient-to-b from-primary/95 via-primary/90 to-primary text-primary-foreground">
+                  <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,.35),transparent_45%),radial-gradient(circle_at_80%_30%,rgba(255,215,128,.25),transparent_40%)]" />
 
-              <div className="relative z-10 text-center">
-                <p className="font-serif tracking-[0.3em] uppercase text-primary-foreground/85 text-xs md:text-sm mb-4">
-                  {language === "nl" ? "Presents Live" : "Presents Live"}
-                </p>
-                <h2 className="font-display text-3xl md:text-5xl leading-tight mb-3">
-                  {language === "nl" ? eventSettings.titleNl : eventSettings.titleEn}
-                </h2>
-                <p className="font-serif text-lg md:text-2xl text-secondary mb-6">
-                  {language === "nl" ? eventSettings.subtitleNl : eventSettings.subtitleEn}
-                </p>
-                <p className="font-serif text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-                  {language === "nl" ? eventSettings.descriptionNl : eventSettings.descriptionEn}
-                </p>
-              </div>
-            </div>
-
-            <div className="p-6 md:p-10">
-              <div className="grid md:grid-cols-3 gap-5 mb-8">
-                <div className="border border-border/80 bg-background/70 p-4">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-medium">
-                    {language === "nl" ? "Datum" : "Date"}
-                  </p>
-                  <div className="flex items-center gap-2 text-foreground font-serif">
-                    <CalendarDays className="w-4 h-4 text-secondary" />
-                    <span>{language === "nl" ? "Elke zondag" : "Every Sunday"}</span>
+                  <div className="relative z-10 text-center">
+                    <p className="font-serif tracking-[0.3em] uppercase text-primary-foreground/85 text-xs md:text-sm mb-4">
+                      {language === "nl" ? "Presents Live" : "Presents Live"}
+                    </p>
+                    <h2 className="font-display text-3xl md:text-5xl leading-tight mb-3">{eventCard.title}</h2>
+                    <p className="font-serif text-lg md:text-2xl text-secondary mb-6">{eventCard.subtitle}</p>
+                    <p className="font-serif text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">{eventCard.description}</p>
                   </div>
                 </div>
 
-                <div className="border border-border/80 bg-background/70 p-4">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-medium">
-                    {language === "nl" ? "Tijden" : "Timings"}
-                  </p>
-                  <div className="flex items-center gap-2 text-foreground font-serif">
-                    <Clock3 className="w-4 h-4 text-secondary" />
-                    <span>{language === "nl" ? eventSettings.timeNl : eventSettings.timeEn}</span>
+                <div className="p-6 md:p-10">
+                  <div className="grid md:grid-cols-3 gap-5 mb-8">
+                    <div className="border border-border/80 bg-background/70 p-4">
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-medium">
+                        {language === "nl" ? "Datum" : "Date"}
+                      </p>
+                      <div className="flex items-center gap-2 text-foreground font-serif">
+                        <CalendarDays className="w-4 h-4 text-secondary" />
+                        <span>{eventCard.dateLabel}</span>
+                      </div>
+                    </div>
+
+                    <div className="border border-border/80 bg-background/70 p-4">
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-medium">
+                        {language === "nl" ? "Tijden" : "Timings"}
+                      </p>
+                      <div className="flex items-center gap-2 text-foreground font-serif">
+                        <Clock3 className="w-4 h-4 text-secondary" />
+                        <span>{eventCard.timeLabel}</span>
+                      </div>
+                    </div>
+
+                    <div className="border border-border/80 bg-background/70 p-4">
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-medium">
+                        {language === "nl" ? "Locatie" : "Location"}
+                      </p>
+                      <div className="flex items-center gap-2 text-foreground font-serif">
+                        <MapPin className="w-4 h-4 text-secondary" />
+                        <span>{eventCard.locationLabel}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-5 text-center">
+                    <div className="border border-secondary/40 bg-secondary/10 p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
+                        {language === "nl" ? "Buffet" : "Buffet Open"}
+                      </p>
+                      <p className="font-display text-3xl text-foreground">
+                        {eventCard.currency} {eventCard.pricePerPerson.toFixed(2)} p/p
+                      </p>
+                    </div>
+                    <div className="border border-border/80 bg-background/70 p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
+                        {language === "nl" ? "Gastheer" : "Host"}
+                      </p>
+                      <p className="font-serif text-lg text-foreground">{eventCard.hostLabel}</p>
+                      <p className="font-serif text-muted-foreground">{eventCard.contactPrimary}</p>
+                    </div>
+                    <div className="border border-border/80 bg-background/70 p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
+                        {language === "nl" ? "Contact" : "Contact"}
+                      </p>
+                      <p className="font-serif text-lg text-foreground">{eventCard.contactSecondary}</p>
+                      <p className="font-serif text-muted-foreground break-all">{eventCard.contactEmail}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 text-center">
+                    <button
+                      type="button"
+                      onClick={() => handleReserveClick(eventCard.key)}
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-serif text-lg hover:bg-primary/90 transition-colors"
+                    >
+                      <Users className="w-5 h-5" />
+                      {language === "nl" ? "Betaal & Reserveer" : "Pay & Reserve"}
+                    </button>
                   </div>
                 </div>
-
-                <div className="border border-border/80 bg-background/70 p-4">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-medium">
-                    {language === "nl" ? "Locatie" : "Location"}
-                  </p>
-                  <div className="flex items-center gap-2 text-foreground font-serif">
-                    <MapPin className="w-4 h-4 text-secondary" />
-                    <span>{language === "nl" ? eventSettings.locationNl : eventSettings.locationEn}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-5 text-center">
-                <div className="border border-secondary/40 bg-secondary/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
-                    {language === "nl" ? "Buffet" : "Buffet Open"}
-                  </p>
-                  <p className="font-display text-3xl text-foreground">
-                    {eventSettings.currency} {eventSettings.pricePerPerson.toFixed(2)} p/p
-                  </p>
-                </div>
-                <div className="border border-border/80 bg-background/70 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
-                    {language === "nl" ? "Gastheer" : "Host"}
-                  </p>
-                  <p className="font-serif text-lg text-foreground">{eventSettings.host}</p>
-                  <p className="font-serif text-muted-foreground">{eventSettings.contactPhonePrimary}</p>
-                </div>
-                <div className="border border-border/80 bg-background/70 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
-                    {language === "nl" ? "Contact" : "Contact"}
-                  </p>
-                  <p className="font-serif text-lg text-foreground">{eventSettings.contactPhoneSecondary}</p>
-                  <p className="font-serif text-muted-foreground break-all">{eventSettings.contactEmail}</p>
-                </div>
-              </div>
-
-              <div className="mt-8 text-center">
-                <button
-                  type="button"
-                  onClick={scrollToReserveSection}
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-serif text-lg hover:bg-primary/90 transition-colors"
-                >
-                  <Users className="w-5 h-5" />
-                  {language === "nl" ? "Betaal & Reserveer" : "Pay & Reserve"}
-                </button>
-              </div>
-            </div>
-          </motion.article>
+              </motion.article>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -321,6 +441,43 @@ const UpcomingEvents = () => {
             {error && (
               <div className="p-3 border border-red-300/50 bg-red-500/20 text-red-100">{error}</div>
             )}
+
+            <div>
+              <label className="block text-sm font-serif text-primary-foreground/85 mb-2">
+                {language === 'nl' ? 'Kies event' : 'Select event'}
+              </label>
+              <select
+                name="selectedEventKey"
+                value={formData.selectedEventKey || 'primary'}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    selectedEventKey: e.target.value as 'primary' | 'secondary',
+                  }))
+                }
+                className="w-full px-4 py-3 border border-white/20 text-primary-foreground focus:border-secondary focus:outline-none font-serif"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+              >
+                {eventOptions.map((eventOption) => (
+                  <option
+                    key={eventOption.key}
+                    value={eventOption.key}
+                    style={{ backgroundColor: 'hsl(25, 30%, 18%)' }}
+                  >
+                    {eventOption.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="p-3 border border-white/20 bg-white/10 text-sm font-serif">
+              {language === 'nl' ? 'Geselecteerd event:' : 'Selected event:'}{' '}
+              <span className="font-semibold">
+                {formData.selectedEventKey === 'secondary'
+                  ? (language === 'nl' ? eventSettings.secondaryTitleNl : eventSettings.secondaryTitleEn)
+                  : (language === 'nl' ? eventSettings.titleNl : eventSettings.titleEn)}
+              </span>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <input

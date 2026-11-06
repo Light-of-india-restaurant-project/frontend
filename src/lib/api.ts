@@ -302,6 +302,25 @@ export interface EventSettingsResponse {
     subtitleNl: string;
     descriptionEn: string;
     descriptionNl: string;
+    secondaryEventEnabled: boolean;
+    secondaryTitleEn: string;
+    secondaryTitleNl: string;
+    secondarySubtitleEn: string;
+    secondarySubtitleNl: string;
+    secondaryDescriptionEn: string;
+    secondaryDescriptionNl: string;
+    secondaryDateLabelEn: string;
+    secondaryDateLabelNl: string;
+    secondaryTimeEn: string;
+    secondaryTimeNl: string;
+    secondaryLocationEn: string;
+    secondaryLocationNl: string;
+    secondaryHost: string;
+    secondaryContactPhonePrimary: string;
+    secondaryContactPhoneSecondary: string;
+    secondaryContactEmail: string;
+    secondaryPricePerPerson: number;
+    secondaryCurrency: string;
     timeEn: string;
     timeNl: string;
     locationEn: string;
@@ -324,6 +343,7 @@ export interface EventReservationPaymentData {
   contactNumber: string;
   numberOfGuests: number;
   reservationDate: string;
+  selectedEventKey?: 'primary' | 'secondary';
 }
 
 export interface EventPaymentInitiateResponse {
