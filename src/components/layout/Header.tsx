@@ -19,9 +19,7 @@ const Header = () => {
 
   const navLinks = useMemo(() => [
     { label: t("nav.menu"), href: "#menu" },
-    { label: t("nav.about"), href: "#about" },
     { label: t("nav.gallery"), href: "#gallery" },
-    { label: t("nav.contact"), href: "#contact" },
   ], [t]);
 
   const servicesLinks = useMemo(() => [
@@ -80,13 +78,13 @@ const Header = () => {
         </a>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden xl:flex items-center gap-6 2xl:gap-8">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="nav-link font-serif text-lg"
+              className="nav-link font-serif text-lg 2xl:text-xl"
             >
               {link.label}
             </a>
@@ -94,16 +92,23 @@ const Header = () => {
 
           <a
             href="/upcoming-events"
-            className="nav-link font-serif text-lg"
+            className="nav-link font-serif text-lg 2xl:text-xl"
           >
             {t("nav.upcomingEvents")}
+          </a>
+
+          <a
+            href="/desi-nashta-brunch"
+            className="nav-link font-serif text-lg 2xl:text-xl"
+          >
+            {t("nav.nashtaBrunch")}
           </a>
           
           {/* Services Dropdown */}
           <div className="relative" ref={servicesMenuRef}>
             <button
               onClick={() => setIsServicesOpen(!isServicesOpen)}
-              className="nav-link flex items-center gap-1 font-serif text-lg"
+              className="nav-link flex items-center gap-1 font-serif text-lg 2xl:text-xl"
             >
               {language === 'nl' ? 'Diensten' : 'Services'}
               <ChevronDown size={16} className={`transition-transform ${isServicesOpen ? "rotate-180" : ""}`} />
@@ -180,7 +185,7 @@ const Header = () => {
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center gap-2">
+        <div className="xl:hidden flex items-center gap-2">
           <CartButton />
           <button
             className="p-2" style={{ color: 'hsl(40, 33%, 96%)' }}
@@ -194,7 +199,7 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <nav className="md:hidden bg-background border-t border-border animate-fade-in">
+        <nav className="xl:hidden bg-background border-t border-border animate-fade-in">
           <div className="container mx-auto px-6 py-4 flex flex-col gap-4">
             {navLinks.map((link) => (
               <a
@@ -213,6 +218,14 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               {t("nav.upcomingEvents")}
+            </a>
+
+            <a
+              href="/desi-nashta-brunch"
+              className="text-foreground/80 hover:text-primary transition-colors font-serif text-lg py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t("nav.nashtaBrunch")}
             </a>
             
             {/* Mobile Services Section */}

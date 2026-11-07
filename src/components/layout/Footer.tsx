@@ -146,6 +146,9 @@ const Footer = () => {
               <a href="/catering" className="block text-cream/80 hover:text-secondary transition-colors">
                 Catering
               </a>
+              <a href="/desi-nashta-brunch" className="block text-cream/80 hover:text-secondary transition-colors">
+                {t("nav.nashtaBrunch")}
+              </a>
               <a href="/specials" className="block text-cream/80 hover:text-secondary transition-colors">
                 {t("nav.specials")}
               </a>
