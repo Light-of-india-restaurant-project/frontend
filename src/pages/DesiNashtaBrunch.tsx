@@ -63,23 +63,6 @@ const DesiNashtaBrunch = () => {
             <p className="font-serif text-lg md:text-xl text-white/85 max-w-xl mx-auto mb-8">
               {t("nashta.hero.subtitle")}
             </p>
-            <div className="flex items-center gap-4 mb-8">
-              <a
-                href="/#about"
-                className="font-serif font-semibold text-sm uppercase tracking-[0.18em] hover:opacity-85 transition-opacity"
-                style={{ color: "hsl(40, 33%, 96%)" }}
-              >
-                {t("nav.about")}
-              </a>
-              <span style={{ color: "hsl(43, 74%, 49%)" }}>|</span>
-              <a
-                href="/#contact"
-                className="font-serif font-semibold text-sm uppercase tracking-[0.18em] hover:opacity-85 transition-opacity"
-                style={{ color: "hsl(40, 33%, 96%)" }}
-              >
-                {t("nav.contact")}
-              </a>
-            </div>
             {isLaunched && (
               <button
                 onClick={handleScrollToForm}

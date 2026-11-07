@@ -56,6 +56,27 @@ const HeroSection = () => {
           </span>
           <span className="h-px w-16 bg-secondary/60" />
         </div>
+
+        <div
+          className="flex items-center justify-center gap-3 mb-6 animate-fade-in"
+          style={{ animationDelay: "0.35s" }}
+        >
+          <a
+            href="#about"
+            className="font-serif text-xs md:text-sm uppercase tracking-[0.16em] hover:opacity-80 transition-opacity"
+            style={{ color: "hsl(43, 74%, 49%)" }}
+          >
+            {t("nav.about")}
+          </a>
+          <span className="text-cream/50">|</span>
+          <a
+            href="#contact"
+            className="font-serif text-xs md:text-sm uppercase tracking-[0.16em] hover:opacity-80 transition-opacity"
+            style={{ color: "hsl(43, 74%, 49%)" }}
+          >
+            {t("nav.contact")}
+          </a>
+        </div>
         
         <p
           className="text-xl md:text-2xl font-serif text-cream/70 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in"
