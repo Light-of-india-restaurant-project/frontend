@@ -12,6 +12,7 @@ import Orders from "@/pages/Orders";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentCancelled from "@/pages/PaymentCancelled";
 import EventPaymentSuccess from "@/pages/EventPaymentSuccess";
+import BreakfastPaymentSuccess from '@/pages/BreakfastPaymentSuccess';
 import Catering from "@/pages/Catering";
 import CateringPackDetail from "@/pages/CateringPackDetail";
 import CateringOrder from "@/pages/CateringOrder";
@@ -112,6 +113,14 @@ export const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <EventPaymentSuccess />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/nashta-brunch/payment/success"
+          element={
+            <PageTransition>
+              <BreakfastPaymentSuccess />
             </PageTransition>
           }
         />

@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from "framer-motion";
 import { Coffee, Sun, Clock, MapPin, Flame, Leaf, Star, ChevronDown, CalendarClock } from "lucide-react";
 import Header from "@/components/layout/Header";
@@ -5,22 +6,60 @@ import Footer from "@/components/layout/Footer";
 import SectionHeading from "@/components/ui/SectionHeading";
 import BreakfastReservationSection from "@/components/sections/BreakfastReservationSection";
 import { useLanguage } from "@/lib/i18n";
+import { api, BreakfastSettingsResponse } from '@/lib/api';
 import breakfastImg from "@/assets/breakfast-reservation.jpeg";
 
 const LAUNCH_DATE = new Date("2026-07-19T00:00:00");
+const FALLBACK_ITEMS_EN = ['Halwa Puri', 'Cholay Bhature', 'Zera Rice', 'Bombay Potatoes', 'Pulao Rice', 'Dal Tadka'];
+const FALLBACK_ITEMS_NL = ['Halwa Puri', 'Cholay Bhature', 'Zera Rijst', 'Bombay Aardappelen', 'Pulao Rijst', 'Dal Tadka'];
 
 const DesiNashtaBrunch = () => {
   const { t, language } = useLanguage();
   const isLaunched = new Date() >= LAUNCH_DATE;
+  const [settings, setSettings] = useState<BreakfastSettingsResponse['data'] | null>(null);
 
-  const highlights = [
-    { icon: Coffee, nameKey: "nashta.dish.chai.name", descKey: "nashta.dish.chai.desc" },
-    { icon: Flame, nameKey: "nashta.dish.paratha.name", descKey: "nashta.dish.paratha.desc" },
-    { icon: Leaf, nameKey: "nashta.dish.poha.name", descKey: "nashta.dish.poha.desc" },
-    { icon: Star, nameKey: "nashta.dish.chole.name", descKey: "nashta.dish.chole.desc" },
-    { icon: Sun, nameKey: "nashta.dish.dosa.name", descKey: "nashta.dish.dosa.desc" },
-    { icon: Flame, nameKey: "nashta.dish.samosa.name", descKey: "nashta.dish.samosa.desc" },
-  ];
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await api.getBreakfastSettings();
+        setSettings(response.data);
+      } catch {
+        setSettings(null);
+      }
+    };
+
+    loadSettings();
+  }, []);
+
+  const menuItems = useMemo(() => {
+    const items = language === 'nl' ? settings?.highlightItemsNl : settings?.highlightItemsEn;
+    if (items && items.length > 0) {
+      return items;
+    }
+    return language === 'nl' ? FALLBACK_ITEMS_NL : FALLBACK_ITEMS_EN;
+  }, [language, settings]);
+
+  const offerTitle = useMemo(() => {
+    if (language === 'nl') {
+      return settings?.offerTitleNl || 'Desi Vegetarische Ontbijt Lunch Brunch Onbeperkt';
+    }
+    return settings?.offerTitleEn || 'Desi Vegetarian Breakfast Lunch Brunch Unlimited';
+  }, [language, settings]);
+
+  const offerSubtitle = useMemo(() => {
+    if (language === 'nl') {
+      return settings?.offerSubtitleNl || 'Dit is de nieuwe update voor Light of India voor Nashta/Brunch';
+    }
+    return settings?.offerSubtitleEn || 'This is the new update for Light of India for Nashta/Brunch';
+  }, [language, settings]);
+
+  const priceText = useMemo(() => {
+    const currency = settings?.currency || 'EUR';
+    const price = (settings?.pricePerPerson ?? 14.95).toFixed(2);
+    return `${currency} ${price}`;
+  }, [settings]);
+
+  const itemIcons = [Coffee, Flame, Leaf, Star, Sun, Flame];
 
   const handleScrollToForm = () => {
     const el = document.getElementById("desi-nashta-reserve");
@@ -82,6 +121,56 @@ const DesiNashtaBrunch = () => {
               </button>
             )}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Highlights Grid */}
+      <section className="py-20" style={{ backgroundColor: "hsl(24, 32%, 20%)" }}>
+        <div className="container mx-auto px-6">
+          <div className="[&_h2]:text-cream [&_p]:text-cream/90">
+            <SectionHeading
+              title={offerTitle}
+              subtitle={`${offerSubtitle} • ${priceText}`}
+            />
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mt-4">
+            {menuItems.map((itemName, index) => {
+              const Icon = itemIcons[index % itemIcons.length];
+              return (
+              <motion.div
+                key={`${itemName}-${index}`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                className="group p-6 rounded border border-cream/30 hover:border-secondary/70 transition-colors duration-300"
+                style={{ backgroundColor: "hsl(24, 30%, 26%)" }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
+                  style={{ backgroundColor: "rgba(184,138,46,0.15)", border: "1px solid rgba(184,138,46,0.4)" }}
+                >
+                  <Icon size={20} style={{ color: "hsl(43, 74%, 49%)" }} />
+                </div>
+                <h3 className="font-display text-lg text-cream mb-2">{itemName}</h3>
+                <p className="font-serif text-cream/85 text-sm leading-relaxed">
+                  {language === 'nl' ? 'Opgenomen in het brunch-aanbod.' : 'Included in the brunch offer.'}
+                </p>
+              </motion.div>
+              );
+            })}
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center font-serif text-cream/85 mt-10 text-sm"
+          >
+            {t("nashta.highlights.note")}
+          </motion.p>
         </div>
       </section>
 
@@ -200,49 +289,6 @@ const DesiNashtaBrunch = () => {
               </div>
             </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* Highlights Grid */}
-      <section className="py-20" style={{ backgroundColor: "hsl(25, 30%, 14%)" }}>
-        <div className="container mx-auto px-6">
-          <SectionHeading
-            title={t("nashta.highlights.title")}
-            subtitle={t("nashta.highlights.subtitle")}
-          />
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mt-4">
-            {highlights.map((item, index) => (
-              <motion.div
-                key={item.nameKey}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
-                className="group p-6 rounded border border-cream/10 hover:border-secondary/50 transition-colors duration-300"
-                style={{ backgroundColor: "hsl(25, 30%, 18%)" }}
-              >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
-                  style={{ backgroundColor: "rgba(184,138,46,0.15)", border: "1px solid rgba(184,138,46,0.4)" }}
-                >
-                  <item.icon size={20} style={{ color: "hsl(43, 74%, 49%)" }} />
-                </div>
-                <h3 className="font-display text-lg text-foreground mb-2">{t(item.nameKey)}</h3>
-                <p className="font-serif text-muted-foreground text-sm leading-relaxed">{t(item.descKey)}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center font-serif text-muted-foreground mt-10 text-sm"
-          >
-            {t("nashta.highlights.note")}
-          </motion.p>
         </div>
       </section>
 

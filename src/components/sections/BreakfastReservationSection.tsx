@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Calendar, Users, Check, AlertCircle, Loader2, User, Mail, Phone } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/lib/i18n";
-import { api, BreakfastReservationData, OpenDate } from "@/lib/api";
+import { api, BreakfastSettingsResponse, OpenDate } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface BreakfastReservationSectionProps {
@@ -25,6 +25,7 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [settings, setSettings] = useState<BreakfastSettingsResponse['data'] | null>(null);
 
   const [openDates, setOpenDates] = useState<OpenDate[]>([]);
   const [isLoadingDates, setIsLoadingDates] = useState(true);
@@ -66,6 +67,19 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
   }, [language, toast]);
 
   useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await api.getBreakfastSettings();
+        setSettings(response.data);
+      } catch (err) {
+        console.error('Failed to fetch breakfast settings:', err);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  useEffect(() => {
     const bootstrapGuard = async () => {
       try {
         const result = await api.getFormGuardToken('breakfast-reservation');
@@ -91,40 +105,18 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
     }
 
     try {
-      const reservationData: BreakfastReservationData = {
+      const paymentResponse = await api.initiateBreakfastPayment({
         name: formData.name.trim(),
         email: formData.email.trim(),
         contactNumber: formData.contactNumber.trim(),
         numberOfGuests: parseInt(formData.numberOfGuests, 10),
         reservationDate: formData.reservationDate,
-        website: formData.website,
-        guardToken,
-        guardStartedAt,
-      };
-
-      await api.createBreakfastReservation(reservationData);
-
-      setIsSuccess(true);
-      toast({
-        title: language === "nl" ? "Ontbijtreservering verzonden!" : "Breakfast reservation sent!",
-        description:
-          language === "nl"
-            ? "We nemen snel contact met u op om uw ontbijtreservering te bevestigen."
-            : "We will contact you soon to confirm your breakfast reservation.",
-        duration: 10000,
+        selectedPaymentMode: 'online',
       });
 
-      setTimeout(() => {
-        setIsSuccess(false);
-        setFormData({
-          name: "",
-          email: "",
-          contactNumber: "",
-          numberOfGuests: "2",
-          reservationDate: "",
-          website: "",
-        });
-      }, 10000);
+      sessionStorage.setItem('pendingBreakfastPaymentId', paymentResponse.paymentId);
+      window.location.href = paymentResponse.paymentUrl;
+      return;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
       setError(errorMessage);
@@ -332,6 +324,22 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
                 </select>
               </div>
 
+              <div>
+                <label className="block font-serif mb-2 text-cream/80">
+                  {language === 'nl' ? 'Betaalmethode' : 'Payment Method'}
+                </label>
+
+                <div className="px-4 py-3 bg-cream/10 border border-cream/20 text-cream/90 font-serif">
+                  {language === 'nl' ? 'Alleen online betalen is beschikbaar voor Nashta/Brunch.' : 'Online payment only for Nashta/Brunch reservations.'}
+                </div>
+
+                {!!settings?.pricePerPerson && (
+                  <p className="text-xs text-cream/70 mt-2 font-serif">
+                    {language === 'nl' ? 'Prijs per persoon:' : 'Price per person:'} {settings.currency} {settings.pricePerPerson.toFixed(2)}
+                  </p>
+                )}
+              </div>
+
               <button
                 type="submit"
                 disabled={isSubmitting || !guardToken || !formData.reservationDate || !formData.name || !formData.email || !formData.contactNumber || !!selectedDateClosureReason}
@@ -343,7 +351,7 @@ const BreakfastReservationSection = ({ sectionId = "breakfast-reservation" }: Br
                     {t("breakfastReservation.submitting")}
                   </>
                 ) : (
-                  t("breakfastReservation.submit")
+                  language === 'nl' ? 'Betaal & Reserveer' : 'Pay & Reserve'
                 )}
               </button>
 

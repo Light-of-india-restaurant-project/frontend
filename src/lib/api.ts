@@ -24,6 +24,8 @@ export const apiConfig = {
     // Breakfast Reservation endpoints (v1)
     breakfastReservations: `${API_V1_URL}/reservations/breakfast`,
     breakfastReservationsOpenDates: `${API_V1_URL}/reservations/breakfast/open-dates`,
+    breakfastSettings: `${API_V1_URL}/reservations/breakfast-settings`,
+    breakfastPaymentInitiate: `${API_V1_URL}/payments/breakfast/initiate`,
 
     // Upcoming Event endpoints (v1)
     eventSettings: `${API_V1_URL}/reservations/events/settings`,
@@ -96,6 +98,15 @@ export const api = {
     }),
   getBreakfastReservationOpenDates: () =>
     apiFetch<SimpleReservationOpenDatesResponse>(apiConfig.endpoints.breakfastReservationsOpenDates),
+  getBreakfastSettings: () =>
+    apiFetch<BreakfastSettingsResponse>(apiConfig.endpoints.breakfastSettings),
+  initiateBreakfastPayment: (data: BreakfastPaymentInitiateData) =>
+    apiFetch<BreakfastPaymentInitiateResponse>(apiConfig.endpoints.breakfastPaymentInitiate, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getBreakfastPaymentStatus: (paymentId: string) =>
+    apiFetch<BreakfastPaymentStatusResponse>(`${API_V1_URL}/payments/breakfast/${paymentId}/status`),
 
   // Upcoming Events
   getEventSettings: () =>
@@ -289,6 +300,61 @@ export interface BreakfastReservationResponse {
     reservationDate: string;
     status: 'pending' | 'accepted' | 'rejected' | 'cancelled';
     createdAt: string;
+  };
+}
+
+export interface BreakfastSettingsResponse {
+  message: string;
+  success: boolean;
+  data: {
+    operatingHours: OperatingHours[];
+    closedDates: string[];
+    openDates: string[];
+    restaurantClosedDates: Array<{
+      date: string;
+      reason: string;
+    }>;
+    reservationDuration: number;
+    slotInterval: number;
+    maxAdvanceDays: number;
+    maxGuestsPerReservation: number;
+    minGuestsPerReservation: number;
+    isActive: boolean;
+    paymentMode: 'online' | 'offline' | 'hybrid';
+    pricePerPerson: number;
+    currency: string;
+    offerTitleEn: string;
+    offerTitleNl: string;
+    offerSubtitleEn: string;
+    offerSubtitleNl: string;
+    highlightItemsEn: string[];
+    highlightItemsNl: string[];
+  };
+}
+
+export interface BreakfastPaymentInitiateData {
+  name: string;
+  email: string;
+  contactNumber: string;
+  numberOfGuests: number;
+  reservationDate: string;
+  selectedPaymentMode?: 'online' | 'offline';
+}
+
+export interface BreakfastPaymentInitiateResponse {
+  success: boolean;
+  message: string;
+  paymentUrl: string;
+  paymentId: string;
+}
+
+export interface BreakfastPaymentStatusResponse {
+  success: boolean;
+  status: string;
+  isPaid: boolean;
+  reservation?: {
+    reservationId: string;
+    confirmationCode: string;
   };
 }
 
